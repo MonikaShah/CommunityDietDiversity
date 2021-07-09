@@ -20,7 +20,7 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from .decorators import *
 
-from registration.models import *
+from accounts.models import *
 from .forms import *
 from shared.encryption import EncryptionHelper
 

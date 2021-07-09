@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls import url
 from django.views.generic.base import RedirectView
-from registration import views
+from accounts import views
 from django.views.generic.base import TemplateView
 
 
