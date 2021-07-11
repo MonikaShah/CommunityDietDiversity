@@ -22,21 +22,21 @@
 <div class="card p-3 m-3" style="width: 18rem;">
     <div class="card-body">
       <h5 class="card-title">Module One</h5>
-      <a href="moduleOne" class="btn btn-primary">Fill Form</a>
+      <a href="{% url 'accounts:parentModuleOne' student.id %}" class="btn btn-primary">Fill Form</a>
     </div>
   </div>
 
   <div class="card p-3 m-3" style="width: 18rem;">
     <div class="card-body">
       <h5 class="card-title">Module Two</h5>
-      <a href="{{student.id}}" class="btn btn-primary">Fill Form</a>
+      <a href="#" class="btn btn-primary">Fill Form</a>
     </div>
   </div>
 
   <div class="card p-3 m-3" style="width: 18rem;">
     <div class="card-body">
       <h5 class="card-title">Module Three</h5>
-      <a href="{{student.id}}" class="btn btn-primary">Fill Form</a>
+      <a href="#" class="btn btn-primary">Fill Form</a>
     </div>
   </div>
 {% endblock %}

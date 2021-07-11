@@ -49,12 +49,12 @@
                             <br>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <form action="/getTemplate">                                                                                                
+                                    <form action="{% url 'accounts:get_template'%}">                                                                                                
                                         <input type="submit" class="btn btn-primary" value="Download Template">
                                     </form>
                                 </div>                                
                                 <div class="col-md-6">
-                                    <form action="/downloadData">                                                                                                
+                                    <form action="{% url 'accounts:download_data'%}">                                                                                                
                                         <input type="submit" class="btn btn-secondary" value="Download Student Data">
                                     </form>
                                 </div>                                
