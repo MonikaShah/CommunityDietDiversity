@@ -73,7 +73,7 @@ def parents_info(request):
             print(request.POST["state"].strip())
             print(request.POST["city"].strip())
             request.session["data"] = request.POST
-            return redirect("students_info") 
+            return redirect("accounts:students_info")
         else:
             return render(
                 request,
@@ -141,7 +141,7 @@ def students_info(request):
 
             if "data" in request.session:
                 del request.session["data"]
-            return redirect("parent_dashboard")
+            return redirect("accounts:parent_dashboard")
         else:
             return render(
                 request,
@@ -165,11 +165,11 @@ def loginU(request):
             if is_member(user, grp):
                 login(request, user)
                 if grp_name == "Parents":
-                    return redirect("parent_dashboard")
+                    return redirect("accounts:parent_dashboard")
                 elif grp_name == "Students":
-                    return redirect("student_dashboard")
+                    return redirect("accounts:student_dashboard")
                 elif grp_name == "Teachers":
-                    return redirect("teacher_dashboard")
+                    return redirect("accounts:teacher_dashboard")
             else:
                 messages.error(request, "User does not belong to selected group")
                 return render(request, "registration_form/login.html", {"form": form})
@@ -178,8 +178,8 @@ def loginU(request):
             return render(request, "registration_form/login.html", {"form": form})
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_parent, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_parent, login_url="accounts:forbidden")
 def dashboard(request):
     if request.method == "GET":
         students = (
@@ -194,14 +194,14 @@ def dashboard(request):
         )
 
 
-@login_required(login_url="loginlink")
+@login_required(login_url="accounts:loginlink")
 def logoutU(request):
     logout(request)
-    return redirect("loginlink")
+    return redirect("accounts:loginlink")
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_parent, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_parent, login_url="accounts:forbidden")
 def addStudentForm(request):
     if request.method == "GET":
         form = StudentsInfoForm()
@@ -230,7 +230,7 @@ def addStudentForm(request):
             print(student.name)
             student.parent = ParentsInfo.objects.filter(user=request.user).first()
             student.save()
-            return redirect("parent_dashboard")
+            return redirect("accounts:parent_dashboard")
         else:
             return render(
                 request,
@@ -239,8 +239,8 @@ def addStudentForm(request):
             )
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_teacher, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
 def bulkRegister(request):
     if request.method == "GET":
         return render(request, "registration/bulkregistration.html")
@@ -429,11 +429,11 @@ def bulkRegister(request):
                 student.save()
 
         messages.success(request, "Registration Completed")
-        return redirect("bulk_register")
+        return redirect("accounts:bulk_register")
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_teacher, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
 def getTemplate(request):
     output = io.BytesIO()
 
@@ -519,8 +519,8 @@ def getTemplate(request):
     return response
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_teacher, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
 def downloadData(request):
 
     output = io.BytesIO()
@@ -729,14 +729,14 @@ def downloadData(request):
 #         return render(request,'registration_form/first_module_second.html',{'form':form})
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_student, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_student, login_url="accounts:forbidden")
 def student_dashboard(request):
     return render(request, "registration_form/student_dashboard.html")
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_teacher, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
 def teacher_dashboard(request):
     teacher = TeacherInCharge.objects.get(user=request.user)
     total_students = teacher.studentsinfo_set.all()
@@ -841,8 +841,8 @@ def creatingOrUpdatingDrafts(temp, user):
         return False
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_student, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_student, login_url="accounts:forbidden")
 def draft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
         module = request.META.get("HTTP_REFERER").split("/")[-1]
@@ -883,8 +883,8 @@ def getFormType(moduleType):
     return "PreTest" if formType.pre else "PostTest"
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_student, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_student, login_url="accounts:forbidden")
 @isActive("moduleOne", "student")
 def moduleOne(request, user=None):
     if request.method == "GET":
@@ -961,10 +961,10 @@ def moduleOne(request, user=None):
                 form.save()
 
             if flag:
-                return redirect("module_one_2")
+                return redirect("accounts:module_one_2")
             else:
                 return redirect(
-                    "parentsModuleOne2", id=StudentsInfo.objects.get(user=user).id
+                    "accounts:parentsModuleOne2", id=StudentsInfo.objects.get(user=user).id
                 )
 
         else:
@@ -976,8 +976,8 @@ def moduleOne(request, user=None):
             )
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_student, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_student, login_url="accounts:forbidden")
 @isActive("moduleOne", "student")
 def moduleOne2(request, user=None):
     if request.method == "GET":
@@ -1035,10 +1035,10 @@ def moduleOne2(request, user=None):
             creatingOrUpdatingDrafts(temp, user)
 
             if flag:
-                return redirect("module_one_3")
+                return redirect("accounts:module_one_3")
             else:
                 return redirect(
-                    "parentsModuleOne3", id=StudentsInfo.objects.get(user=user).id
+                    "accounts:parentsModuleOne3", id=StudentsInfo.objects.get(user=user).id
                 )
         else:
             formPre = getFormType("moduleOne")
@@ -1049,8 +1049,8 @@ def moduleOne2(request, user=None):
             )
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_student, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_student, login_url="accounts:forbidden")
 @isActive("moduleOne", "student")
 def moduleOne3(request, user=None):
     if request.method == "GET":
@@ -1129,9 +1129,9 @@ def moduleOne3(request, user=None):
                 draftForm.submission_timestamp = datetime.datetime.now()
                 draftForm.save()
                 if flag:
-                    return redirect("student_dashboard")
+                    return redirect("accounts:student_dashboard")
                 else:
-                    return redirect("parent_dashboard")
+                    return redirect("accounts:parent_dashboard")
         # invalid form
         else:
             formPre = getFormType("moduleOne")
@@ -1146,40 +1146,40 @@ def forbidden(request):
     raise PermissionDenied
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_parent, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_parent, login_url="accounts:forbidden")
 def showStudent(request, id):
     student = StudentsInfo.objects.get(pk=id)
     encryptionHelper = EncryptionHelper()
-    return render(request, "registration_form/student_modules.html")
+    return render(request, "registration_form/student_modules.html",{'student':student})
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_parent, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_parent, login_url="accounts:forbidden")
 @isActive("moduleOne", "parent")
 def parentModuleOne(request, id):
     user = StudentsInfo.objects.get(pk=id).user
     return moduleOne(request, user)
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_parent, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_parent, login_url="accounts:forbidden")
 @isActive("moduleOne", "parent")
 def parentModuleOne2(request, id):
     user = StudentsInfo.objects.get(pk=id).user
     return moduleOne2(request, user)
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_parent, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_parent, login_url="accounts:forbidden")
 @isActive("moduleOne", "parent")
 def parentModuleOne3(request, id):
     user = StudentsInfo.objects.get(pk=id).user
     return moduleOne3(request, user)
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_student, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_student, login_url="accounts:forbidden")
 def previous(request):
     link = request.META.get("HTTP_REFERER").split("/")
     if "parent_dashboard" in link:
@@ -1196,8 +1196,8 @@ def previous(request):
     return redirect(newLink)
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_teacher, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
 def manageForms(request):
     if request.method == "GET":
         moduleOne = {}
@@ -1237,7 +1237,7 @@ def manageForms(request):
             module_one_post = request.POST.get("module_one_post", False)
             if module_one_pre == "on" and module_one_post == "on":
                 messages.error(request, "Cannot select both PreTest and PostTest")
-                return redirect("manage_forms")
+                return redirect("accounts:manage_forms")
 
             form = Form.objects.get(name="moduleOne")
             teacher = TeacherInCharge.objects.get(user=request.user)
@@ -1331,11 +1331,11 @@ def manageForms(request):
 
         # if module_one_pre == module_one_post or module_two_pre == module_two_post or module_three_pre == module_three_post:
         # FormDetails.objects.filter(form= )
-        return redirect("manage_forms")
+        return redirect("accounts:manage_forms")
 
 
-@login_required(login_url="loginlink")
-@user_passes_test(is_teacher, login_url="forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
 def getFormDetails(request, id):
     session = FormDetails.objects.get(pk=id)
     print(session)
