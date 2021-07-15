@@ -15,7 +15,7 @@ def isActive(moduleType, userType):
                 ).exists():
                     return view_func(request, *args, **kwargs)
                 else:
-                    return redirect("/form_closed")
+                    return redirect("../form_closed")
 
             elif "parent_dashboard" in request.build_absolute_uri().split("/"):
                 studentID = request.META.get("HTTP_REFERER").split("/")[-2]
@@ -30,7 +30,7 @@ def isActive(moduleType, userType):
                 ).exists():
                     return view_func(request, *args, **kwargs)
                 else:
-                    return redirect("/form_closed")
+                    return redirect("../form_closed")
 
         return wrap
 

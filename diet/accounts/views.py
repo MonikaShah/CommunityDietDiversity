@@ -926,7 +926,7 @@ def moduleOne(request, user=None):
                     {"form": form, "formPre": formPre},
                 )
             else:
-                return redirect("/already_filled")
+                return redirect("../already_filled")
 
         # new form
         else:
@@ -964,7 +964,8 @@ def moduleOne(request, user=None):
                 return redirect("accounts:module_one_2")
             else:
                 return redirect(
-                    "accounts:parentsModuleOne2", id=StudentsInfo.objects.get(user=user).id
+                    "accounts:parentsModuleOne2",
+                    id=StudentsInfo.objects.get(user=user).id,
                 )
 
         else:
@@ -1011,7 +1012,7 @@ def moduleOne2(request, user=None):
                     {"form": form, "formPre": formPre},
                 )
             else:
-                return redirect("/already_filled")
+                return redirect("../already_filled")
 
         # new form
         else:
@@ -1038,7 +1039,8 @@ def moduleOne2(request, user=None):
                 return redirect("accounts:module_one_3")
             else:
                 return redirect(
-                    "accounts:parentsModuleOne3", id=StudentsInfo.objects.get(user=user).id
+                    "accounts:parentsModuleOne3",
+                    id=StudentsInfo.objects.get(user=user).id,
                 )
         else:
             formPre = getFormType("moduleOne")
@@ -1083,7 +1085,7 @@ def moduleOne3(request, user=None):
                     {"form": form, "formPre": formPre},
                 )
             else:
-                return redirect("/already_filled")
+                return redirect("../already_filled")
         # new form
         else:
             form = ModuleOneForm3()
@@ -1151,7 +1153,9 @@ def forbidden(request):
 def showStudent(request, id):
     student = StudentsInfo.objects.get(pk=id)
     encryptionHelper = EncryptionHelper()
-    return render(request, "registration_form/student_modules.html",{'student':student})
+    return render(
+        request, "registration_form/student_modules.html", {"student": student}
+    )
 
 
 @login_required(login_url="accounts:loginlink")
