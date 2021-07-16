@@ -3,7 +3,7 @@
 
 # Ignoring cache and migration files
 *__pycache__
-*migrations
+diet/accounts/migrations
 
 # Ignoring environment files containg project key, db credentials and encryption key
 /.env
