@@ -842,7 +842,7 @@ def creatingOrUpdatingDrafts(temp, user):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_student, login_url="accounts:forbidden")
+# @user_passes_test(is_student, login_url="accounts:forbidden")
 def draft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
         module = request.META.get("HTTP_REFERER").split("/")[-1]
@@ -884,7 +884,7 @@ def getFormType(moduleType):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_student, login_url="accounts:forbidden")
+# @user_passes_test(is_student, login_url="accounts:forbidden")
 @isActive("moduleOne", "student")
 def moduleOne(request, user=None):
     if request.method == "GET":
@@ -978,7 +978,7 @@ def moduleOne(request, user=None):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_student, login_url="accounts:forbidden")
+# @user_passes_test(is_student, login_url="accounts:forbidden")
 @isActive("moduleOne", "student")
 def moduleOne2(request, user=None):
     if request.method == "GET":
@@ -1052,7 +1052,7 @@ def moduleOne2(request, user=None):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_student, login_url="accounts:forbidden")
+# @user_passes_test(is_student, login_url="accounts:forbidden")
 @isActive("moduleOne", "student")
 def moduleOne3(request, user=None):
     if request.method == "GET":
