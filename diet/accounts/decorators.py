@@ -9,6 +9,8 @@ def isActive(moduleType, userType):
         def wrap(request, *args, **kwargs):
             module = Form.objects.get(name=moduleType)
             if not "parent_dashboard" in request.build_absolute_uri().split("/"):
+                if request.user.groups.filter(name="Parents").exists():
+                    return redirect("accounts:forbidden")
                 student = StudentsInfo.objects.get(user=request.user)
                 if FormDetails.objects.filter(
                     form=module, open=True, teacher=student.teacher
@@ -18,6 +20,7 @@ def isActive(moduleType, userType):
                     return redirect("../form_closed")
 
             elif "parent_dashboard" in request.build_absolute_uri().split("/"):
+                print(2)
                 studentID = request.META.get("HTTP_REFERER").split("/")[-2]
                 student = (
                     ParentsInfo.objects.filter(user=request.user)
