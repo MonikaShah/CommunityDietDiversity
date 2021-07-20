@@ -359,10 +359,10 @@ class ModuleOneForm2(forms.ModelForm):
     ]
 
     microgreen_example_choices = [
-        ("Sprouts", "/static/img/sprouts.jpg"),
-        ("True Leaves", "/static/img/true_leaves.jpg"),
-        ("Flowers", "/static/img/flowers.jpg"),
-        ("Roots", "/static/img/roots.jpg"),
+        ("Sprouts", "/static/accounts/img/sprouts.jpg"),
+        ("True Leaves", "/static/accounts/img/true_leaves.jpg"),
+        ("Flowers", "/static/accounts/img/flowers.jpg"),
+        ("Roots", "/static/accounts/img/roots.jpg"),
     ]
 
     harvestdays_microgreen_choices = [

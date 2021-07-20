@@ -3,29 +3,30 @@
 {% load static %} {% load crispy_forms_tags%}
 
 {%block links %}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'css/consent.css' %}">
-    <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+<link rel="stylesheet" href="{% static 'accounts/css/consent.css' %}">
+<script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
 {% endblock %}
-    
+
 {% block title %}
-    <title>Consent Form</title>
+<title>Consent Form</title>
 {% endblock %}
 
 
-        
+
 {%block content%}
-    <div class="d-flex justify-content-end">
-        <a href="{% url 'accounts:add_student_form' %}" class="btn btn-primary">Add Student</a>
+<div class="d-flex justify-content-end">
+    <a href="{% url 'accounts:add_student_form' %}" class="btn btn-primary">Add Student</a>
+</div>
+{% for student in students %}
+<div class="card p-3 m-3" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">{{ student.name }}</h5>
+        <a href="{% url 'accounts:parent_dashboard_student' student.id %}" class="btn btn-primary">Edit Form</a>
     </div>
-    {% for student in students %}
-    <div class="card p-3 m-3" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">{{ student.name }}</h5>
-          <a href="{% url 'accounts:parent_dashboard_student' student.id %}" class="btn btn-primary">Edit Form</a>
-        </div>
-      </div>
-    {% endfor %}
+</div>
+{% endfor %}
 {% endblock %}

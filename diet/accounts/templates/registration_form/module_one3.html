@@ -5,11 +5,11 @@
 {%block links %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">>
-<link rel="stylesheet" href="{% static 'css/consent.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/consent.css' %}">
 <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
 
 {% endblock %}
 
@@ -42,8 +42,8 @@
                             {% for radio in form.microgreen_grow_seeds_kitchen %}
                             <div>
                                 {{ radio.tag }}
-                                <label
-                                    for="id_microgreen_grow_seeds_kitchen_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_microgreen_grow_seeds_kitchen_{{ forloop.counter0 }}">{{
+                                    radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -59,8 +59,8 @@
                             {% for radio in form.microgreen_nutritiousthan_fullgrownvegetables %}
                             <div>
                                 {{ radio.tag }}
-                                <label
-                                    for="id_microgreen_nutritiousthan_fullgrownvegetables_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_microgreen_nutritiousthan_fullgrownvegetables_{{ forloop.counter0 }}">{{
+                                    radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -76,8 +76,8 @@
                             {% for radio in form.microgreen_immunity %}
                             <div>
                                 {{ radio.tag }}
-                                <label
-                                    for="id_microgreen_immunity_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_microgreen_immunity_{{ forloop.counter0 }}">{{ radio.choice_label
+                                    }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -96,8 +96,8 @@
                             {% for radio in form.microgreen_variety %}
                             <div>
                                 {{ radio.tag }}
-                                <label
-                                    for="id_microgreen_variety_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_microgreen_variety_{{ forloop.counter0 }}">{{ radio.choice_label
+                                    }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -114,8 +114,8 @@
                             {% for radio in form.microgreen_source %}
                             <div>
                                 {{ radio.tag }}
-                                <label
-                                    for="id_microgreen_source_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_microgreen_source_{{ forloop.counter0 }}">{{ radio.choice_label
+                                    }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -131,8 +131,8 @@
                             {% for radio in form.newspaper_grow_microgreen %}
                             <div>
                                 {{ radio.tag }}
-                                <label
-                                    for="id_newspaper_grow_microgreen_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_newspaper_grow_microgreen_{{ forloop.counter0 }}">{{ radio.choice_label
+                                    }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -151,8 +151,8 @@
                             {% for radio in form.microgreen_first_step %}
                             <div>
                                 {{ radio.tag }}
-                                <label
-                                    for="id_microgreen_first_step_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_microgreen_first_step_{{ forloop.counter0 }}">{{ radio.choice_label
+                                    }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -168,8 +168,8 @@
                             {% for radio in form.soaking_time_seeds %}
                             <div>
                                 {{ radio.tag }}
-                                <label
-                                    for="id_soaking_time_seeds_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_soaking_time_seeds_{{ forloop.counter0 }}">{{ radio.choice_label
+                                    }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -186,8 +186,8 @@
                             {% for radio in form.microgreen_watering %}
                             <div>
                                 {{ radio.tag }}
-                                <label
-                                    for="id_microgreen_watering_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                <label for="id_microgreen_watering_{{ forloop.counter0 }}">{{ radio.choice_label
+                                    }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -218,7 +218,8 @@
                                             <span aria-hidden="true">×</span>
                                         </button>
                                     </div>
-                                    <div class="modal-body">Select "Submit" below if you are ready to submit the form. You won't be able to make changes later.
+                                    <div class="modal-body">Select "Submit" below if you are ready to submit the form.
+                                        You won't be able to make changes later.
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-secondary" type="button"
@@ -234,13 +235,15 @@
                             </div>
 
                             <div class="col-md-4 d-flex justify-content-center">
-                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#submitModal">
-                                        Submit
+                                <button type="button" class="btn btn-danger" data-toggle="modal"
+                                    data-target="#submitModal">
+                                    Submit
                                 </button>
-                                
+
                             </div>
                             <div class="col-md-4 d-flex justify-content-end">
-                                <input type="submit" class="btn btn-warning" value="Save draft" formaction="{% url 'accounts:draft' %}">
+                                <input type="submit" class="btn btn-warning" value="Save draft"
+                                    formaction="{% url 'accounts:draft' %}">
                             </div>
                         </div>
                     </div>
