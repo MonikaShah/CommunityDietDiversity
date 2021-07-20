@@ -20,7 +20,6 @@ def isActive(moduleType, userType):
                     return redirect("../form_closed")
 
             elif "parent_dashboard" in request.build_absolute_uri().split("/"):
-                print(2)
                 studentID = request.META.get("HTTP_REFERER").split("/")[-2]
                 student = (
                     ParentsInfo.objects.filter(user=request.user)

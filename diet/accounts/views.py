@@ -895,8 +895,6 @@ def moduleOne(request, user=None):
         if user == None:
             user = request.user
 
-        print(request.META['PATH_INFO'])
-
         student = StudentsInfo.objects.get(user=user)
         startdate = FormDetails.objects.get(
             form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True
