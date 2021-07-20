@@ -38,6 +38,7 @@ def is_student(user):
 def is_parent(user):
     return user.groups.filter(name="Parents").exists()
 
+
 def is_parent_or_student(user):
     return user.groups.filter(Q(name="Parents") | Q(name="Students")).exists()
 
@@ -652,12 +653,7 @@ def downloadData(request):
             row_num += 1
             for col_num in range(len(parentColumns)):
 
-                if col_num == 0:
-                    parentSheet.write(
-                        row_num, col_num, encryptionHelper.decrypt(row[col_num])
-                    )
-
-                elif col_num == 1:
+                if col_num == 0 or col_num == 1:
                     parentSheet.write(
                         row_num, col_num, encryptionHelper.decrypt(row[col_num])
                     )
