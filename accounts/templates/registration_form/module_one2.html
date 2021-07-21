@@ -43,8 +43,7 @@
                             {% for radio in form.citrus_fruits_blank %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_citrus_fruits_blank_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_citrus_fruits_blank_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -60,8 +59,7 @@
                             {% for radio in form.not_richsource_iron %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_not_richsource_iron_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_not_richsource_iron_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -95,8 +93,7 @@
                             {% for radio in form.imp_eat_fruits_vegetables %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_imp_eat_fruits_vegetables_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_imp_eat_fruits_vegetables_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -114,8 +111,7 @@
                             {% for radio in form.reason_wide_variety_food %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_reason_wide_variety_food_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_reason_wide_variety_food_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -153,7 +149,7 @@
                                         <img src="{{ radio.choice_label }}">
                                         <br>
                                         {{ radio.tag }}
-                                        {{ radio.choice_label|getValue}}
+                                        {{ radio.choice_label|getValue }}
                                     </label>
                                 </div>
                                 {% endfor %}
@@ -172,8 +168,7 @@
                             {% for radio in form.harvestdays_microgreen %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_harvestdays_microgreen_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_harvestdays_microgreen_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -182,8 +177,7 @@
                                 <a href="{% url 'accounts:previous' %}" class="btn btn-secondary">Previous</a>
                             </div>
                             <div class="col-md-4 d-flex justify-content-center">
-                                <input type="submit" class="btn btn-warning" value="Save draft"
-                                    formaction="{% url 'accounts:draft' %}">
+                                <input type="submit" class="btn btn-warning" value="Save draft" formaction="{% url 'accounts:draft' %}">
                             </div>
                             <div class="col-md-4 d-flex justify-content-end">
                                 <input type="submit" class="btn btn-success" value="Next">

@@ -42,8 +42,7 @@
                             {% for radio in form.microgreen_grow_seeds_kitchen %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_microgreen_grow_seeds_kitchen_{{ forloop.counter0 }}">{{
-                                    radio.choice_label }}</label>
+                                <label for="id_microgreen_grow_seeds_kitchen_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -59,8 +58,7 @@
                             {% for radio in form.microgreen_nutritiousthan_fullgrownvegetables %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_microgreen_nutritiousthan_fullgrownvegetables_{{ forloop.counter0 }}">{{
-                                    radio.choice_label }}</label>
+                                <label for="id_microgreen_nutritiousthan_fullgrownvegetables_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -76,14 +74,10 @@
                             {% for radio in form.microgreen_immunity %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_microgreen_immunity_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_microgreen_immunity_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
-
-
-
 
                         <div class="col-md-12 mb-3 form-group">
                             <p class="fw-bold mb-0">19. {{form.microgreen_variety.label_tag}}
@@ -96,8 +90,7 @@
                             {% for radio in form.microgreen_variety %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_microgreen_variety_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_microgreen_variety_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -114,8 +107,7 @@
                             {% for radio in form.microgreen_source %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_microgreen_source_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_microgreen_source_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -131,8 +123,7 @@
                             {% for radio in form.newspaper_grow_microgreen %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_newspaper_grow_microgreen_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_newspaper_grow_microgreen_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -151,8 +142,7 @@
                             {% for radio in form.microgreen_first_step %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_microgreen_first_step_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_microgreen_first_step_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -168,8 +158,7 @@
                             {% for radio in form.soaking_time_seeds %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_soaking_time_seeds_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_soaking_time_seeds_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -186,8 +175,7 @@
                             {% for radio in form.microgreen_watering %}
                             <div>
                                 {{ radio.tag }}
-                                <label for="id_microgreen_watering_{{ forloop.counter0 }}">{{ radio.choice_label
-                                    }}</label>
+                                <label for="id_microgreen_watering_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -235,15 +223,10 @@
                             </div>
 
                             <div class="col-md-4 d-flex justify-content-center">
-                                <button type="button" class="btn btn-danger" data-toggle="modal"
-                                    data-target="#submitModal">
-                                    Submit
-                                </button>
-
+                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#submitModal">Submit</button>
                             </div>
                             <div class="col-md-4 d-flex justify-content-end">
-                                <input type="submit" class="btn btn-warning" value="Save draft"
-                                    formaction="{% url 'accounts:draft' %}">
+                                <input type="submit" class="btn btn-warning" value="Save draft" formaction="{% url 'accounts:draft' %}">
                             </div>
                         </div>
                     </div>

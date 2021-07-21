@@ -160,7 +160,7 @@ class FormDetails(models.Model):
 
 class ModuleOne(models.Model):
     student = models.ForeignKey(StudentsInfo, on_delete=models.CASCADE)
-    pre = models.BooleanField()
+    pre = models.BooleanField(null=True)
     draft = models.BooleanField()
     nutriGarden = models.CharField(max_length=10, null=True)
     source_fruits_vegetables = models.CharField(max_length=255, null=True)
