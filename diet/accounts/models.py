@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from shared.encryption import EncryptionHelper
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from django.core.validators import validate_email
 
 # Create your models here.
 # class myValidate:
@@ -77,7 +77,7 @@ class School(models.Model):
 
 class ParentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.BinaryField(max_length=500)
+    email = models.BinaryField(max_length=500, validators=[validate_email])
     consent = models.BooleanField(default=True)
     name = models.BinaryField(max_length=500)
     gender = models.CharField(max_length=255)
@@ -88,7 +88,7 @@ class ParentsInfo(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
     pincode = models.IntegerField()
-    no_of_family_members = models.IntegerField()
+    no_of_family_members = models.IntegerField(validators=[MinValueValidator(2)])
     type_of_family = models.ForeignKey(FamilyType, on_delete=models.CASCADE)
     religion = models.ForeignKey(ReligiousBelief, on_delete=models.CASCADE)
     children_count = models.IntegerField(validators=[MinValueValidator(1)])
@@ -111,15 +111,16 @@ class TeacherInCharge(models.Model):
 
 class StudentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.BinaryField(max_length=500)
+    name = models.CharField(max_length=500)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
     rollno = models.IntegerField(validators=[MinValueValidator(0)])
     gender = models.CharField(max_length=255)
     dob = models.DateField(
         validators=[
-            MaxValueValidator(limit_value=date.today() - timedelta(days=(365 * 3)))
-        ]
+            MaxValueValidator(limit_value=date.today() - timedelta(days=(365 * 5))),
+            MinValueValidator(limit_value=date.today() - timedelta(days=(365 * 15)))
+        ], error_messages={'invalid':'Date of Birth is out of range'}
     )
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE)
     first_password = models.CharField(max_length=20, default="helloworld14")

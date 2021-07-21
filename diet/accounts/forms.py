@@ -7,6 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
 import datetime
 from .models import ParentsInfo, StudentsInfo, ModuleOne, FirstModule
+from django.core.validators import RegexValidator
 
 
 class ConsentForm(forms.Form):
@@ -59,7 +60,8 @@ class StudentsInfoForm(ModelForm):
         "dob": "Date Of Birth",
         "teacher": "Teacher InCharge",
     }
-    name = forms.CharField()
+    alphanumeric = RegexValidator(r'^[a-zA-Z]*$', 'No Numeric and Special characters are allowed.')
+    name = forms.CharField(max_length=500, validators=[alphanumeric])
 
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)

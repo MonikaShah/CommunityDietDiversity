@@ -68,6 +68,11 @@
 
                                 <div class="col-md-6">
                                     {{ form.dob|as_crispy_field }}
+                                   {% if form.dob.errors %}
+                                <strong class="text-danger fw-bolder">
+                                     {{form.dob.errors}}
+                                </strong>
+                                {% endif %} 
                                 </div>
                                 <div class="col-md-6">
                                     {{ form.teacher|as_crispy_field }}
