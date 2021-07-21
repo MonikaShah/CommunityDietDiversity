@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os  # Used for deployment on heroku
 from pathlib import Path
 from decouple import config  # Used to access environment variables
 
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Used for deployment on heroku
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -83,7 +85,7 @@ DATABASES = {
         "NAME": config("DB_NAME"),
         "USER": config("DB_USERNAME"),
         "PASSWORD": config("DB_PASSWORD"),
-        "HOST": "localhost",
+        "HOST": config("DB_HOST"),
         "PORT": "5432",
     }
 }
@@ -124,6 +126,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # Used for deployment on heroku
 
 STATIC_URL = "/static/"
 

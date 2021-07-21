@@ -3,8 +3,7 @@
 
 # Ignoring cache and migration files
 *__pycache__
-diet/accounts/migrations
 
 # Ignoring environment files containg project key, db credentials and encryption key
-/.env
-/diet/shared/.env
+.env
+shared/.env
