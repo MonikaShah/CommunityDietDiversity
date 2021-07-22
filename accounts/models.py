@@ -111,7 +111,7 @@ class TeacherInCharge(models.Model):
 
 class StudentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=500)
+    name = models.BinaryField(max_length=500)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
     rollno = models.IntegerField(validators=[MinValueValidator(0)])
