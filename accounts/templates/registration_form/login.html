@@ -18,16 +18,18 @@
 
 <body>
     <style>
-        body{
-            height:100vh;
+        body {
+            height: 100vh;
         }
+
         .btn-primary,
         .btn-success {
             background-color: #2b0d52 !important;
             border-color: #6441A5 !important;
         }
-        .full-height{
-            height:100vh;
+
+        .full-height {
+            height: 100vh;
         }
     </style>
     <div class="full-height d-flex align-items-center justify-content-center">
@@ -48,6 +50,7 @@
                     <input type="submit" value="Login" class="mt-4 btn btn-primary">
                     <a href="{% url 'accounts:parent_consent'  %}" class=" mt-4 btn btn-secondary">Parent
                         not already registered? Sign up</a>
+                    <a href="{% url 'accounts:forgot_password' %}" class="mt-4 btn btn-danger">Forgot Password</a>
                 </form>
             </div>
         </div>

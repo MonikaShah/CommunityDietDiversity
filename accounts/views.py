@@ -1580,3 +1580,10 @@ def uploadData(request):
         for city in temp:
             ct = City(city=city, state=stte)
             ct.save()
+
+
+def forgot_password(request):
+    return None
+
+def change_password(request):
+    return None
