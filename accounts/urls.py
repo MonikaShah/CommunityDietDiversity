@@ -62,4 +62,6 @@ urlpatterns = [
         "form_closed/",
         TemplateView.as_view(template_name="registration_form/form_closed.html"),
     ),
+    path("forgot_password/", views.forgot_password, name="forgot_password"),
+    path("change_password/", views.change_password, name="change_password"),
 ]

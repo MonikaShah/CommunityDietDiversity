@@ -60,7 +60,13 @@ class StudentsInfoForm(ModelForm):
         "dob": "Date Of Birth",
         "teacher": "Teacher InCharge",
     }
+<<<<<<< HEAD
     alphanumeric = RegexValidator(r'^[a-zA-Z\' ]*$', 'No Numeric and Special characters are allowed.')
+=======
+    alphanumeric = RegexValidator(
+        r"^[a-zA-Z]*$", "No Numeric and Special characters are allowed."
+    )
+>>>>>>> 19899375aa3209c506516646bc143ca89d3eca21
     name = forms.CharField(max_length=500, validators=[alphanumeric])
 
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
@@ -90,13 +96,13 @@ class FirstModuleForm(ModelForm):
     class Meta:
         model = FirstModule
         fields = ["name", "cricket", "chess", "tennis"]
+        labels = {
+            "cricket": "Cricket",
+            "chess": "Chess",
+            "tennis": "Tennis",
+            "email": "Email",
+        }
 
-    labels = {
-        "cricket": "Cricket",
-        "chess": "Chess",
-        "tennis": "Tennis",
-        "email": "Email",
-    }
     name = forms.CharField()
     email = forms.CharField()
     PRIORITY_CHOICES = [("Daily", ""), ("Once", ""), ("Twice", "")]
