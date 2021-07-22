@@ -17,21 +17,6 @@
 </head>
 
 <body>
-    <style>
-        body {
-            height: 100vh;
-        }
-
-        .btn-primary,
-        .btn-success {
-            background-color: #2b0d52 !important;
-            border-color: #6441A5 !important;
-        }
-
-        .full-height {
-            height: 100vh;
-        }
-    </style>
     <div class="full-height d-flex align-items-center justify-content-center">
         <div class="card">
             <div class="consent-card">
@@ -47,7 +32,7 @@
                     <h2>Login</h2>
                     <br>
                     {{form | crispy }}
-                    <input type="submit" value="Login" class="mt-4 btn btn-primary">
+                    <input type="submit" value="Login" class="mt-4 btn btn-primary btncolourchange">
                     <a href="{% url 'accounts:parent_consent'  %}" class=" mt-4 btn btn-secondary">Parent
                         not already registered? Sign up</a>
                     <a href="{% url 'accounts:forgot_password' %}" class="mt-4 btn btn-danger">Forgot Password</a>
