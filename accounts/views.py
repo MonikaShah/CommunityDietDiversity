@@ -1583,8 +1583,16 @@ def uploadData(request):
 
 
 def forgot_password(request):
-    return None
+    if request.method == "GET":
+        form = forgot_password_form()
+        return render(request, "registration_form/forgot_password.html", {"form": form})
+    else:
+        return None
 
 
 def change_password(request):
-    return None
+    if request.method == "GET":
+        form = change_password_form()
+        return render(request, "registration_form/change_password.html", {"form": form})
+    else:
+        return None

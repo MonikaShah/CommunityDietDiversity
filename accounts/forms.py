@@ -1,4 +1,4 @@
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.core.exceptions import ValidationError
 from django.db.models.fields import CharField
 from django.forms import ModelForm, fields
@@ -567,3 +567,20 @@ class ModuleOneForm3(forms.ModelForm):
             if not self.cleaned_data[field]:
                 self.add_error(field, "Required")
         return self.cleaned_data
+
+
+class forgot_password_form(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["username", "groups", "password"]
+        labels = {"password": "New Password"}
+
+
+class change_password_form(forms.ModelForm):
+    new_password = forms.CharField(widget=forms.PasswordInput())
+    re_enter_password = forms.CharField(widget=forms.PasswordInput())
+    
+    class Meta:
+        model = User
+        fields = ["password"]
+        labels = {"password":"Old Password"}
