@@ -120,7 +120,7 @@ class StudentsInfo(models.Model):
         validators=[
             MaxValueValidator(limit_value=date.today() - timedelta(days=(365 * 5))),
             MinValueValidator(limit_value=date.today() - timedelta(days=(365 * 15)))
-        ], error_messages={'invalid':'Date of Birth is out of range'}
+        ]
     )
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE)
     first_password = models.CharField(max_length=20, default="helloworld14")
