@@ -55,18 +55,14 @@ class StudentsInfoForm(ModelForm):
     class Meta:
         model = StudentsInfo
         fields = ["school", "gender", "rollno", "dob", "address", "teacher"]
+        labels = {
+            "dob": "Date Of Birth",
+            "teacher": "Teacher InCharge",
+        }
 
-    labels = {
-        "dob": "Date Of Birth",
-        "teacher": "Teacher InCharge",
-    }
-<<<<<<< HEAD
-    alphanumeric = RegexValidator(r'^[a-zA-Z\' ]*$', 'No Numeric and Special characters are allowed.')
-=======
     alphanumeric = RegexValidator(
-        r"^[a-zA-Z]*$", "No Numeric and Special characters are allowed."
+        r"^[a-zA-Z\' ]*$", "No Numeric and Special characters are allowed."
     )
->>>>>>> 19899375aa3209c506516646bc143ca89d3eca21
     name = forms.CharField(max_length=500, validators=[alphanumeric])
 
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
