@@ -190,3 +190,13 @@ class ModuleOne(models.Model):
     microgreen_watering = models.CharField(max_length=255, null=True)
     microgreen_use = models.CharField(max_length=255, null=True)
     submission_timestamp = models.DateTimeField(null=True)
+
+class Activity(models.Model):
+    student = models.ForeignKey(StudentsInfo, on_delete=models.CASCADE)
+    pre = models.BooleanField(null=True)
+    draft = models.BooleanField()
+    weight = models.FloatField(null=True)
+    height = models.FloatField(null=True)
+    waist = models.FloatField(null=True)
+    hip = models.FloatField(null=True)
+    submission_timestamp = models.DateTimeField(null=True)

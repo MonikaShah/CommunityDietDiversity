@@ -1204,6 +1204,7 @@ def previous(request):
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 def manageForms(request):
     if request.method == "GET":
+        activity = {}
         moduleOne = {}
         moduleTwo = {}
         moduleThree = {}
@@ -1224,11 +1225,13 @@ def manageForms(request):
                 else:
                     moduleOne["post"] = True
                     moduleOne["pre"] = False
+        
 
         return render(
             request,
             "registration_form/manage_forms_teacher.html",
             {
+                "activity": activity,
                 "moduleOne": moduleOne,
                 "moduleTwo": moduleTwo,
                 "moduleThree": moduleThree,
@@ -1327,6 +1330,99 @@ def manageForms(request):
                             ).first()
                             draftForm.delete()
                     update.save()
+        
+        # elif "activity" in request.POST:
+        #     activity_pre = request.POST.get("activity_pre", False)
+        #     activity_post = request.POST.get("activity_post", False)
+        #     if activity_pre == "on" and activity_post == "on":
+        #         messages.error(request, "Cannot select both PreTest and PostTest")
+        #         return redirect("accounts:manage_forms")
+
+        #     form = Form.objects.get(name="activity")
+        #     teacher = TeacherInCharge.objects.get(user=request.user)
+
+        #     if activity_pre == "on":
+        #         if not FormDetails.objects.filter(
+        #             form=form, teacher=teacher, pre=True, open=True
+        #         ).exists():
+        #             update = FormDetails(
+        #                 form=form,
+        #                 teacher=teacher,
+        #                 pre=True,
+        #                 open=True,
+        #                 start_timestamp=datetime.datetime.now(),
+        #             )
+        #             update.save()
+        #     else:
+        #         if FormDetails.objects.filter(
+        #             form=form, teacher=teacher, pre=True, open=True
+        #         ).exists():
+        #             update = FormDetails.objects.filter(
+        #                 form=form, teacher=teacher, pre=True, open=True
+        #             ).first()
+        #             update.open = False
+        #             update.end_timestamp = datetime.datetime.now()
+        #             teacher = TeacherInCharge.objects.get(user=request.user)
+        #             total_students = teacher.studentsinfo_set.all()
+        #             for student in total_students:
+        #                 if Activity.objects.filter(
+        #                     student=student,
+        #                     submission_timestamp__gte=update.start_timestamp,
+        #                     submission_timestamp__lte=update.end_timestamp,
+        #                     draft=True,
+        #                     pre=True,
+        #                 ).exists():
+        #                     draftForm = Activity.objects.filter(
+        #                         student=student,
+        #                         submission_timestamp__gte=update.start_timestamp,
+        #                         submission_timestamp__lte=update.end_timestamp,
+        #                         draft=True,
+        #                         pre=True,
+        #                     ).first()
+        #                     draftForm.delete()
+        #             update.save()
+
+        #     if activity_post == "on":
+        #         if not FormDetails.objects.filter(
+        #             form=form, teacher=teacher, pre=False, open=True
+        #         ).exists():
+        #             update = FormDetails(
+        #                 form=form,
+        #                 teacher=teacher,
+        #                 pre=False,
+        #                 open=True,
+        #                 start_timestamp=datetime.datetime.now(),
+        #             )
+        #             update.save()
+        #     else:
+        #         if FormDetails.objects.filter(
+        #             form=form, teacher=teacher, pre=False, open=True
+        #         ).exists():
+        #             update = FormDetails.objects.filter(
+        #                 form=form, teacher=teacher, pre=False, open=True
+        #             ).first()
+        #             update.open = False
+        #             update.end_timestamp = datetime.datetime.now()
+        #             teacher = TeacherInCharge.objects.get(user=request.user)
+        #             total_students = teacher.studentsinfo_set.all()
+        #             for student in total_students:
+        #                 if Activity.objects.filter(
+        #                     student=student,
+        #                     submission_timestamp__gte=update.start_timestamp,
+        #                     submission_timestamp__lte=update.end_timestamp,
+        #                     draft=True,
+        #                     pre=False,
+        #                 ).exists():
+        #                     draftForm = Activity.objects.filter(
+        #                         student=student,
+        #                         submission_timestamp__gte=update.start_timestamp,
+        #                         submission_timestamp__lte=update.end_timestamp,
+        #                         draft=True,
+        #                         pre=False,
+        #                     ).first()
+        #                     draftForm.delete()
+        #             update.save()
+                
 
         module_two_pre = request.POST.get("module_two_pre", False)
         module_two_post = request.POST.get("module_two_post", False)
@@ -1596,3 +1692,95 @@ def change_password(request):
         return render(request, "registration_form/change_password.html", {"form": form})
     else:
         return None
+        
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
+# @isActive("activity", "student")
+def activity(request, user=None):
+    if request.method == "GET":
+        if user == None:
+            user = request.user
+
+        student = StudentsInfo.objects.get(user=user)
+        startdate = FormDetails.objects.get(
+            form=Form.objects.get(name="activity"), teacher=student.teacher, open=True
+        ).start_timestamp
+        if Activity.objects.filter(
+            student=student, submission_timestamp__gte=startdate
+        ).exists():
+            draftForm = Activity.objects.get(
+                student=StudentsInfo.objects.get(user=user),
+                submission_timestamp__gte=startdate,
+            )
+            if draftForm.draft:
+                mod = Activity()
+                temp = {}
+                for name in Activity._meta.get_fields():
+                    name = name.column
+                    if name in mod.fields:
+                        temp[name] = getattr(draftForm, name) or None
+                form = Activity(temp)
+                formPre = getFormType("activity")
+                return render(
+                    request,
+                    "registration_form/activity.html",
+                    {"form": form, "formPre": formPre},
+                )
+            else:
+                return redirect("../already_filled")
+        # new form
+        else:
+            form = Activity()
+            formPre = getFormType("activity")
+            return render(
+                request,
+                "registration_form/activity.html",
+                {"form": form, "formPre": formPre},
+            )
+    # POST
+    else:
+        flag = False
+        if user == None:
+            flag = True
+            user = request.user
+        form = Activity(request.POST)
+
+        # valid form
+        if form.is_valid():
+            temp = createTempDict(request.POST)
+            student = StudentsInfo.objects.get(user=user)
+            startdate = FormDetails.objects.get(
+                form=Form.objects.get(name="activity"),
+                teacher=student.teacher,
+                open=True,
+            ).start_timestamp
+            draftForm = Activity.objects.get(
+                student=StudentsInfo.objects.get(user=user),
+                submission_timestamp__gte=startdate,
+            )
+            if draftForm.draft:
+                for name in Activity._meta.get_fields():
+                    name = name.column
+                    if name == "id" or name == "student_id" or name == "draft":
+                        continue
+                    elif name == "source_fruits_vegetables" or name == "grow_own_food":
+                        list = "; ".join(ast.literal_eval(getattr(draftForm, name)))
+                        setattr(draftForm, name, list)
+                    elif name in temp:
+                        setattr(draftForm, name, temp[name])
+
+                draftForm.draft = False
+                draftForm.submission_timestamp = datetime.datetime.now()
+                draftForm.save()
+                if flag:
+                    return redirect("accounts:student_dashboard")
+                else:
+                    return redirect("accounts:parent_dashboard")
+        # invalid form
+        else:
+            formPre = getFormType("activity")
+            return render(
+                request,
+                "registration_form/activity.html",
+                {"form": form, "formPre": formPre},
+            )

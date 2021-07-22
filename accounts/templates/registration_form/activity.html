@@ -1,0 +1,66 @@
+{% extends 'partials/layout.html' %}
+
+{% load static %} {% load crispy_forms_tags %}
+
+{%block links %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+<link rel="stylesheet" href="{% static 'accounts/css/consent.css' %}">
+<script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+<link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+
+{% endblock %}
+
+{% block title %}
+<title>Activity</title>
+{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        font-size: 1.1rem !important;
+    }
+</style>
+<div class="container ml-3">
+
+    <div class="card mt-3" style="padding:1rem 3rem">
+        <div class="row">
+            <h2 class="mb-3 text-center">{{formPre}} Activity</h2>
+            <div class="col-md-12">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">4. {{form.ask_weight.label_tag}}</p>
+                            {{form.ask_weight|as_crispy_field}}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">4. {{form.ask_height.label_tag}}</p>
+                            {{form.ask_height|as_crispy_field}}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">4. {{form.ask_waist.label_tag}}</p>
+                            {{form.ask_waist|as_crispy_field}}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <p class="fw-bold mb-0">4. {{form.ask_hip.label_tag}}</p>
+                            {{form.ask_hip|as_crispy_field}}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="submit" class="btn btn-warning" value="Save draft"
+                                    formaction="{% url 'accounts:draft' %}">
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-center">
+                                <input type="submit" class="btn btn-success" value="Submit">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

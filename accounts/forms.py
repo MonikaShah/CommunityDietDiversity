@@ -6,7 +6,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
 import datetime
-from .models import ParentsInfo, StudentsInfo, ModuleOne, FirstModule
+from .models import ParentsInfo, StudentsInfo, ModuleOne, FirstModule, Activity
 from django.core.validators import RegexValidator
 
 
@@ -584,3 +584,44 @@ class change_password_form(forms.ModelForm):
         model = User
         fields = ["password"]
         labels = {"password":"Old Password"}
+        
+class ActivityForm(forms.ModelForm):
+    class Meta:
+        model = Activity
+        fields = [
+            "weight",
+            "height",
+            "waist",
+            "hip",
+        ]
+
+    ask_weight = forms.FloatField(
+        label=(
+            "What is your Weight? (kgs)"
+        ),
+        required=False,
+    )
+    ask_height = forms.FloatField(
+        label=(
+            "What is your Height? (cms)"
+        ),
+        required=False,
+    )
+    ask_waist = forms.FloatField(
+        label=(
+            "Please measure your Waist Circumference and write it below. (cms)"
+        ),
+        required=False,
+    )
+    ask_hip = forms.FloatField(
+        label=(
+            "Please measure your Hip Circumference (cms) and mention it below."
+        ),
+        required=False,
+    )
+
+    def clean(self):
+        for field in self.fields:
+            if not self.cleaned_data[field]:
+                self.add_error(field, "Required")
+        return self.cleaned_data
