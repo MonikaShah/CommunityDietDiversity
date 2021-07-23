@@ -31,13 +31,13 @@ body {
     height:100vh;
 }
 
-.btncolourchange{
+.btn-primary{
     background-color: #2b0d52 !important;
     border-color: #6441A5 !important;
 }
-
-.btnsmall{
-
+.btn-warning{
+    background-color: #cefd61;
+    border-color: #acd64a !important;
 }
 @media only screen and (max-width:340px){
     .btnsmall{
@@ -46,9 +46,9 @@ body {
     }
 }
 #msform {
-    text-align: left;
-    position: relative;
-    margin-top: 30px;
+        text-align: left;
+        position: relative;
+        margin-top: 30px;
 }
 
 #msform fieldset {

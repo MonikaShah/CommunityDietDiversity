@@ -13,7 +13,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
 
-    <title>Students Information</title>
+    <title>Login</title>
 </head>
 
 <body>
@@ -32,7 +32,7 @@
                     <h2>Login</h2>
                     <br>
                     {{form | crispy }}
-                    <input type="submit" value="Login" class="mt-4 btn btn-primary btncolourchange">
+                    <input type="submit" value="Login" class="mt-4 btn btn-primary">
                     <a href="{% url 'accounts:parent_consent'  %}" class=" mt-4 btn btn-secondary">Parent
                         not already registered? Sign up</a>
                     <a href="{% url 'accounts:forgot_password' %}" class="mt-4 btn btn-danger">Forgot Password</a>

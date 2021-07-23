@@ -15,7 +15,9 @@
 <title>Consent Form</title>
 {% endblock %}
 
-
+{% block userinfo %}
+{% include 'partials/userinfo.html' %}
+{% endblock %}
 
 {%block content%}
 <div class="card">
@@ -77,6 +79,5 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 {% endblock %}

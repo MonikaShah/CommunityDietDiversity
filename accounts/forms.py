@@ -17,6 +17,13 @@ class ConsentForm(forms.Form):
 
 
 class ParentsInfoForm(ModelForm):
+    email = forms.EmailField()
+    name = forms.CharField()
+    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
+
+    address = forms.CharField(max_length=100, widget=forms.Textarea())
+
     class Meta:
         model = ParentsInfo
         fields = [
@@ -35,13 +42,6 @@ class ParentsInfoForm(ModelForm):
             "edu": "Education",
         }
 
-    email = forms.EmailField()
-    name = forms.CharField()
-    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
-    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-
-    address = forms.CharField(max_length=100, widget=forms.Textarea())
-
     def clean(self):
         super(ParentsInfoForm, self).clean()
         for field in self.fields:
@@ -52,14 +52,6 @@ class ParentsInfoForm(ModelForm):
 
 
 class StudentsInfoForm(ModelForm):
-    class Meta:
-        model = StudentsInfo
-        fields = ["school", "gender", "rollno", "dob", "address", "teacher"]
-        labels = {
-            "dob": "Date Of Birth",
-            "teacher": "Teacher InCharge",
-        }
-
     alphanumeric = RegexValidator(
         r"^[a-zA-Z\' ]*$", "No Numeric and Special characters are allowed."
     )
@@ -78,6 +70,18 @@ class StudentsInfoForm(ModelForm):
 
     dob = forms.DateField(widget=DatePickerInput(widgets))
 
+    class Meta:
+        model = StudentsInfo
+        fields = ["school", "gender", "rollno", "dob", "address", "teacher"]
+        labels = {
+            "dob": "Date Of Birth",
+            "teacher": "Teacher InCharge",
+        }
+        labels = {
+            "dob": "Date Of Birth",
+            "teacher": "Teacher InCharge",
+        }
+
     def clean(self):
         super(StudentsInfoForm, self).clean()
 
@@ -89,16 +93,6 @@ class StudentsInfoForm(ModelForm):
 
 
 class FirstModuleForm(ModelForm):
-    class Meta:
-        model = FirstModule
-        fields = ["name", "cricket", "chess", "tennis"]
-        labels = {
-            "cricket": "Cricket",
-            "chess": "Chess",
-            "tennis": "Tennis",
-            "email": "Email",
-        }
-
     name = forms.CharField()
     email = forms.CharField()
     PRIORITY_CHOICES = [("Daily", ""), ("Once", ""), ("Twice", "")]
@@ -141,6 +135,16 @@ class FirstModuleForm(ModelForm):
         widget=forms.CheckboxSelectMultiple(attrs={"class": "flex-item"}),
     )
 
+    class Meta:
+        model = FirstModule
+        fields = ["name", "cricket", "chess", "tennis"]
+        labels = {
+            "cricket": "Cricket",
+            "chess": "Chess",
+            "tennis": "Tennis",
+            "email": "Email",
+        }
+
 
 class CustomAuthenticationForm(AuthenticationForm):
     groups = forms.ModelChoiceField(queryset=Group.objects.all())
@@ -150,18 +154,6 @@ class CustomAuthenticationForm(AuthenticationForm):
 
 
 class ModuleOneForm(forms.ModelForm):
-    class Meta:
-        model = ModuleOne
-        fields = [
-            "nutriGarden",
-            "source_fruits_vegetables",
-            "grow_own_food",
-            "if_grow_what",
-            "reason_gardening",
-            "healthy_diet",
-            "imp_nutrients",
-        ]
-
     if_grow_what = forms.CharField(
         label=(
             "If you grow your own food, what do you grow? ( if you don't grow your own food,please specify N/A)"
@@ -288,6 +280,18 @@ class ModuleOneForm(forms.ModelForm):
         required=False,
     )
 
+    class Meta:
+        model = ModuleOne
+        fields = [
+            "nutriGarden",
+            "source_fruits_vegetables",
+            "grow_own_food",
+            "if_grow_what",
+            "reason_gardening",
+            "healthy_diet",
+            "imp_nutrients",
+        ]
+
     def clean(self):
         for field in self.fields:
             if not self.cleaned_data[field]:
@@ -296,19 +300,6 @@ class ModuleOneForm(forms.ModelForm):
 
 
 class ModuleOneForm2(forms.ModelForm):
-    class Meta:
-        model = ModuleOne
-        fields = [
-            "citrus_fruits_blank",
-            "not_richsource_iron",
-            "source_vitaminA",
-            "imp_eat_fruits_vegetables",
-            "reason_wide_variety_food",
-            "microgreen",
-            "microgreen_example",
-            "harvestdays_microgreen",
-        ]
-
     citrus_fruits_blank_choices = [
         ("Calcium", "Calcium"),
         ("Vitamin A", "Vitamin A"),
@@ -425,6 +416,19 @@ class ModuleOneForm2(forms.ModelForm):
         required=False,
     )
 
+    class Meta:
+        model = ModuleOne
+        fields = [
+            "citrus_fruits_blank",
+            "not_richsource_iron",
+            "source_vitaminA",
+            "imp_eat_fruits_vegetables",
+            "reason_wide_variety_food",
+            "microgreen",
+            "microgreen_example",
+            "harvestdays_microgreen",
+        ]
+
     def clean(self):
         for field in self.fields:
             if not self.cleaned_data[field]:
@@ -433,21 +437,6 @@ class ModuleOneForm2(forms.ModelForm):
 
 
 class ModuleOneForm3(forms.ModelForm):
-    class Meta:
-        model = ModuleOne
-        fields = [
-            "microgreen_grow_seeds_kitchen",
-            "microgreen_nutritiousthan_fullgrownvegetables",
-            "microgreen_immunity",
-            "microgreen_variety",
-            "microgreen_source",
-            "newspaper_grow_microgreen",
-            "microgreen_first_step",
-            "soaking_time_seeds",
-            "microgreen_watering",
-            "microgreen_use",
-        ]
-
     microgreen_variety_choices = [
         ("Wheat", "Wheat"),
         ("Radish", "Radish"),
@@ -562,6 +551,21 @@ class ModuleOneForm3(forms.ModelForm):
         required=False,
     )
 
+    class Meta:
+        model = ModuleOne
+        fields = [
+            "microgreen_grow_seeds_kitchen",
+            "microgreen_nutritiousthan_fullgrownvegetables",
+            "microgreen_immunity",
+            "microgreen_variety",
+            "microgreen_source",
+            "newspaper_grow_microgreen",
+            "microgreen_first_step",
+            "soaking_time_seeds",
+            "microgreen_watering",
+            "microgreen_use",
+        ]
+
     def clean(self):
         for field in self.fields:
             if not self.cleaned_data[field]:
@@ -570,6 +574,10 @@ class ModuleOneForm3(forms.ModelForm):
 
 
 class forgot_password_form(forms.ModelForm):
+    username = forms.CharField(max_length=150)
+    groups = forms.ModelChoiceField(queryset=Group.objects.all())
+    new_password = forms.CharField(widget=forms.PasswordInput())
+
     class Meta:
         model = User
         fields = ["username", "groups", "password"]
@@ -578,22 +586,13 @@ class forgot_password_form(forms.ModelForm):
 
 class change_password_form(forms.ModelForm):
     new_password = forms.CharField(widget=forms.PasswordInput())
-    re_enter_password = forms.CharField(widget=forms.PasswordInput())
-    
+
     class Meta:
         model = User
         fields = ["password"]
-        labels = {"password":"Old Password"}
-        
+        labels = {"password": "Old Password"}
+
 class ActivityForm(forms.ModelForm):
-    class Meta:
-        model = Activity
-        fields = [
-            "weight",
-            "height",
-            "waist",
-            "hip",
-        ]
 
     weight = forms.FloatField(
         label=(
@@ -617,8 +616,16 @@ class ActivityForm(forms.ModelForm):
         label=(
             "Please measure your Hip Circumference (cms) and mention it below."
         ),
-        required=False,
     )
+
+    class Meta:
+        model = Activity
+        fields = [
+            "weight",
+            "height",
+            "waist",
+            "hip",
+        ]
 
     def clean(self):
         for field in self.fields:
