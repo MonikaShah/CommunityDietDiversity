@@ -22,14 +22,8 @@
 {% endblock %}
 
 {% block content %}
-<style>
-    body {
-        font-size: 1.1rem !important;
-    }
-</style>
-<div class="container ml-3">
-
-    <div class="card mt-3" style="padding:1rem 3rem">
+<div class="container ml-2 moduleform">
+    <div class="card mt-3 pl-2 pb-3">
         <div class="row">
             <h2 class="mb-3 text-center">{{formPre}} Activity</h2>
             <div class="col-md-12">
@@ -52,13 +46,13 @@
                             <p class="fw-bold mb-0">4. {{form.hip.label_tag}}</p>
                             {{form.hip}}
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <input type="submit" class="btn btn-warning" value="Save draft"
+                        <div class="d-flex justify-content-around">
+                            <div>
+                                <input type="submit" class="btn btn-warning secondarybutton" value="Save draft"
                                     formaction="{% url 'accounts:draft' %}">
                             </div>
-                            <div class="col-md-6 d-flex justify-content-center">
-                                <input type="submit" class="btn btn-success" value="Submit">
+                            <div>
+                                <input type="submit" class="btn btn-primary" value="Submit">
                             </div>
                         </div>
                     </div>

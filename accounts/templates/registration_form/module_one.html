@@ -22,16 +22,16 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container moduleform">
     <div class="card mt-3" style="padding:1rem 3rem">
         <div class="row">
             <h2 class="mb-3 text-center">{{formPre}} Module One</h2>
             <div class="col-md-12">
                 <form action="" method="POST">
                     {% csrf_token %}
-                    <div class="row">
+                    <div class="row correctlabel">
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">1. {{form.nutriGarden.label_tag}}
+                            <p class="fw-bold mb-2">1. {{form.nutriGarden.label_tag}}
                                 {% if form.nutriGarden.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.nutriGarden.errors.0}}
@@ -47,7 +47,7 @@
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">2. {{form.source_fruits_vegetables.label_tag}}
+                            <p class="fw-bold mb-2">2. {{form.source_fruits_vegetables.label_tag}}
                                 {% if form.source_fruits_vegetables.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.source_fruits_vegetables.errors.0}}
@@ -63,7 +63,7 @@
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">3. {{form.grow_own_food.label_tag}}
+                            <p class="fw-bold mb-2">3. {{form.grow_own_food.label_tag}}
                                 {% if form.grow_own_food.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.grow_own_food.errors.0}}
@@ -81,14 +81,14 @@
 
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">4. {{form.if_grow_what.label_tag}}</p>
+                            <p class="fw-bold mb-2">4. {{form.if_grow_what.label_tag}}</p>
                             {{form.if_grow_what|as_crispy_field}}
                         </div>
 
 
 
                         <div class="col-md-12 mb-3 form-group">
-                            <p class="fw-bold mb-0">5. {{form.reason_gardening.label_tag}}
+                            <p class="fw-bold mb-2">5. {{form.reason_gardening.label_tag}}
                                 {% if form.reason_gardening.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.reason_gardening.errors.0}}
@@ -105,7 +105,7 @@
 
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">6. {{form.healthy_diet.label_tag}}
+                            <p class="fw-bold mb-2">6. {{form.healthy_diet.label_tag}}
                                 {% if form.healthy_diet.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.healthy_diet.errors.0}}
@@ -122,7 +122,7 @@
 
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">7. {{form.imp_nutrients.label_tag}}
+                            <p class="fw-bold mb-2">7. {{form.imp_nutrients.label_tag}}
                                 {% if form.imp_nutrients.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.imp_nutrients.errors.0}}
@@ -138,11 +138,11 @@
                         </div>
                         <div class="d-flex justify-content-around">
                             <div>
-                                <input type="submit" class="btn btn-warning" value="Save draft"
+                                <input type="submit" class="btn btn-warning secondarybutton btnsmall" value="Save draft"
                                     formaction="{% url 'accounts:draft' %}">
                             </div>
                             <div>
-                                <input type="submit" class="btn btn-primary" value="Next">
+                                <input type="submit" class="btn btn-primary btnsmall" value="Next">
                             </div>
                         </div>
                     </div>

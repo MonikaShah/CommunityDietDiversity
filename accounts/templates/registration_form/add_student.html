@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block title %}
-<title>Consent Form</title>
+<title>Student Information</title>
 {% endblock %}
 
 {% block userinfo %}
@@ -29,7 +29,7 @@
                     {{form.media}}
 
                     {% csrf_token %}
-                    <h2>Students Information</h2>
+                    <h2>Student Information</h2>
                     <br>
                     <div class="col-md-12">
                         {{ form.name|as_crispy_field }}
@@ -46,34 +46,33 @@
                             </div>
                         </div>
                         <br>
-
-                        <div class="col-md-12">
-                            <div class="row">
-
-
-                                <div class="col-md-6">
-                                    {{ form.dob|as_crispy_field }}
-                                </div>
-                                <div class="col-md-6">
-                                    {{ form.teacher|as_crispy_field }}
-                                </div>
-                                <div class="col-md-6">
-                                    {{ form.gender|as_crispy_field }}
-                                </div>
-
-                                <div class="col-md-12">
-                                    {{form.address|as_crispy_field}}
-                                </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.dob|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.teacher|as_crispy_field }}
                             </div>
                         </div>
-                        <br>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.gender|as_crispy_field }}
+                            </div>
 
-                        <br> {{user_creation_form|crispy}}
-                        <div class="d-flex justify-content-around">
-
-                            <input type="submit" class="btn btn-warning " value="Submit">
+                            <div class="col-md-12">
+                                {{form.address|as_crispy_field}}
+                            </div>
                         </div>
-
+                    </div>
+                    <br>
+                    <div class="ml-2">{{user_creation_form|crispy}}</div>
+                    <div class="d-flex justify-content-around">
+                        <input type="submit" class="btn btn-primary " value="Submit">
+                    </div>
                 </form>
 
             </div>

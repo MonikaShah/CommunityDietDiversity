@@ -31,18 +31,31 @@ body {
     height:100vh;
 }
 
+.correctlabel label {
+    display: inline;
+}
+
+.moduleform{
+    font-size: 1.1rem;
+}
 .btn-primary{
     background-color: #2b0d52 !important;
     border-color: #6441A5 !important;
 }
-.btn-warning{
+.secondarybutton{
     background-color: #cefd61;
     border-color: #acd64a !important;
 }
-@media only screen and (max-width:340px){
+
+.btnsmall{
+    padding:7px;
+    font-size: 16px;
+    
+}
+@media only screen and (max-width:400px){
     .btnsmall{
-        padding:5px;
-        font-size: 14px;
+        padding:3px;
+        font-size: 12px;
     }
 }
 #msform {

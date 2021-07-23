@@ -23,21 +23,16 @@
 {% endblock %}
 
 {% block content %}
-<style>
-    body {
-        font-size: 1.1rem !important;
-    }
-</style>
-<div class="container ml-3">
+<div class="container moduleform">
     <div class="card mt-3" style="padding:1rem 3rem">
         <div class="row">
             <h2 class="mb-3 text-center">{{formPre}} Module One</h2>
             <div class="col-md-12">
                 <form action="" method="POST">
                     {% csrf_token %}
-                    <div class="row">
+                    <div class="row correctlabel">
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">8. {{form.citrus_fruits_blank.label_tag}}
+                            <p class="fw-bold mb-2">8. {{form.citrus_fruits_blank.label_tag}}
                                 {% if form.citrus_fruits_blank.errors %}
                                 <strong class="text-danger fw-bolder fw-bolder">
                                     {{form.citrus_fruits_blank.errors.0}}
@@ -53,7 +48,7 @@
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">9. {{form.not_richsource_iron.label_tag}}
+                            <p class="fw-bold mb-2">9. {{form.not_richsource_iron.label_tag}}
                                 {% if form.not_richsource_iron.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.not_richsource_iron.errors.0}}
@@ -69,7 +64,7 @@
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">10. {{form.source_vitaminA.label_tag}}
+                            <p class="fw-bold mb-2">10. {{form.source_vitaminA.label_tag}}
                                 {% if form.source_vitaminA.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.source_vitaminA.errors.0}}
@@ -87,7 +82,7 @@
 
 
                         <div class="col-md-12 mb-3 form-group">
-                            <p class="fw-bold mb-0">11. {{form.imp_eat_fruits_vegetables.label_tag}}
+                            <p class="fw-bold mb-2">11. {{form.imp_eat_fruits_vegetables.label_tag}}
                                 {% if form.imp_eat_fruits_vegetables.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.imp_eat_fruits_vegetables.errors.0}}
@@ -105,7 +100,7 @@
 
 
                         <div class="col-md-12 mb-3 form-group">
-                            <p class="fw-bold mb-0">12. {{form.reason_wide_variety_food.label_tag}}
+                            <p class="fw-bold mb-2">12. {{form.reason_wide_variety_food.label_tag}}
                                 {% if form.reason_wide_variety_food.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.reason_wide_variety_food.errors.0}}
@@ -122,7 +117,7 @@
 
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">13. {{form.microgreen.label_tag}}
+                            <p class="fw-bold mb-2">13. {{form.microgreen.label_tag}}
                                 {% if form.microgreen.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.microgreen.errors.0}}
@@ -139,7 +134,7 @@
 
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">14. {{form.microgreen_example.label_tag}}
+                            <p class="fw-bold mb-2">14. {{form.microgreen_example.label_tag}}
                                 {% if form.microgreen_example.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.microgreen_example.errors.0}}
@@ -161,7 +156,7 @@
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">15. {{form.harvestdays_microgreen.label_tag}}
+                            <p class="fw-bold mb-2">15. {{form.harvestdays_microgreen.label_tag}}
                                 {% if form.harvestdays_microgreen.errors %}
                                 <strong class="text-danger fw-bolder">
                                     {{form.harvestdays_microgreen.errors.0}}
@@ -176,15 +171,15 @@
                             </div>
                             {% endfor %}
                         </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <a href="{% url 'accounts:previous' %}" class="btn btn-secondary">Previous</a>
+                        <div class="d-flex justify-content-around">
+                            <div>
+                                <a href="{% url 'accounts:previous' %}" class="btn btn-secondary btnsmall">Previous</a>
                             </div>
-                            <div class="col-md-4 d-flex justify-content-center">
-                                <input type="submit" class="btn btn-warning" value="Save draft" formaction="{% url 'accounts:draft' %}">
+                            <div>
+                                <input type="submit" class="btn btn-warning secondarybutton btnsmall" value="Save draft" formaction="{% url 'accounts:draft' %}">
                             </div>
-                            <div class="col-md-4 d-flex justify-content-end">
-                                <input type="submit" class="btn btn-success" value="Next">
+                            <div>
+                                <input type="submit" class="btn btn-primary btnsmall" value="Next">
                             </div>
                         </div>
                     </div>
