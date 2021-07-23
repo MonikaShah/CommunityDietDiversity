@@ -576,21 +576,19 @@ class ModuleOneForm3(forms.ModelForm):
 class forgot_password_form(forms.ModelForm):
     username = forms.CharField(max_length=150)
     groups = forms.ModelChoiceField(queryset=Group.objects.all())
-    new_password = forms.CharField(widget=forms.PasswordInput())
+    password = forms.CharField(widget=forms.PasswordInput(), label="New Password")
 
     class Meta:
         model = User
-        fields = ["username", "groups", "password"]
-        labels = {"password": "New Password"}
+        fields = ["groups", "password"]
 
 
 class change_password_form(forms.ModelForm):
-    new_password = forms.CharField(widget=forms.PasswordInput())
-
+    old_password = forms.CharField(widget=forms.PasswordInput(),label="Old Password")
+    password = forms.CharField(widget=forms.PasswordInput(),label="New Password")
     class Meta:
         model = User
         fields = ["password"]
-        labels = {"password": "Old Password"}
 
 
 class ActivityForm(forms.ModelForm):
