@@ -1742,7 +1742,7 @@ def activity(request, user=None):
                 submission_timestamp__gte=startdate,
             )
             if draftForm.draft:
-                mod = Activity()
+                mod = ActivityForm()
                 temp = {}
                 for name in Activity._meta.get_fields():
                     name = name.column
@@ -1813,3 +1813,57 @@ def activity(request, user=None):
                 "registration_form/activity.html",
                 {"form": form, "formPre": formPre},
             )
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
+def activityDraft(request):
+    if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
+        module = request.META.get("HTTP_REFERER").split("/")[-1]
+        id = request.META.get("HTTP_REFERER").split("/")[-2]
+        user = StudentsInfo.objects.get(pk=id).user
+    else:
+        module = request.META.get("HTTP_REFERER").split("/")[-2]
+        user = request.user
+    # for removing csrf field
+    temp = createTempDict(request.POST)
+    # checking if draft exists
+    if not creatingOrUpdatingDraftsActivity(temp, user, "activity"):
+        # creating new record
+        form = Activity(**temp)
+        form.student = StudentsInfo.objects.get(user=user)
+        form.draft = True
+        formType = getFormType("activity")
+        form.pre = 1 if formType == "PreTest" else 0
+        form.submission_timestamp = datetime.datetime.now()
+        form.save()
+    return redirect(request.META.get("HTTP_REFERER"))
+
+
+def creatingOrUpdatingDraftsActivity(temp, user, formName):
+    student = StudentsInfo.objects.get(user=user)
+    startdate = FormDetails.objects.get(
+        form=Form.objects.get(name=formName), teacher=student.teacher, open=True
+    ).start_timestamp
+    if Activity.objects.filter(
+        student=student, submission_timestamp__gte=startdate
+    ).exists():
+        draftForm = Activity.objects.get(
+            student=StudentsInfo.objects.get(user=user),
+            submission_timestamp__gte=startdate,
+        )
+        if draftForm.draft:
+            # updating drafts
+            for name in Activity._meta.get_fields():
+                name = name.column
+                if name == "id" or name == "student_id" or name == "draft":
+                    continue
+                if name in temp:
+                    setattr(draftForm, name, temp[name])
+                else:
+                    setattr(draftForm, name, getattr(draftForm, name) or None)
+
+            draftForm.submission_timestamp = datetime.datetime.now()
+            draftForm.save()
+            return True
+    else:
+        return False
