@@ -574,7 +574,10 @@ class ModuleOneForm3(forms.ModelForm):
 
 
 class forgot_password_form(forms.ModelForm):
+    username = forms.CharField(max_length=150)
     groups = forms.ModelChoiceField(queryset=Group.objects.all())
+    new_password = forms.CharField(widget=forms.PasswordInput())
+
     class Meta:
         model = User
         fields = ["username", "groups", "password"]
