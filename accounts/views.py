@@ -1222,7 +1222,7 @@ def previous(request):
             link[-2] = "moduleOne"
         elif link[-2] == "moduleOne-3":
             link[-2] = "moduleOne-2"
-    newLink = "/account/".join(link)
+    newLink = "/".join(link)
     return redirect(newLink)
 
 
