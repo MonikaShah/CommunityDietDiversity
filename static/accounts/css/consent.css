@@ -37,6 +37,7 @@ body {
 }
 .btn-warning{
     background-color: #cefd61;
+    border-color: #acd64a !important;
 }
 @media only screen and (max-width:340px){
     .btnsmall{
