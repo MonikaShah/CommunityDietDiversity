@@ -595,25 +595,25 @@ class ActivityForm(forms.ModelForm):
             "hip",
         ]
 
-    ask_weight = forms.FloatField(
+    weight = forms.FloatField(
         label=(
             "What is your Weight? (kgs)"
         ),
         required=False,
     )
-    ask_height = forms.FloatField(
+    height = forms.FloatField(
         label=(
             "What is your Height? (cms)"
         ),
         required=False,
     )
-    ask_waist = forms.FloatField(
+    waist = forms.FloatField(
         label=(
             "Please measure your Waist Circumference and write it below. (cms)"
         ),
         required=False,
     )
-    ask_hip = forms.FloatField(
+    hip = forms.FloatField(
         label=(
             "Please measure your Hip Circumference (cms) and mention it below."
         ),

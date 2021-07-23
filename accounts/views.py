@@ -811,10 +811,10 @@ def createTempDict(postData):
     return temp
 
 
-def creatingOrUpdatingDrafts(temp, user):
+def creatingOrUpdatingDrafts(temp, user, formName):
     student = StudentsInfo.objects.get(user=user)
     startdate = FormDetails.objects.get(
-        form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True
+        form=Form.objects.get(name=formName), teacher=student.teacher, open=True
     ).start_timestamp
     if ModuleOne.objects.filter(
         student=student, submission_timestamp__gte=startdate
@@ -857,7 +857,7 @@ def draft(request):
         # for removing csrf field
         temp = createTempDict(request.POST)
         # checking if draft exists
-        if not creatingOrUpdatingDrafts(temp, user):
+        if not creatingOrUpdatingDrafts(temp, user, "moduleOne"):
             # creating new record
             form = ModuleOne(**temp)
             form.student = StudentsInfo.objects.get(user=user)
@@ -869,11 +869,11 @@ def draft(request):
     # 2nd Page
     elif module == "moduleOne-2":
         temp = createTempDict(request.POST)
-        creatingOrUpdatingDrafts(temp, user)
+        creatingOrUpdatingDrafts(temp, user, "moduleOne")
     # 3rd Page
     elif module == "moduleOne-3":
         temp = createTempDict(request.POST)
-        creatingOrUpdatingDrafts(temp, user)
+        creatingOrUpdatingDrafts(temp, user, "moduleOne")
     return redirect(request.META.get("HTTP_REFERER"))
 
 
@@ -950,7 +950,7 @@ def moduleOne(request, user=None):
         if form.is_valid():
             temp = createTempDict(request.POST)
 
-            if not creatingOrUpdatingDrafts(temp, user):
+            if not creatingOrUpdatingDrafts(temp, user, "moduleOne"):
                 # creating new record
                 form = ModuleOne(**temp)
                 form.student = StudentsInfo.objects.get(user=user)
@@ -1033,7 +1033,7 @@ def moduleOne2(request, user=None):
 
         if form.is_valid():
             temp = createTempDict(request.POST)
-            creatingOrUpdatingDrafts(temp, user)
+            creatingOrUpdatingDrafts(temp, user, "moduleOne")
 
             if flag:
                 return redirect("accounts:module_one_3")
@@ -1692,7 +1692,7 @@ def change_password(request):
         return render(request, "registration_form/change_password.html", {"form": form})
     else:
         return None
-        
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
 # @isActive("activity", "student")
@@ -1719,7 +1719,7 @@ def activity(request, user=None):
                     name = name.column
                     if name in mod.fields:
                         temp[name] = getattr(draftForm, name) or None
-                form = Activity(temp)
+                form = ActivityForm(temp)
                 formPre = getFormType("activity")
                 return render(
                     request,
@@ -1730,7 +1730,7 @@ def activity(request, user=None):
                 return redirect("../already_filled")
         # new form
         else:
-            form = Activity()
+            form = ActivityForm()
             formPre = getFormType("activity")
             return render(
                 request,
@@ -1743,7 +1743,7 @@ def activity(request, user=None):
         if user == None:
             flag = True
             user = request.user
-        form = Activity(request.POST)
+        form = ActivityForm(request.POST)
 
         # valid form
         if form.is_valid():
@@ -1772,10 +1772,10 @@ def activity(request, user=None):
                 draftForm.draft = False
                 draftForm.submission_timestamp = datetime.datetime.now()
                 draftForm.save()
-                if flag:
-                    return redirect("accounts:student_dashboard")
-                else:
-                    return redirect("accounts:parent_dashboard")
+            if flag:
+                return redirect("accounts:student_dashboard")
+            else:
+                return redirect("accounts:parent_dashboard")
         # invalid form
         else:
             formPre = getFormType("activity")
