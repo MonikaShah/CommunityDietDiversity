@@ -66,4 +66,5 @@ urlpatterns = [
     ),
     path("forgot_password/", views.forgot_password, name="forgot_password"),
     path("change_password/", views.change_password, name="change_password"),
+    path("password_changed/", views.password_changed, name="password_changed"),
 ]

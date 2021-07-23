@@ -1,27 +1,25 @@
 import io
 import ast
-from typing import NewType
-from django.contrib.auth.models import Group
-from django.db.models.expressions import F
-
 import openpyxl
 import string
 import random
 import xlsxwriter
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.http import HttpResponse
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, authenticate
+from typing import NewType
 from datetime import datetime, date
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.exceptions import PermissionDenied
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.urls import reverse
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from django.db.models.expressions import F
 from .decorators import *
-
-from accounts.models import *
+from .models import *
 from .forms import *
 from shared.encryption import EncryptionHelper
 
@@ -203,7 +201,9 @@ def loginU(request):
                         return redirect("accounts:teacher_dashboard")
                 else:
                     messages.error(request, "User does not belong to selected group")
-                    return render(request, "registration_form/login.html", {"form": form})
+                    return render(
+                        request, "registration_form/login.html", {"form": form}
+                    )
             else:
                 messages.error(request, "Invalid credentials")
                 return render(request, "registration_form/login.html", {"form": form})
@@ -1701,7 +1701,6 @@ def uploadData(request):
             ct = City(city=city, state=stte)
             ct.save()
 
-from django.contrib.auth.password_validation import validate_password
 
 def forgot_password(request):
     if request.user.get_username() != "":
@@ -1715,17 +1714,35 @@ def forgot_password(request):
         else:
             form = forgot_password_form(request.POST)
             if form.is_valid():
-                user = form.save(commit=False) # Do not save to table yet
-                username = form.cleaned_data['username']
-                password = form.cleaned_data['password']
-
+                username = form.cleaned_data["username"]
+                group = form.cleaned_data["groups"]
+                password = form.cleaned_data["password"]
                 try:
-                    validate_password(password, user)
-                except ValidationError as e:
-                    form.add_error('password', e)  # to be displayed with the field's errors
-                    return render(
-                        request, "registration_form/forgot_password.html", {"form": form}
-                        )
+                    user = User.objects.get(username=username)
+                    if user.groups.filter(name=group).exists():
+                        try:
+                            validate_password(password)
+                            if user.check_password(password):
+                                form.add_error(
+                                    "password",
+                                    "Password entered is same as the previous one!",
+                                )
+                            else:
+                                user.set_password(password)
+                                user.save()
+                                return redirect("accounts:password_changed")
+                        except ValidationError as e:
+                            form.add_error("password", e)
+                    else:
+                        form.add_error("groups", "Invalid Group")
+                except User.DoesNotExist:
+                    form.add_error("username", "Invalid Username")
+
+                return render(
+                    request,
+                    "registration_form/forgot_password.html",
+                    {"form": form},
+                )
 
 
 def change_password(request):
@@ -1734,6 +1751,14 @@ def change_password(request):
         return render(request, "registration_form/change_password.html", {"form": form})
     else:
         return None
+
+
+def password_changed(request):
+    if request.method == "GET":
+        return render(request, "registration_form/password_changed.html", {})
+    else:
+        return redirect("accounts:loginlink")
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
@@ -1826,6 +1851,7 @@ def activity(request, user=None):
                 "registration_form/activity.html",
                 {"form": form, "formPre": formPre},
             )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
