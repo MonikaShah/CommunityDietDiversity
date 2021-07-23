@@ -1209,7 +1209,7 @@ def parentModuleOne3(request, id):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_student, login_url="accounts:forbidden")
+@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
 def previous(request):
     link = request.META.get("HTTP_REFERER").split("/")
     if "parent_dashboard" in link:
@@ -1701,6 +1701,7 @@ def uploadData(request):
             ct = City(city=city, state=stte)
             ct.save()
 
+from django.contrib.auth.password_validation import validate_password
 
 def forgot_password(request):
     if request.user.get_username() != "":
@@ -1712,7 +1713,19 @@ def forgot_password(request):
                 request, "registration_form/forgot_password.html", {"form": form}
             )
         else:
-            return None
+            form = forgot_password_form(request.POST)
+            if form.is_valid():
+                user = form.save(commit=False) # Do not save to table yet
+                username = form.cleaned_data['username']
+                password = form.cleaned_data['password']
+
+                try:
+                    validate_password(password, user)
+                except ValidationError as e:
+                    form.add_error('password', e)  # to be displayed with the field's errors
+                    return render(
+                        request, "registration_form/forgot_password.html", {"form": form}
+                        )
 
 
 def change_password(request):
