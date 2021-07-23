@@ -33,6 +33,7 @@ urlpatterns = [
     path("moduleOne/", views.moduleOne, name="module_one"),
     path("moduleOne-2/", views.moduleOne2, name="module_one_2"),
     path("moduleOne-3/", views.moduleOne3, name="module_one_3"),
+    path("activitydraft/", views.activityDraft, name="activitydraft"),
     path("draft/", views.draft, name="draft"),
     path("forbidden/", views.forbidden, name="forbidden"),
     path(
