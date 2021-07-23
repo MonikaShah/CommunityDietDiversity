@@ -1737,20 +1737,41 @@ def forgot_password(request):
                         form.add_error("groups", "Invalid Group")
                 except User.DoesNotExist:
                     form.add_error("username", "Invalid Username")
+            return render(
+                request,
+                "registration_form/forgot_password.html",
+                {"form": form},
+            )
 
-                return render(
-                    request,
-                    "registration_form/forgot_password.html",
-                    {"form": form},
-                )
 
-
+@login_required(login_url="accounts:loginlink")
 def change_password(request):
     if request.method == "GET":
         form = change_password_form()
         return render(request, "registration_form/change_password.html", {"form": form})
     else:
-        return None
+        form = change_password_form(request.POST)
+        if form.is_valid():
+            old_password = form.cleaned_data["old_password"]
+            new_password = form.cleaned_data["password"]
+            user = request.user
+            if user.check_password(old_password):
+                try:
+                    validate_password(new_password)
+                    if user.check_password(new_password):
+                        form.add_error(
+                            "password", "Password entered is same as the previous one!"
+                        )
+                    else:
+                        user.set_password(new_password)
+                        user.save()
+                        logout(request)
+                        return redirect("accounts:password_changed")
+                except ValidationError as e:
+                    form.add_error("password", e)
+            else:
+                form.add_error("old_password", "Incorrect Password")
+        return render(request, "registration_form/change_password.html", {"form": form})
 
 
 def password_changed(request):
