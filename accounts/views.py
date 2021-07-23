@@ -51,136 +51,162 @@ def home(request):
     return render(request, "registration_form/home.html")
 
 
+def redirect_to_dashboard(request):
+    if is_teacher(request.user):
+        return redirect("accounts:teacher_dashboard")
+    elif is_parent(request.user):
+        return redirect("accounts:parent_dashboard")
+    elif is_student(request.user):
+        return redirect("accounts:student_dashboard")
+    else:
+        logout(request)
+        return redirect("accounts:login")
+
+
 def consent(request):
-    if request.method == "GET":
-        form = ConsentForm()
-        return render(request, "registration_form/consent.html", {"form": form})
+    if request.user.get_username() != "":
+        return redirect_to_dashboard(request)
+    else:
+        if request.method == "GET":
+            form = ConsentForm()
+            return render(request, "registration_form/consent.html", {"form": form})
 
 
 def parents_info(request):
-    if request.method == "GET":
-        if request.session.get("data"):
-            form = ParentsInfoForm(request.session.get("data"))
-            user_creation_form = UserCreationForm(request.session.get("data"))
-        else:
-            form = ParentsInfoForm()
-            user_creation_form = UserCreationForm()
-        return render(
-            request,
-            "registration_form/parents_info.html",
-            {"form": form, "user_creation_form": user_creation_form},
-        )
+    if request.user.get_username() != "":
+        return redirect_to_dashboard(request)
     else:
-        form = ParentsInfoForm(request.POST)
-        user_creation_form = UserCreationForm(request.POST)
-
-        if form.is_valid() and user_creation_form.is_valid():
-            print(request.POST["state"].strip())
-            print(request.POST["city"].strip())
-            request.session["data"] = request.POST
-            return redirect("accounts:students_info")
-        else:
+        if request.method == "GET":
+            if request.session.get("data"):
+                form = ParentsInfoForm(request.session.get("data"))
+                user_creation_form = UserCreationForm(request.session.get("data"))
+            else:
+                form = ParentsInfoForm()
+                user_creation_form = UserCreationForm()
             return render(
                 request,
                 "registration_form/parents_info.html",
                 {"form": form, "user_creation_form": user_creation_form},
             )
+        else:
+            form = ParentsInfoForm(request.POST)
+            user_creation_form = UserCreationForm(request.POST)
+
+            if form.is_valid() and user_creation_form.is_valid():
+                print(request.POST["state"].strip())
+                print(request.POST["city"].strip())
+                request.session["data"] = request.POST
+                return redirect("accounts:students_info")
+            else:
+                return render(
+                    request,
+                    "registration_form/parents_info.html",
+                    {"form": form, "user_creation_form": user_creation_form},
+                )
 
 
 def students_info(request):
-    if request.method == "GET":
-        form = StudentsInfoForm()
-        user_creation_form = UserCreationForm()
-        return render(
-            request,
-            "registration_form/students_info.html",
-            {"form": form, "user_creation_form": user_creation_form},
-        )
+    if request.user.get_username() != "":
+        return redirect_to_dashboard(request)
     else:
-        previousPOST = request.session["data"]
-        form = StudentsInfoForm(request.POST)
-        studentuserform = UserCreationForm(request.POST)
-        parentform = ParentsInfoForm(previousPOST)
-        parentuserform = UserCreationForm(previousPOST)
-        if form.is_valid() and studentuserform.is_valid():
-            encryptionHelper = EncryptionHelper()
-            parentUser = parentuserform.save(commit=False)
-            parentUser.save()
-            parent_group = Group.objects.get(name="Parents")
-            parentUser.groups.add(parent_group)
-            parentUser.save()
-
-            parent = parentform.save(commit=False)
-            parent.user = parentUser
-            parent.first_password = ""
-            parent.password_changed = True
-            parent.name = encryptionHelper.encrypt(previousPOST["name"])
-            parent.email = encryptionHelper.encrypt(previousPOST["email"])
-            parent.state = State.objects.get(
-                state__icontains=previousPOST["state"].strip()
-            )
-            parent.city = City.objects.get(city__icontains=previousPOST["city"].strip())
-            parent.save()
-
-            studentuser = studentuserform.save(commit=False)
-            studentuser.save()
-            student_group = Group.objects.get(name="Students")
-            studentuser.groups.add(student_group)
-            studentuser.save()
-
-            student = form.save(commit=False)
-            student.user = studentuser
-            student.first_password = ""
-            student.password_changed = True
-            student.name = encryptionHelper.encrypt(request.POST["name"])
-            student.parent = parent
-            student.save()
-
-            user = authenticate(
-                request,
-                username=previousPOST["username"],
-                password=previousPOST["password1"],
-            )
-            if user is not None:
-                login(request, user)
-
-            if "data" in request.session:
-                del request.session["data"]
-            return redirect("accounts:parent_dashboard")
-        else:
+        if request.method == "GET":
+            form = StudentsInfoForm()
+            user_creation_form = UserCreationForm()
             return render(
                 request,
                 "registration_form/students_info.html",
-                {"form": form, "user_creation_form": studentuserform},
+                {"form": form, "user_creation_form": user_creation_form},
             )
+        else:
+            previousPOST = request.session["data"]
+            form = StudentsInfoForm(request.POST)
+            studentuserform = UserCreationForm(request.POST)
+            parentform = ParentsInfoForm(previousPOST)
+            parentuserform = UserCreationForm(previousPOST)
+            if form.is_valid() and studentuserform.is_valid():
+                encryptionHelper = EncryptionHelper()
+                parentUser = parentuserform.save(commit=False)
+                parentUser.save()
+                parent_group = Group.objects.get(name="Parents")
+                parentUser.groups.add(parent_group)
+                parentUser.save()
+
+                parent = parentform.save(commit=False)
+                parent.user = parentUser
+                parent.first_password = ""
+                parent.password_changed = True
+                parent.name = encryptionHelper.encrypt(previousPOST["name"])
+                parent.email = encryptionHelper.encrypt(previousPOST["email"])
+                parent.state = State.objects.get(
+                    state__icontains=previousPOST["state"].strip()
+                )
+                parent.city = City.objects.get(
+                    city__icontains=previousPOST["city"].strip()
+                )
+                parent.save()
+
+                studentuser = studentuserform.save(commit=False)
+                studentuser.save()
+                student_group = Group.objects.get(name="Students")
+                studentuser.groups.add(student_group)
+                studentuser.save()
+
+                student = form.save(commit=False)
+                student.user = studentuser
+                student.first_password = ""
+                student.password_changed = True
+                student.name = encryptionHelper.encrypt(request.POST["name"])
+                student.parent = parent
+                student.save()
+
+                user = authenticate(
+                    request,
+                    username=previousPOST["username"],
+                    password=previousPOST["password1"],
+                )
+                if user is not None:
+                    login(request, user)
+
+                if "data" in request.session:
+                    del request.session["data"]
+                return redirect("accounts:parent_dashboard")
+            else:
+                return render(
+                    request,
+                    "registration_form/students_info.html",
+                    {"form": form, "user_creation_form": studentuserform},
+                )
 
 
 def loginU(request):
-    if request.method == "GET":
-        form = CustomAuthenticationForm()
-        return render(request, "registration_form/login.html", {"form": form})
+    if request.user.get_username() != "":
+        return redirect_to_dashboard(request)
     else:
-        username = request.POST["username"]
-        password = request.POST["password"]
-        grp = request.POST["groups"]
-        user = authenticate(request, username=username, password=password)
-        grp_name = Group.objects.get(pk=grp).name
-        form = CustomAuthenticationForm(request.POST)
-        if user is not None:
-            if is_member(user, grp):
-                login(request, user)
-                if grp_name == "Parents":
-                    return redirect("accounts:parent_dashboard")
-                elif grp_name == "Students":
-                    return redirect("accounts:student_dashboard")
-                elif grp_name == "Teachers":
-                    return redirect("accounts:teacher_dashboard")
-            else:
-                messages.error(request, "User does not belong to selected group")
-                return render(request, "registration_form/login.html", {"form": form})
-        else:
-            messages.error(request, "Invalid credentials")
+        if request.method == "GET":
+            form = CustomAuthenticationForm()
             return render(request, "registration_form/login.html", {"form": form})
+        else:
+            username = request.POST["username"]
+            password = request.POST["password"]
+            grp = request.POST["groups"]
+            user = authenticate(request, username=username, password=password)
+            grp_name = Group.objects.get(pk=grp).name
+            form = CustomAuthenticationForm(request.POST)
+            if user is not None:
+                if is_member(user, grp):
+                    login(request, user)
+                    if grp_name == "Parents":
+                        return redirect("accounts:parent_dashboard")
+                    elif grp_name == "Students":
+                        return redirect("accounts:student_dashboard")
+                    elif grp_name == "Teachers":
+                        return redirect("accounts:teacher_dashboard")
+                else:
+                    messages.error(request, "User does not belong to selected group")
+                    return render(request, "registration_form/login.html", {"form": form})
+            else:
+                messages.error(request, "Invalid credentials")
+                return render(request, "registration_form/login.html", {"form": form})
 
 
 @login_required(login_url="accounts:loginlink")
@@ -1225,7 +1251,6 @@ def manageForms(request):
                 else:
                     moduleOne["post"] = True
                     moduleOne["pre"] = False
-        
 
         return render(
             request,
@@ -1330,7 +1355,7 @@ def manageForms(request):
                             ).first()
                             draftForm.delete()
                     update.save()
-        
+
         # elif "activity" in request.POST:
         #     activity_pre = request.POST.get("activity_pre", False)
         #     activity_post = request.POST.get("activity_post", False)
@@ -1422,7 +1447,6 @@ def manageForms(request):
         #                     ).first()
         #                     draftForm.delete()
         #             update.save()
-                
 
         module_two_pre = request.POST.get("module_two_pre", False)
         module_two_post = request.POST.get("module_two_post", False)
@@ -1679,11 +1703,16 @@ def uploadData(request):
 
 
 def forgot_password(request):
-    if request.method == "GET":
-        form = forgot_password_form()
-        return render(request, "registration_form/forgot_password.html", {"form": form})
+    if request.user.get_username() != "":
+        return redirect_to_dashboard(request)
     else:
-        return None
+        if request.method == "GET":
+            form = forgot_password_form()
+            return render(
+                request, "registration_form/forgot_password.html", {"form": form}
+            )
+        else:
+            return None
 
 
 def change_password(request):
@@ -1692,7 +1721,8 @@ def change_password(request):
         return render(request, "registration_form/change_password.html", {"form": form})
     else:
         return None
-        
+
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
 # @isActive("activity", "student")
