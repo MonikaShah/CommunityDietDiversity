@@ -590,23 +590,30 @@ class change_password_form(forms.ModelForm):
         model = User
         fields = ["password"]
 
-
 class ActivityForm(forms.ModelForm):
-    ask_weight = forms.FloatField(
-        label=("What is your Weight? (kgs)"),
+
+    weight = forms.FloatField(
+        label=(
+            "What is your Weight? (kgs)"
+        ),
         required=False,
     )
-    ask_height = forms.FloatField(
-        label=("What is your Height? (cms)"),
+    height = forms.FloatField(
+        label=(
+            "What is your Height? (cms)"
+        ),
         required=False,
     )
-    ask_waist = forms.FloatField(
-        label=("Please measure your Waist Circumference and write it below. (cms)"),
+    waist = forms.FloatField(
+        label=(
+            "Please measure your Waist Circumference and write it below. (cms)"
+        ),
         required=False,
     )
-    ask_hip = forms.FloatField(
-        label=("Please measure your Hip Circumference (cms) and mention it below."),
-        required=False,
+    hip = forms.FloatField(
+        label=(
+            "Please measure your Hip Circumference (cms) and mention it below."
+        ),
     )
 
     class Meta:
