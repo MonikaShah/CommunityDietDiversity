@@ -60,7 +60,7 @@ def redirect_to_dashboard(request):
         return redirect("accounts:student_dashboard")
     else:
         logout(request)
-        return redirect("accounts:login")
+        return redirect("accounts:loginlink")
 
 
 def consent(request):
