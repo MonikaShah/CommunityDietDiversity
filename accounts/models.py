@@ -99,11 +99,20 @@ class ParentsInfo(models.Model):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.name)
 
+class CoordinatorInCharge(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=500)
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    createdAt=models.DateTimeField()
+
+    def __str__(self):
+        return self.name
 
 class TeacherInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=500)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
+    coordinator=models.ForeignKey(CoordinatorInCharge,on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
