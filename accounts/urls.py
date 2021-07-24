@@ -54,6 +54,11 @@ urlpatterns = [
         views.parentModuleOne3,
         name="parentsModuleOne3",
     ),
+    path(
+        "parent_dashboard/<int:id>/activity",
+        views.parentActivity,
+        name="parentActivity",
+    ),
     path("previous/", views.previous, name="previous"),
     path("manage-forms/", views.manageForms, name="manage_forms"),
     url(

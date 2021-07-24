@@ -31,20 +31,24 @@
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">1. {{form.weight.label}}</p>
-                            {{form.weight}}
+                            <p class="fw-bold mb-0">1. {{form.weight.label_tag}}</p>
+                            {{form.weight|as_crispy_field}}
                         </div>
                         <div class="col-md-12 mb-3">
                             <p class="fw-bold mb-0">2. {{form.height.label_tag}}</p>
-                            {{form.height}}
+                            {{form.height|as_crispy_field}}
                         </div>
                         <div class="col-md-12 mb-3">
                             <p class="fw-bold mb-0">3. {{form.waist.label_tag}}</p>
-                            {{form.waist}}
+                            <img src="/static/accounts/img/waist.jpg">
+                            <br><br>
+                            {{form.waist|as_crispy_field}}
                         </div>
                         <div class="col-md-12 mb-3">
                             <p class="fw-bold mb-0">4. {{form.hip.label_tag}}</p>
-                            {{form.hip}}
+                            <img src="/static/accounts/img/waist.jpg">
+                            <br><br>
+                            {{form.hip|as_crispy_field}}
                         </div>
                         <div class="d-flex justify-content-around">
                             <div>

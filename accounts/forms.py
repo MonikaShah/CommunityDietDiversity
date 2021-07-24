@@ -8,7 +8,7 @@ from bootstrap_datepicker_plus import DatePickerInput
 import datetime
 from .models import ParentsInfo, StudentsInfo, ModuleOne, FirstModule, Activity
 from django.core.validators import RegexValidator
-
+from crispy_forms.helper import FormHelper
 
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
@@ -592,6 +592,11 @@ class change_password_form(forms.ModelForm):
 
 class ActivityForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(ActivityForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False 
+
     weight = forms.FloatField(
         label=(
             "What is your Weight? (kgs)"
@@ -614,6 +619,7 @@ class ActivityForm(forms.ModelForm):
         label=(
             "Please measure your Hip Circumference (cms) and mention it below."
         ),
+        required=False,
     )
 
     class Meta:

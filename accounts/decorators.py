@@ -14,7 +14,7 @@ def is_parent(user):
 def is_parent_or_student(user):
     return (
         user.groups.filter(name="Parents").exists()
-        or user.groups.filter(name="Studnets").exists()
+        or user.groups.filter(name="Students").exists()
     )
 
 
