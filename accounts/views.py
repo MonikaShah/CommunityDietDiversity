@@ -229,6 +229,7 @@ def addStudentForm(request):
                 {"form": form, "user_creation_form": studentuserform},
             )
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def addTeacherForm(request):
@@ -255,7 +256,9 @@ def addTeacherForm(request):
             teacher.first_password = ""
             teacher.password_changed = True
             teacher.name = encryptionHelper.encrypt(request.POST["name"])
-            teacher.coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
+            teacher.coordinator = CoordinatorInCharge.objects.filter(
+                user=request.user
+            ).first()
             teacher.save()
             return redirect("accounts:coordinator_dashboard")
         else:
@@ -264,6 +267,7 @@ def addTeacherForm(request):
                 "registration_form/add_teacher.html",
                 {"form": form, "user_creation_form": teacheruserform},
             )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
@@ -840,6 +844,7 @@ def teacher_dashboard(request):
         {"results": results, "results2": results2},
     )
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def coordinator_dashboard(request):
@@ -847,6 +852,7 @@ def coordinator_dashboard(request):
         request,
         "registration_form/coordinator_dashboard.html",
     )
+
 
 def createTempDict(postData):
     temp = {}
@@ -1289,7 +1295,6 @@ def manageForms(request):
                 else:
                     activity["post"] = True
                     activity["pre"] = False
-
 
         return render(
             request,
@@ -1784,6 +1789,7 @@ def forgot_password(request):
         return render(request, "registration_form/forgot_password.html", {"form": form})
     else:
         form = forgot_password_form(request.POST)
+        context = {"form": form}
         if form.is_valid():
             username = form.cleaned_data["username"]
             group = form.cleaned_data["groups"]
@@ -1805,13 +1811,13 @@ def forgot_password(request):
                     except ValidationError as e:
                         form.add_error("password", e)
                 else:
-                    form.add_error("groups", "Invalid Group")
+                    context["error"] = "Invalid Input."
             except User.DoesNotExist:
-                form.add_error("username", "Invalid Username")
+                context["error"] = "Invalid Input."
         return render(
             request,
             "registration_form/forgot_password.html",
-            {"form": form},
+            context,
         )
 
 
@@ -1966,13 +1972,13 @@ def activityDraft(request):
         formType = getFormType("activity")
         form.pre = 1 if formType == "PreTest" else 0
         form.submission_timestamp = datetime.datetime.now()
-        if form.waist == '':
+        if form.waist == "":
             form.waist = 0
-        if form.weight == '':
+        if form.weight == "":
             form.weight = 0
-        if form.hip == '':
+        if form.hip == "":
             form.hip = 0
-        if form.height == '':
+        if form.height == "":
             form.height = 0
         form.save()
     return redirect(request.META.get("HTTP_REFERER"))
@@ -2002,18 +2008,19 @@ def creatingOrUpdatingDraftsActivity(temp, user, formName):
                     setattr(draftForm, name, getattr(draftForm, name) or None)
 
             draftForm.submission_timestamp = datetime.datetime.now()
-            if draftForm.waist == '':
+            if draftForm.waist == "":
                 draftForm.waist = 0
-            if draftForm.weight == '':
+            if draftForm.weight == "":
                 draftForm.weight = 0
-            if draftForm.hip == '':
+            if draftForm.hip == "":
                 draftForm.hip = 0
-            if draftForm.height == '':
+            if draftForm.height == "":
                 draftForm.height = 0
             draftForm.save()
             return True
     else:
         return False
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
