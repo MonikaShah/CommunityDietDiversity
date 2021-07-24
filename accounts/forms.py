@@ -6,9 +6,8 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
 import datetime
-from .models import ParentsInfo, StudentsInfo, ModuleOne, FirstModule, Activity
+from .models import ParentsInfo, StudentsInfo, ModuleOne, FirstModule, Activity, TeacherInCharge
 from django.core.validators import RegexValidator
-
 
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
@@ -91,6 +90,23 @@ class StudentsInfoForm(ModelForm):
 
         return self.cleaned_data
 
+class TeachersInfoForm(ModelForm):
+    alphanumeric = RegexValidator(
+        r"^[a-zA-Z\' ]*$", "No Numeric and Special characters are allowed."
+    )
+    name = forms.CharField(max_length=500, validators=[alphanumeric])
+    class Meta:
+        model = TeacherInCharge
+        fields = ["school"]
+
+    def clean(self):
+        super(TeachersInfoForm, self).clean()
+
+        name = self.cleaned_data.get("name")
+        if not name:
+            self.add_error("name", "Name is a required Field")
+
+        return self.cleaned_data
 
 class FirstModuleForm(ModelForm):
     name = forms.CharField()

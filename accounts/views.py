@@ -161,6 +161,8 @@ def loginU(request):
                     return redirect("accounts:student_dashboard")
                 elif grp_name == "Teachers":
                     return redirect("accounts:teacher_dashboard")
+                elif grp_name == "Coordinators":
+                    return redirect("accounts:coordinator_dashboard")
             else:
                 messages.error(request, "User does not belong to selected group")
                 return render(request, "registration_form/login.html", {"form": form})
@@ -212,13 +214,11 @@ def addStudentForm(request):
             student_group = Group.objects.get(name="Students")
             studentuser.groups.add(student_group)
             studentuser.save()
-
             student = form.save(commit=False)
             student.user = studentuser
             student.first_password = ""
             student.password_changed = True
             student.name = encryptionHelper.encrypt(request.POST["name"])
-            print(student.name)
             student.parent = ParentsInfo.objects.filter(user=request.user).first()
             student.save()
             return redirect("accounts:parent_dashboard")
@@ -229,6 +229,41 @@ def addStudentForm(request):
                 {"form": form, "user_creation_form": studentuserform},
             )
 
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def addTeacherForm(request):
+    if request.method == "GET":
+        form = TeachersInfoForm()
+        user_creation_form = UserCreationForm()
+        return render(
+            request,
+            "registration_form/add_teacher.html",
+            {"form": form, "user_creation_form": user_creation_form},
+        )
+    else:
+        form = TeachersInfoForm(request.POST)
+        teacheruserform = UserCreationForm(request.POST)
+        if form.is_valid() and teacheruserform.is_valid():
+            encryptionHelper = EncryptionHelper()
+            teacheruser = teacheruserform.save(commit=False)
+            teacheruser.save()
+            teacher_group = Group.objects.get(name="Teachers")
+            teacheruser.groups.add(teacher_group)
+            teacheruser.save()
+            teacher = form.save(commit=False)
+            teacher.user = teacheruser
+            teacher.first_password = ""
+            teacher.password_changed = True
+            teacher.name = encryptionHelper.encrypt(request.POST["name"])
+            teacher.coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
+            teacher.save()
+            return redirect("accounts:coordinator_dashboard")
+        else:
+            return render(
+                request,
+                "registration_form/add_teacher.html",
+                {"form": form, "user_creation_form": teacheruserform},
+            )
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
@@ -785,6 +820,13 @@ def teacher_dashboard(request):
         {"results": results, "results2": results2},
     )
 
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def coordinator_dashboard(request):
+    return render(
+        request,
+        "registration_form/coordinator_dashboard.html",
+    )
 
 def createTempDict(postData):
     temp = {}
