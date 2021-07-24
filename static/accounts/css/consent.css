@@ -42,20 +42,27 @@ body {
     background-color: #2b0d52 !important;
     border-color: #6441A5 !important;
 }
-.secondarybutton{
-    background-color: #cefd61;
-    border-color: #acd64a !important;
-}
-
 .btnsmall{
     padding:7px;
     font-size: 16px;
     
 }
+
+.dashCard>div {
+    width: 29%;
+}
+
 @media only screen and (max-width:400px){
     .btnsmall{
         padding:3px;
         font-size: 12px;
+    }
+    .dashCard {
+        flex-direction: column;
+    }
+    .dashCard>div {
+        width: 98%;
+        margin: auto;
     }
 }
 #msform {

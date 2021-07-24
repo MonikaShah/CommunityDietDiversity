@@ -22,69 +22,39 @@
 {%block content%}
 
 {% if results2 %}
-<h3>Open Forms</h3>
-<table class="table">
-  <thead>
-    <tr>
-
-      <th class="text-center" scope="col">Form</th>
-      <th class="text-center" scope="col">Start Date</th>
-      <th class="text-center" scope="col">Type</th>
-      <th class="text-center" scope="col">No. of submissions</th>
-      <th class="text-center" scope="col">Total Students</th>
-      <th class="text-center" scope="col">View info</th>
-    </tr>
-  </thead>
-  <tbody>
-
+  <h3 class="mb-3">Open Forms</h3>
+  <div class="d-flex mb-3 dashCard" style="flex-wrap: wrap;" >
     {% for result in results2 %}
-    <tr>
-      {% for data in result %}
-      {% if not forloop.last %}
-      <td class="text-center">{{data}}</td>
-      {% endif %}
-      {% endfor %}
-
-      <td class="text-center"> <a href="{% url 'accounts:get_form_details' result.5 %}" class="btn btn-primary"><i
-            class="fa fa-info-circle"></i></a></td>
-    </tr>
+      <div class="card mb-4 mr-5">
+        <h5 class="card-header">{{result.2}}</h5>
+        <div class="card-body">
+          <h5 class="card-title">{{result.0}}</h5>
+          <p class="card-text"><b>Start Date:</b> {{result.1}}</p>
+          <p class="card-text"><b>No. of submissions:</b> {{result.3}}</p>
+          <p class="card-text"><b>Total Students:</b> {{result.4}}</p>
+          <a href="{% url 'accounts:get_form_details' result.5 %}" class="btn btn-primary">View Info</a>
+        </div>
+      </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
 {% endif %}
 
 {% if results %}
-<h3>Closed Forms</h3>
-<table style="width:100vw" class="table overflow-auto">
-  <thead>
-    <tr>
-
-      <th class="text-center" scope="col">Form</th>
-      <th class="text-center" scope="col">Start Date</th>
-      <th class="text-center" scope="col">End Date</th>
-      <th class="text-center" scope="col">Type</th>
-      <th class="text-center" scope="col">No. of submissions</th>
-      <th class="text-center" scope="col">Total Students</th>
-      <th class="text-center" scope="col">View info</th>
-    </tr>
-  </thead>
-  <tbody>
-
+<h3 class="mb-3">Closed Forms</h3>
+    <div class="d-flex mb-3 dashCard" style="flex-wrap: wrap;" >
     {% for result in results %}
-    <tr>
-      {% for data in result %}
-      {% if not forloop.last %}
-      <td class="text-center">{{data}}</td>
-      {% endif %}
-      {% endfor %}
-
-      <td class="text-center"> <a href="{% url 'accounts:get_form_details' result.6 %}" class="btn btn-primary"><i
-            class="fa fa-info-circle"></i></a></td>
-    </tr>
+      <div class="card mb-4 mr-5">
+        <h5 class="card-header">{{result.3}}</h5>
+        <div class="card-body">
+          <h5 class="card-title">{{result.0}}</h5>
+          <p class="card-text"><b>Start Date:</b> {{result.1}}</p>
+          <p class="card-text"><b>End Date:</b> {{result.2}}</p>
+          <p class="card-text"><b>No. of submissions:</b> {{result.4}}</p>
+          <p class="card-text"><b>Total Students:</b> {{result.5}}</p>
+          <a href="{% url 'accounts:get_form_details' result.6 %}" class="btn btn-primary">View Info</a>
+        </div>
+      </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
 {% endif %}
-
-
 {% endblock %}

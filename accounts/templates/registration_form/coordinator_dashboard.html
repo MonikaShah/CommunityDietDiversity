@@ -23,70 +23,15 @@
 <div class="d-flex justify-content-end">
     <a href="{% url 'accounts:add_teacher_form' %}" class="btn btn-primary">Add Teacher</a>
 </div>
-<!-- {% if results2 %}
-<h3>Open Forms</h3>
-<table class="table">
-  <thead>
-    <tr>
 
-      <th class="text-center" scope="col">Form</th>
-      <th class="text-center" scope="col">Start Date</th>
-      <th class="text-center" scope="col">Type</th>
-      <th class="text-center" scope="col">No. of submissions</th>
-      <th class="text-center" scope="col">Total Students</th>
-      <th class="text-center" scope="col">View info</th>
-    </tr>
-  </thead>
-  <tbody>
-
-    {% for result in results2 %}
-    <tr>
-      {% for data in result %}
-      {% if not forloop.last %}
-      <td class="text-center">{{data}}</td>
-      {% endif %}
-      {% endfor %}
-
-      <td class="text-center"> <a href="{% url 'accounts:get_form_details' result.5 %}" class="btn btn-primary"><i
-            class="fa fa-info-circle"></i></a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% endif %}
-
-{% if results %}
-<h3>Closed Forms</h3>
-<table style="width:100vw" class="table overflow-auto">
-  <thead>
-    <tr>
-
-      <th class="text-center" scope="col">Form</th>
-      <th class="text-center" scope="col">Start Date</th>
-      <th class="text-center" scope="col">End Date</th>
-      <th class="text-center" scope="col">Type</th>
-      <th class="text-center" scope="col">No. of submissions</th>
-      <th class="text-center" scope="col">Total Students</th>
-      <th class="text-center" scope="col">View info</th>
-    </tr>
-  </thead>
-  <tbody>
-
-    {% for result in results %}
-    <tr>
-      {% for data in result %}
-      {% if not forloop.last %}
-      <td class="text-center">{{data}}</td>
-      {% endif %}
-      {% endfor %}
-
-      <td class="text-center"> <a href="{% url 'accounts:get_form_details' result.6 %}" class="btn btn-primary"><i
-            class="fa fa-info-circle"></i></a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% endif %} -->
-
+{% for teacher in teachers %}
+<div class="card p-3 m-3" style="width: 18rem;">
+    <div class="card-body">
+        <h4 class="card-title">{{ teacher.name }}</h4>
+        <br>
+        <h6 class="card-text"><b>School:</b> {{ teacher.school }}</h6>
+    </div>
+</div>
+{% endfor %}
 
 {% endblock %}

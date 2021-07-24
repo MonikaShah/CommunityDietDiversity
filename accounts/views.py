@@ -245,7 +245,6 @@ def addTeacherForm(request):
         form = TeachersInfoForm(request.POST)
         teacheruserform = UserCreationForm(request.POST)
         if form.is_valid() and teacheruserform.is_valid():
-            encryptionHelper = EncryptionHelper()
             teacheruser = teacheruserform.save(commit=False)
             teacheruser.save()
             teacher_group = Group.objects.get(name="Teachers")
@@ -255,10 +254,15 @@ def addTeacherForm(request):
             teacher.user = teacheruser
             teacher.first_password = ""
             teacher.password_changed = True
+<<<<<<< Updated upstream
             teacher.name = encryptionHelper.encrypt(request.POST["name"])
             teacher.coordinator = CoordinatorInCharge.objects.filter(
                 user=request.user
             ).first()
+=======
+            teacher.name = request.POST["name"]
+            teacher.coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
+>>>>>>> Stashed changes
             teacher.save()
             return redirect("accounts:coordinator_dashboard")
         else:
@@ -848,10 +852,14 @@ def teacher_dashboard(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def coordinator_dashboard(request):
-    return render(
-        request,
-        "registration_form/coordinator_dashboard.html",
-    )
+    if request.method == "GET":
+        coordinator = CoordinatorInCharge.objects.get(user=request.user)
+        teachers = coordinator.teacherincharge_set.all()
+        return render(
+            request,
+            "registration_form/coordinator_dashboard.html",
+            {"teachers": teachers}
+        )
 
 
 def createTempDict(postData):
