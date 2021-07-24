@@ -1,7 +1,25 @@
-from django.http import HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
 from .models import *
 from django.shortcuts import redirect
+from django.contrib.auth import logout
+
+
+def is_student(user):
+    return user.groups.filter(name="Students").exists()
+
+
+def is_parent(user):
+    return user.groups.filter(name="Parents").exists()
+
+
+def is_parent_or_student(user):
+    return (
+        user.groups.filter(name="Parents").exists()
+        or user.groups.filter(name="Studnets").exists()
+    )
+
+
+def is_teacher(user):
+    return user.groups.filter(name="Teachers").exists()
 
 
 def isActive(moduleType, userType):
@@ -37,3 +55,24 @@ def isActive(moduleType, userType):
         return wrap
 
     return decorator
+
+
+def redirect_to_dashboard(func):
+    def logic(request):
+        def my_redirect(request):
+            if is_teacher(request.user):
+                return redirect("accounts:teacher_dashboard")
+            elif is_parent(request.user):
+                return redirect("accounts:parent_dashboard")
+            elif is_student(request.user):
+                return redirect("accounts:student_dashboard")
+            else:
+                logout(request)
+                return redirect("accounts:loginlink")
+
+        if request.user.get_username() != "":
+            return my_redirect(request)
+        else:
+            return func(request)
+
+    return logic
