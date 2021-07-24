@@ -8,10 +8,7 @@ from bootstrap_datepicker_plus import DatePickerInput
 import datetime
 from .models import ParentsInfo, StudentsInfo, ModuleOne, FirstModule, Activity, TeacherInCharge
 from django.core.validators import RegexValidator
-<<<<<<< HEAD
 from crispy_forms.helper import FormHelper
-=======
->>>>>>> d7d9e021a04c67aa7e0520c15449f483ae499679
 
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
