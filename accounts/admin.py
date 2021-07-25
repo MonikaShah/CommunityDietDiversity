@@ -1,14 +1,22 @@
-from django.contrib import admin
+from django.contrib import admin, auth
+from .models import (
+    TeacherInCharge,
+    School,
+    CoordinatorInCharge,
+)
 
-from .models import ParentsInfo, StudentsInfo, TeacherInCharge, State, City,School,CoordinatorInCharge
+
+class AccountsUserCustomization(admin.ModelAdmin):
+    fields = ["username", "first_name", "last_name", "email", "password", "groups"]
 
 
-admin.site.register(ParentsInfo)
-admin.site.register(StudentsInfo)
-admin.site.register(TeacherInCharge)
-admin.site.register(CoordinatorInCharge)
-admin.site.register(State)
-admin.site.register(City)
-admin.site.register(School)
+class AccountsAdminArea(admin.AdminSite):
+    site_header = "Accounts Admin Area"
 
-# Register your models here.
+
+accounts_admin_area = AccountsAdminArea(name="accounts_admin")
+
+accounts_admin_area.register(auth.models.User, AccountsUserCustomization)
+accounts_admin_area.register(School)
+accounts_admin_area.register(CoordinatorInCharge)
+accounts_admin_area.register(TeacherInCharge)

@@ -33,9 +33,10 @@
                     <br>
                     {{form | crispy }}
                     <input type="submit" value="Login" class="mt-4 btn btn-primary">
-                    <a href="{% url 'accounts:parent_consent'  %}" class=" mt-4 btn btn-secondary">Parent
+                    <a href="{% url 'accounts:parent_consent'  %}" class=" mt-4 btn btn-success">Parent
                         not already registered? Sign up</a>
                     <a href="{% url 'accounts:forgot_password' %}" class="mt-4 btn btn-danger">Forgot Password</a>
+                    <a href="../admin/" class="mt-4 btn btn-warning">Admin Login</a>
                 </form>
             </div>
         </div>

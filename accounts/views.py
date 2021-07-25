@@ -39,6 +39,8 @@ def consent(request):
         form = ConsentForm()
         return render(request, "registration_form/consent.html", {"form": form})
 
+def root(request):
+    return redirect("accounts:loginlink")
 
 @redirect_to_dashboard
 def parents_info(request):

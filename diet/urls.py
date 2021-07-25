@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponseRedirect
+from accounts.admin import accounts_admin_area
 
 urlpatterns = [
     path("", lambda r: HttpResponseRedirect("account/")),
     path("account/", include("accounts.urls")),
     path("admin/", admin.site.urls),
+    path("account/admin/", accounts_admin_area.urls),
 ]
