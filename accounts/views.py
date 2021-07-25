@@ -254,15 +254,10 @@ def addTeacherForm(request):
             teacher.user = teacheruser
             teacher.first_password = ""
             teacher.password_changed = True
-<<<<<<< Updated upstream
-            teacher.name = encryptionHelper.encrypt(request.POST["name"])
+            teacher.name = request.POST["name"]
             teacher.coordinator = CoordinatorInCharge.objects.filter(
                 user=request.user
             ).first()
-=======
-            teacher.name = request.POST["name"]
-            teacher.coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
->>>>>>> Stashed changes
             teacher.save()
             return redirect("accounts:coordinator_dashboard")
         else:
@@ -858,7 +853,7 @@ def coordinator_dashboard(request):
         return render(
             request,
             "registration_form/coordinator_dashboard.html",
-            {"teachers": teachers}
+            {"teachers": teachers},
         )
 
 
