@@ -76,6 +76,10 @@ body {
     .top h5 {
         font-size: 0.9rem;
     }
+    .filebtn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
 }
 
 @media only screen and (max-width:400px){

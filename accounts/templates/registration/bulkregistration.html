@@ -50,12 +50,12 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <form action="{% url 'accounts:get_template'%}">
-                                    <input type="submit" class="btn btn-primary" value="Download Template">
+                                    <input type="submit" class="btn btn-primary btnsmall filebtn" value="Download Template">
                                 </form>
                             </div>
                             <div class="col-md-6">
                                 <form action="{% url 'accounts:download_data'%}">
-                                    <input type="submit" class="btn btn-secondary" value="Download Student Data">
+                                    <input type="submit" class="btn btn-secondary btnsmall filebtn" value="Download Student Data">
                                 </form>
                             </div>
                         </div>
@@ -65,8 +65,8 @@
                                     {% csrf_token %}
                                     <input type="file" title="Upload excel file" name="excel_file"
                                         style="border: 1px solid black; padding: 5px;" required="required"
-                                        accept=".xlsx">
-                                    <input type="submit" class="btn btn-success" value="Upload">
+                                        accept=".xlsx" class="filebtn">
+                                    <input type="submit" class="btn btn-success btnsmall filebtn" value="Upload">
                                 </form>
                                 <br><br>
                                 <p class="text-danger fw-bold">NOTE:</p>
