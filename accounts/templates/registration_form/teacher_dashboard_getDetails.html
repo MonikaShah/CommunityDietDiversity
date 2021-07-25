@@ -21,15 +21,17 @@
 
 {%block content%}
 
-{% if not open %}
-<h5>Form : {{result.0}} &nbsp&nbsp&nbsp&nbsp Start Date: {{result.1}} &nbsp&nbsp&nbsp&nbsp End Date: {{result.2}}
-  &nbsp&nbsp&nbsp&nbsp Type: {{result.3}}</h5>
 
-{% else %}
-<h5>Form : {{result.0}} &nbsp&nbsp&nbsp&nbsp Start Date: {{result.1}} &nbsp&nbsp&nbsp&nbsp End Date: Ongoing
-  &nbsp&nbsp&nbsp&nbsp Type: {{result.2}}</h5>
-
-{% endif %}
+<div class="d-flex justify-content-around top">
+  <h5><b>Form: </b>{{result.0}}</h5>
+  <h5><b>Start Date: </b>{{result.1}}</h5>
+  {% if not open %}
+  <h5><b>End Date: </b>{{result.2}}</h5>
+  {% else %}
+  <h5><b>End Date: </b>Ongoing</h5>
+  {% endif %}
+  <h5><b>Type: </b>{{result.3}}</h5>  
+</div>
 
 <table class="table text-center">
   <thead>

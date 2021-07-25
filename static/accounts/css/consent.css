@@ -64,13 +64,18 @@ body {
         width: 100%;
         margin: auto;
     }
-    .manage {
+    .manage, {
         flex-direction: column;
     }
     .manage>div {
         margin-bottom: 1rem;
     }
-
+    .top {
+        flex-direction: column;
+    }
+    .top h5 {
+        font-size: 0.9rem;
+    }
 }
 
 @media only screen and (max-width:400px){
