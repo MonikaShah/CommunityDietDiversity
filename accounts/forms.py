@@ -18,7 +18,10 @@ class ConsentForm(forms.Form):
 
 class ParentsInfoForm(ModelForm):
     email = forms.EmailField()
-    name = forms.CharField()
+    alphanumeric = RegexValidator(
+        r"^[a-zA-Z\' ]*$", "No Numeric and Special characters are allowed."
+    )
+    name = forms.CharField(max_length=500, validators=[alphanumeric])
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
@@ -44,12 +47,15 @@ class ParentsInfoForm(ModelForm):
 
     def clean(self):
         super(ParentsInfoForm, self).clean()
-        for field in self.fields:
-            if not self.cleaned_data[field]:
-                #   self.add_error(field,'Required')
-                raise ValidationError("Required")
-        return self.cleaned_data
+        name = self.cleaned_data.get("name")
+        if not name:
+            self.add_error("name", "Name is a required Field")
+        # for field in self.fields:
+        #     if not self.cleaned_data[field]:
+        #         #   self.add_error(field,'Required')
+        #         raise ValidationError("Required")
 
+        return self.cleaned_data
 
 class StudentsInfoForm(ModelForm):
     alphanumeric = RegexValidator(

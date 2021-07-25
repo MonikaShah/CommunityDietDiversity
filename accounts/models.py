@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from shared.encryption import EncryptionHelper
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.validators import validate_email
+
 
 # Create your models here.
 # class myValidate:
@@ -77,7 +77,7 @@ class School(models.Model):
 
 class ParentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.BinaryField(max_length=500, validators=[validate_email])
+    email = models.BinaryField(max_length=500)
     consent = models.BooleanField(default=True)
     name = models.BinaryField(max_length=500)
     gender = models.CharField(max_length=255)
@@ -87,7 +87,7 @@ class ParentsInfo(models.Model):
     edu = models.ForeignKey(Education, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
-    pincode = models.IntegerField()
+    pincode = models.IntegerField(validators=[MinValueValidator(100000), MaxValueValidator(999999)])
     no_of_family_members = models.IntegerField(validators=[MinValueValidator(2)])
     type_of_family = models.ForeignKey(FamilyType, on_delete=models.CASCADE)
     religion = models.ForeignKey(ReligiousBelief, on_delete=models.CASCADE)
