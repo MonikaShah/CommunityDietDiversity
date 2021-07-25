@@ -205,7 +205,7 @@ class Activity(models.Model):
     pre = models.BooleanField(null=True)
     draft = models.BooleanField()
     weight = models.FloatField(null=True, default=None, validators=[MinValueValidator(0)])
-    height = models.FloatField(null=True, default=None, validators=[MinValueValidator(0)])
+    height = models.FloatField(null=True, default=None, validators=[MinValueValidator(0), MaxValueValidator(214)])
     waist = models.FloatField(null=True, default=None, validators=[MinValueValidator(0)])
     hip = models.FloatField(null=True, default=None, validators=[MinValueValidator(0)])
     submission_timestamp = models.DateTimeField(null=True)

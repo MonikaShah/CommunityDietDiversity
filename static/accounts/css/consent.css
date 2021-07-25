@@ -52,6 +52,12 @@ body {
     width: 29%;
 }
 
+@media only screen and (max-width:600px){
+    .activityImg {
+        width: 100%;
+    }
+}
+
 @media only screen and (max-width:400px){
     .btnsmall{
         padding:3px;
@@ -65,6 +71,7 @@ body {
         margin: auto;
     }
 }
+
 #msform {
         text-align: left;
         position: relative;

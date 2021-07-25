@@ -22,41 +22,41 @@
 {% endblock %}
 
 {% block content %}
-<div class="container ml-2 moduleform">
-    <div class="card mt-3 pl-2 pb-3">
+<div class="container moduleform">
+    <div class="card mt-3" style="padding:1rem 3rem">
         <div class="row">
             <h2 class="mb-3 text-center">{{formPre}} Activity</h2>
             <div class="col-md-12">
                 <form action="" method="POST">
                     {% csrf_token %}
-                    <div class="row">
+                    <div class="row correctlabel">
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">1. {{form.weight.label_tag}}</p>
+                            <p class="fw-bold mb-2">1. {{form.weight.label_tag}}</p>
                             {{form.weight|as_crispy_field}}
                         </div>
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">2. {{form.height.label_tag}}</p>
+                            <p class="fw-bold mb-2">2. {{form.height.label_tag}}</p>
                             {{form.height|as_crispy_field}}
                         </div>
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">3. {{form.waist.label_tag}}</p>
-                            <img src="/static/accounts/img/waist.jpg">
-                            <br><br>
+                            <p class="fw-bold mb-2">3. {{form.waist.label_tag}}</p>
+                            <center><img class="activityImg" src="/static/accounts/img/waist.jpg"></center>
+                            <br>
                             {{form.waist|as_crispy_field}}
                         </div>
                         <div class="col-md-12 mb-3">
-                            <p class="fw-bold mb-0">4. {{form.hip.label_tag}}</p>
-                            <img src="/static/accounts/img/waist.jpg">
-                            <br><br>
+                            <p class="fw-bold mb-2">4. {{form.hip.label_tag}}</p>
+                            <center><img class="activityImg" src="/static/accounts/img/waist.jpg"></center>
+                            <br>
                             {{form.hip|as_crispy_field}}
                         </div>
                         <div class="d-flex justify-content-around">
                             <div>
-                                <input type="submit" class="btn btn-warning " value="Save draft"
+                                <input type="submit" class="btn btn-warning btnsmall" value="Save draft"
                                     formaction="{% url 'accounts:activitydraft' %}">
                             </div>
                             <div>
-                                <input type="submit" class="btn btn-primary" value="Submit">
+                                <input type="submit" class="btn btn-primary btnsmall" value="Submit">
                             </div>
                         </div>
                     </div>
