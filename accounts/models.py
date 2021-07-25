@@ -103,7 +103,6 @@ class CoordinatorInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    createdAt=models.DateTimeField()
 
     def __str__(self):
         return self.name

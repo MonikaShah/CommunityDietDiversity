@@ -7,7 +7,7 @@ from django.views.generic.base import TemplateView
 app_name = "accounts"
 
 urlpatterns = [
-    path("", views.loginU, name="loginu"),
+    path("", views.root, name="loginu"),
     # path('submit',views.show),
     # path('get/',views.get),
     # path('getExcel/',views.getExcel),
