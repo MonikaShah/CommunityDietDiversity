@@ -1923,6 +1923,7 @@ def activity(request, user=None):
                 teacher=student.teacher,
                 open=True,
             ).start_timestamp
+            activityDraft(request)
             draftForm = Activity.objects.get(
                 student=StudentsInfo.objects.get(user=user),
                 submission_timestamp__gte=startdate,
