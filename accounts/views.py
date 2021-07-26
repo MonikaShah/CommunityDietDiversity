@@ -1509,7 +1509,6 @@ def manageForms(request):
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 def getFormDetails(request, id):
     session = FormDetails.objects.get(pk=id)
-    print(session)
     teacher = session.teacher
     total_students = teacher.studentsinfo_set.all()
 
@@ -1552,7 +1551,7 @@ def getFormDetails(request, id):
                     temp.append(encryptionHelper.decrypt(student.name))
                     temp.append("-")
                     not_filled_students.append(temp)
-            elif Activity.objects.filter(
+            if Activity.objects.filter(
                 student=student,
                 submission_timestamp__gte=session.start_timestamp,
                 submission_timestamp__lte=session.end_timestamp,
@@ -1596,7 +1595,7 @@ def getFormDetails(request, id):
                     temp.append(encryptionHelper.decrypt(student.name))
                     temp.append("-")
                     not_filled_students.append(temp)
-            elif Activity.objects.filter(
+            if Activity.objects.filter(
                 student=student, submission_timestamp__gte=session.start_timestamp
             ).exists():
                 draftForm = Activity.objects.filter(
