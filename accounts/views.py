@@ -921,7 +921,7 @@ def draft(request):
             form = ModuleOne(**temp)
             form.student = StudentsInfo.objects.get(user=user)
             form.draft = True
-            formType = getFormType("moduleOne")
+            formType = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
             form.pre = 1 if formType == "PreTest" else 0
             form.submission_timestamp = datetime.datetime.now()
             form.save()
@@ -936,10 +936,13 @@ def draft(request):
     return redirect(request.META.get("HTTP_REFERER"))
 
 
-def getFormType(moduleType):
+def getFormType(moduleType, teacher):
     module = Form.objects.get(name=moduleType)
-    formType = FormDetails.objects.filter(form=module, open=True).first()
-    return "PreTest" if formType.pre else "PostTest"
+    formType = FormDetails.objects.filter(form=module, open=True, teacher=teacher).first()
+    if formType.pre:
+        return "PreTest"
+    else:
+        return "PostTest"
 
 
 @login_required(login_url="accounts:loginlink")
@@ -978,7 +981,7 @@ def moduleOne(request, user=None):
                             temp[name] = getattr(draftForm, name)
 
                 form = ModuleOneForm(temp)
-                formPre = getFormType("moduleOne")
+                formPre = getFormType("moduleOne", student.teacher)
                 return render(
                     request,
                     "registration_form/module_one.html",
@@ -990,7 +993,7 @@ def moduleOne(request, user=None):
         # new form
         else:
             form = ModuleOneForm()
-            formPre = getFormType("moduleOne")
+            formPre = getFormType("moduleOne", student.teacher)
             return render(
                 request,
                 "registration_form/module_one.html",
@@ -1014,7 +1017,7 @@ def moduleOne(request, user=None):
                 form = ModuleOne(**temp)
                 form.student = StudentsInfo.objects.get(user=user)
                 form.draft = True
-                formType = getFormType("moduleOne")
+                formType = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
                 form.pre = 1 if formType == "PreTest" else 0
                 form.submission_timestamp = datetime.datetime.now()
                 form.save()
@@ -1028,7 +1031,7 @@ def moduleOne(request, user=None):
                 )
 
         else:
-            formPre = getFormType("moduleOne")
+            formPre = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
             return render(
                 request,
                 "registration_form/module_one.html",
@@ -1064,7 +1067,7 @@ def moduleOne2(request, user=None):
                         temp[name] = getattr(draftForm, name) or None
 
                 form = ModuleOneForm2(temp)
-                formPre = getFormType("moduleOne")
+                formPre = getFormType("moduleOne", student.teacher)
                 return render(
                     request,
                     "registration_form/module_one2.html",
@@ -1076,7 +1079,7 @@ def moduleOne2(request, user=None):
         # new form
         else:
             form = ModuleOneForm2()
-            formPre = getFormType("moduleOne")
+            formPre = getFormType("moduleOne", student.teacher)
             return render(
                 request,
                 "registration_form/module_one2.html",
@@ -1102,7 +1105,7 @@ def moduleOne2(request, user=None):
                     id=StudentsInfo.objects.get(user=user).id,
                 )
         else:
-            formPre = getFormType("moduleOne")
+            formPre = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
             return render(
                 request,
                 "registration_form/module_one2.html",
@@ -1137,7 +1140,7 @@ def moduleOne3(request, user=None):
                     if name in mod.fields:
                         temp[name] = getattr(draftForm, name) or None
                 form = ModuleOneForm3(temp)
-                formPre = getFormType("moduleOne")
+                formPre = getFormType("moduleOne", student.teacher)
                 return render(
                     request,
                     "registration_form/module_one3.html",
@@ -1148,7 +1151,7 @@ def moduleOne3(request, user=None):
         # new form
         else:
             form = ModuleOneForm3()
-            formPre = getFormType("moduleOne")
+            formPre = getFormType("moduleOne", student.teacher)
             return render(
                 request,
                 "registration_form/module_one3.html",
@@ -1195,7 +1198,7 @@ def moduleOne3(request, user=None):
                     return redirect("accounts:parent_dashboard")
         # invalid form
         else:
-            formPre = getFormType("moduleOne")
+            formPre = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
             return render(
                 request,
                 "registration_form/module_one3.html",
@@ -1889,7 +1892,7 @@ def activity(request, user=None):
                     if name in mod.fields:
                         temp[name] = getattr(draftForm, name) or None
                 form = ActivityForm(temp)
-                formPre = getFormType("activity")
+                formPre = getFormType("activity", student.teacher)
                 return render(
                     request,
                     "registration_form/activity.html",
@@ -1900,7 +1903,7 @@ def activity(request, user=None):
         # new form
         else:
             form = ActivityForm()
-            formPre = getFormType("activity")
+            formPre = getFormType("activity", student.teacher)
             return render(
                 request,
                 "registration_form/activity.html",
@@ -1948,7 +1951,7 @@ def activity(request, user=None):
                 return redirect("accounts:parent_dashboard")
         # invalid form
         else:
-            formPre = getFormType("activity")
+            formPre = getFormType("activity", StudentsInfo.objects.get(user=user).teacher)
             return render(
                 request,
                 "registration_form/activity.html",
@@ -1974,7 +1977,7 @@ def activityDraft(request):
         form = Activity(**temp)
         form.student = StudentsInfo.objects.get(user=user)
         form.draft = True
-        formType = getFormType("activity")
+        formType = getFormType("activity", StudentsInfo.objects.get(user=user).teacher)
         form.pre = 1 if formType == "PreTest" else 0
         form.submission_timestamp = datetime.datetime.now()
         if form.waist == "":
