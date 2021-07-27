@@ -1,4 +1,5 @@
-from django.contrib import admin, auth
+from django.contrib import auth, admin
+from django.contrib.auth.admin import UserAdmin
 from .models import (
     TeacherInCharge,
     School,
@@ -6,8 +7,21 @@ from .models import (
 )
 
 
-class AccountsUserCustomization(admin.ModelAdmin):
-    fields = ["username", "first_name", "last_name", "email", "password", "groups"]
+class AccountsUserCustomization(UserAdmin):
+    fieldsets = (
+        (
+            "Details",
+            {
+                "fields": (
+                    "username",
+                    "password",
+                    "first_name",
+                    "last_name",
+                    "groups",
+                )
+            },
+        ),
+    )
 
 
 class AccountsAdminArea(admin.AdminSite):
