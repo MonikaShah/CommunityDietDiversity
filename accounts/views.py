@@ -188,7 +188,9 @@ def dashboard(request):
             print(student.name)
             student.name = helper.decrypt(student.name)
         return render(
-            request, "registration_form/dashboard.html", {"students": students}
+            request,
+            "registration_form/dashboard.html",
+            {"students": students, "page_type": "parent_dashboard"},
         )
 
 
@@ -277,7 +279,11 @@ def addTeacherForm(request):
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 def bulkRegister(request):
     if request.method == "GET":
-        return render(request, "registration/bulkregistration.html")
+        return render(
+            request,
+            "registration/bulkregistration.html",
+            {"page_type": "bulk_register"},
+        )
     else:
         excel_file = request.FILES["excel_file"]
 
@@ -761,7 +767,11 @@ def downloadData(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_student, login_url="accounts:forbidden")
 def student_dashboard(request):
-    return render(request, "registration_form/student_dashboard.html")
+    return render(
+        request,
+        "registration_form/student_dashboard.html",
+        {"page_type": "student_dashboard"},
+    )
 
 
 @login_required(login_url="accounts:loginlink")
@@ -845,7 +855,7 @@ def teacher_dashboard(request):
     return render(
         request,
         "registration_form/teacher_dashboard.html",
-        {"results": results, "results2": results2},
+        {"results": results, "results2": results2, "page_type": "teacher_dashboard"},
     )
 
 
@@ -992,7 +1002,11 @@ def moduleOne(request, user=None):
                 return render(
                     request,
                     "registration_form/module_one.html",
-                    {"form": form, "formPre": formPre},
+                    {
+                        "form": form,
+                        "formPre": formPre,
+                        "page_type": "student_module_one",
+                    },
                 )
             else:
                 return redirect("../already_filled")
@@ -1004,7 +1018,7 @@ def moduleOne(request, user=None):
             return render(
                 request,
                 "registration_form/module_one.html",
-                {"form": form, "formPre": formPre},
+                {"form": form, "formPre": formPre, "page_type": "student_module_one"},
             )
 
     # POST
@@ -1046,7 +1060,7 @@ def moduleOne(request, user=None):
             return render(
                 request,
                 "registration_form/module_one.html",
-                {"form": form, "formPre": formPre},
+                {"form": form, "formPre": formPre, "page_type": "student_module_one"},
             )
 
 
@@ -1082,7 +1096,11 @@ def moduleOne2(request, user=None):
                 return render(
                     request,
                     "registration_form/module_one2.html",
-                    {"form": form, "formPre": formPre},
+                    {
+                        "form": form,
+                        "formPre": formPre,
+                        "page_type": "student_module_one",
+                    },
                 )
             else:
                 return redirect("../already_filled")
@@ -1094,7 +1112,7 @@ def moduleOne2(request, user=None):
             return render(
                 request,
                 "registration_form/module_one2.html",
-                {"form": form, "formPre": formPre},
+                {"form": form, "formPre": formPre, "page_type": "student_module_one"},
             )
     # POST
     else:
@@ -1122,7 +1140,7 @@ def moduleOne2(request, user=None):
             return render(
                 request,
                 "registration_form/module_one2.html",
-                {"form": form, "formPre": "formPre"},
+                {"form": form, "formPre": "formPre", "page_type": "student_module_one"},
             )
 
 
@@ -1157,7 +1175,11 @@ def moduleOne3(request, user=None):
                 return render(
                     request,
                     "registration_form/module_one3.html",
-                    {"form": form, "formPre": formPre},
+                    {
+                        "form": form,
+                        "formPre": formPre,
+                        "page_type": "student_module_one",
+                    },
                 )
             else:
                 return redirect("../already_filled")
@@ -1168,7 +1190,7 @@ def moduleOne3(request, user=None):
             return render(
                 request,
                 "registration_form/module_one3.html",
-                {"form": form, "formPre": formPre},
+                {"form": form, "formPre": formPre, "page_type": "student_module_one"},
             )
     # POST
     else:
@@ -1217,7 +1239,7 @@ def moduleOne3(request, user=None):
             return render(
                 request,
                 "registration_form/module_one3.html",
-                {"form": form, "formPre": formPre},
+                {"form": form, "formPre": formPre, "page_type": "student_module_one"},
             )
 
 
@@ -1327,6 +1349,7 @@ def manageForms(request):
                 "moduleOne": moduleOne,
                 "moduleTwo": moduleTwo,
                 "moduleThree": moduleThree,
+                "page_type": "manage_forms",
             },
         )
     else:
@@ -1912,7 +1935,7 @@ def activity(request, user=None):
                 return render(
                     request,
                     "registration_form/activity.html",
-                    {"form": form, "formPre": formPre},
+                    {"form": form, "formPre": formPre, "page_type": "student_activity"},
                 )
             else:
                 return redirect("../already_filled")
@@ -1923,7 +1946,7 @@ def activity(request, user=None):
             return render(
                 request,
                 "registration_form/activity.html",
-                {"form": form, "formPre": formPre},
+                {"form": form, "formPre": formPre, "page_type": "student_activity"},
             )
     # POST
     else:
@@ -1973,7 +1996,7 @@ def activity(request, user=None):
             return render(
                 request,
                 "registration_form/activity.html",
-                {"form": form, "formPre": formPre},
+                {"form": form, "formPre": formPre, "page_type": "student_activity"},
             )
 
 

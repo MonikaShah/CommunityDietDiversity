@@ -1,3 +1,5 @@
+{% load sidebar_tags %}
+
 <ul class="navbar-nav sidebar bgPurple sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
@@ -9,69 +11,90 @@
     </a>
 
     <!-- Divider -->
-    <hr class="sidebar-divider my-0">
+    <hr class="sidebar-divider" style="color:white; margin:10px;">
 
-    <!-- Nav Item - Dashboard -->
+    {% if request.user|has_group:"Teachers" %}
+        {% if page_type == "teacher_dashboard" %}
+        <li class="nav-item active">
+        {% else %}
+        <li class="nav-item">
+        {% endif %}
+            <a class="nav-link" href="{% url 'accounts:teacher_dashboard' %}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
 
+        {% if page_type == "bulk_register" %}
+        <li class="nav-item active">
+        {% else %}
+        <li class="nav-item">
+        {% endif %}
+            <a class="nav-link" href="{% url 'accounts:bulk_register'%}">
+                <i class="fas fa-fw fa-users"></i>
+                <span>Bulk Register</span>
+            </a>
+        </li>
 
-    <!-- Divider -->
-    {% if user.groups.all.0.name == "Teachers"%}
-    <!-- Nav Item - Charts -->
-
-    <li class="nav-item active">
-        <a class="nav-link" href="{% url 'accounts:teacher_dashboard' %}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
-    </li>
-
-
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'accounts:bulk_register'%}">
-            <i class="fas fa-fw fa-users"></i>
-            <span>Bulk Register</span></a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'accounts:manage_forms'%}">
-            <i class="fas fa-fw fa-book"></i>
-            <span>Manage Forms</span></a>
-    </li>
-    {% endif %}
-
-
-    {% if user.groups.all.0.name == "Students"%}
-    <!-- Nav Item - Charts -->
-    <li class="nav-item active">
-        <a class="nav-link" href="{% url 'accounts:student_dashboard'%}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
-    </li>
+        {% if page_type == "manage_forms" %}
+        <li class="nav-item active">
+        {% else %}
+        <li class="nav-item">
+        {% endif %}
+            <a class="nav-link" href="{% url 'accounts:manage_forms'%}">
+                <i class="fas fa-fw fa-book"></i>
+                <span>Manage Forms</span>
+            </a>
+        </li>
 
 
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'accounts:module_one'%}">
-            <i class="fas fa-fw fa-pen"></i>
-            <span>Module One</span></a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'accounts:activity'%}">
-            <i class="fas fa-fw fa-pen"></i>
-            <span>Activity</span></a>
-    </li>
-    {% endif %}
-    <hr class="sidebar-divider">
+    {% elif request.user|has_group:"Parents" %}
+        {% if page_type == "parent_dashboard" %}
+        <li class="nav-item active">
+        {% else %}
+        <li class="nav-item">
+        {% endif %}
+            <a class="nav-link" href="{% url 'accounts:parent_dashboard'%}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
 
 
-    {% if user.groups.all.0.name == "Parents"%}
-    <!-- Nav Item - Charts -->
-    <li class="nav-item active">
-        <a class="nav-link" href="{% url 'accounts:parent_dashboard'%}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
-    </li>
+    {% elif request.user|has_group:"Students" %}
+        {% if page_type == "student_dashboard" %}
+        <li class="nav-item active">
+        {% else %}
+        <li class="nav-item">
+        {% endif %}
+            <a class="nav-link" href="{% url 'accounts:student_dashboard'%}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
 
+        {% if page_type == "student_module_one" %}
+        <li class="nav-item active">
+        {% else %}
+        <li class="nav-item">
+        {% endif %}
+            <a class="nav-link" href="{% url 'accounts:module_one'%}">
+                <i class="fas fa-fw fa-pen"></i>
+                <span>Module One</span>
+            </a>
+        </li>
 
+        {% if page_type == "student_activity" %}
+        <li class="nav-item active">
+        {% else %}
+        <li class="nav-item">
+        {% endif %}
+            <a class="nav-link" href="{% url 'accounts:activity'%}">
+                <i class="fas fa-fw fa-pen"></i>
+                <span>Activity</span>
+            </a>
+        </li>
+        <hr class="sidebar-divider">
 
     {% endif %}
     <!-- Heading -->
