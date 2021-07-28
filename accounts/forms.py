@@ -47,14 +47,13 @@ class ParentsInfoForm(ModelForm):
 
     def clean(self):
         super(ParentsInfoForm, self).clean()
-        name = self.cleaned_data.get("name")
-        if not name:
-            self.add_error("name", "Name is a required Field")
+        # name = self.cleaned_data.get("name")
+        # if not name :
+        #      self.add_error("name", "Name is a required Field")
         # for field in self.fields:
         #     if not self.cleaned_data[field]:
-        #         #   self.add_error(field,'Required')
+        #          #  self.add_error(field,'Required')
         #         raise ValidationError("Required")
-
         return self.cleaned_data
 
 class StudentsInfoForm(ModelForm):
@@ -91,9 +90,9 @@ class StudentsInfoForm(ModelForm):
     def clean(self):
         super(StudentsInfoForm, self).clean()
 
-        name = self.cleaned_data.get("name")
-        if not name:
-            self.add_error("name", "Name is a required Field")
+        # name = self.cleaned_data.get("name")
+        # if not name:
+        #     self.add_error("name", "Name is a required Field")
 
         return self.cleaned_data
 
@@ -109,9 +108,9 @@ class TeachersInfoForm(ModelForm):
     def clean(self):
         super(TeachersInfoForm, self).clean()
 
-        name = self.cleaned_data.get("name")
-        if not name:
-            self.add_error("name", "Name is a required Field")
+        # name = self.cleaned_data.get("name")
+        # if not name:
+        #     self.add_error("name", "Name is a required Field")
 
         return self.cleaned_data
 
