@@ -247,6 +247,15 @@ body {
     justify-content: left;
 }
 
+.teacher_info_header{
+    text-align: center;
+    margin: 20px 0;
+}
+
+.teacher_info_header > h3{
+    font-weight: bold;
+}
+
 @media only screen and (max-width:600px) {
     .module_one_images {
         width: 100%;
