@@ -33,14 +33,16 @@ def home(request):
     return render(request, "registration_form/home.html")
 
 
+def root(request):
+    return redirect("accounts:loginlink")
+
+
 @redirect_to_dashboard
 def consent(request):
     if request.method == "GET":
         form = ConsentForm()
         return render(request, "registration_form/consent.html", {"form": form})
 
-def root(request):
-    return redirect("accounts:loginlink")
 
 @redirect_to_dashboard
 def parents_info(request):
@@ -61,8 +63,6 @@ def parents_info(request):
         user_creation_form = UserCreationForm(request.POST)
 
         if form.is_valid() and user_creation_form.is_valid():
-            print(request.POST["state"].strip())
-            print(request.POST["city"].strip())
             request.session["data"] = request.POST
             return redirect("accounts:students_info")
         else:
@@ -152,6 +152,7 @@ def loginU(request):
         password = request.POST["password"]
         grp = request.POST["groups"]
         user = authenticate(request, username=username, password=password)
+        request.session.set_expiry(86400)
         grp_name = Group.objects.get(pk=grp).name
         form = CustomAuthenticationForm(request.POST)
         if user is not None:
@@ -921,7 +922,9 @@ def draft(request):
             form = ModuleOne(**temp)
             form.student = StudentsInfo.objects.get(user=user)
             form.draft = True
-            formType = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
+            formType = getFormType(
+                "moduleOne", StudentsInfo.objects.get(user=user).teacher
+            )
             form.pre = 1 if formType == "PreTest" else 0
             form.submission_timestamp = datetime.datetime.now()
             form.save()
@@ -938,7 +941,9 @@ def draft(request):
 
 def getFormType(moduleType, teacher):
     module = Form.objects.get(name=moduleType)
-    formType = FormDetails.objects.filter(form=module, open=True, teacher=teacher).first()
+    formType = FormDetails.objects.filter(
+        form=module, open=True, teacher=teacher
+    ).first()
     if formType.pre:
         return "PreTest"
     else:
@@ -1017,7 +1022,9 @@ def moduleOne(request, user=None):
                 form = ModuleOne(**temp)
                 form.student = StudentsInfo.objects.get(user=user)
                 form.draft = True
-                formType = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
+                formType = getFormType(
+                    "moduleOne", StudentsInfo.objects.get(user=user).teacher
+                )
                 form.pre = 1 if formType == "PreTest" else 0
                 form.submission_timestamp = datetime.datetime.now()
                 form.save()
@@ -1031,7 +1038,9 @@ def moduleOne(request, user=None):
                 )
 
         else:
-            formPre = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
+            formPre = getFormType(
+                "moduleOne", StudentsInfo.objects.get(user=user).teacher
+            )
             return render(
                 request,
                 "registration_form/module_one.html",
@@ -1105,7 +1114,9 @@ def moduleOne2(request, user=None):
                     id=StudentsInfo.objects.get(user=user).id,
                 )
         else:
-            formPre = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
+            formPre = getFormType(
+                "moduleOne", StudentsInfo.objects.get(user=user).teacher
+            )
             return render(
                 request,
                 "registration_form/module_one2.html",
@@ -1198,7 +1209,9 @@ def moduleOne3(request, user=None):
                     return redirect("accounts:parent_dashboard")
         # invalid form
         else:
-            formPre = getFormType("moduleOne", StudentsInfo.objects.get(user=user).teacher)
+            formPre = getFormType(
+                "moduleOne", StudentsInfo.objects.get(user=user).teacher
+            )
             return render(
                 request,
                 "registration_form/module_one3.html",
@@ -1818,9 +1831,9 @@ def forgot_password(request):
                     except ValidationError as e:
                         form.add_error("password", e)
                 else:
-                    context["error"] = "Invalid Input."
+                    context["error"] = "Invalid Credentials."
             except User.DoesNotExist:
-                context["error"] = "Invalid Input."
+                context["error"] = "Invalid Credentials."
         return render(
             request,
             "registration_form/forgot_password.html",
@@ -1951,7 +1964,9 @@ def activity(request, user=None):
                 return redirect("accounts:parent_dashboard")
         # invalid form
         else:
-            formPre = getFormType("activity", StudentsInfo.objects.get(user=user).teacher)
+            formPre = getFormType(
+                "activity", StudentsInfo.objects.get(user=user).teacher
+            )
             return render(
                 request,
                 "registration_form/activity.html",
