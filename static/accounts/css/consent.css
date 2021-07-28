@@ -31,6 +31,10 @@ body {
     height:100vh;
 }
 
+.forgotpass{
+    text-decoration: none;
+    color:#6441A5;
+}
 .correctlabel label {
     display: inline;
 }
@@ -42,12 +46,25 @@ body {
     background-color: #2b0d52 !important;
     border-color: #6441A5 !important;
 }
+.btn-info{
+    background-color: #035397!important;
+    border-color: #033866 !important;
+    color: white;
+}
+.lightyellowbutton{
+    background-color: #dbe490 !important;
+    border-color: #a4a560 !important;
+    color: rgb(0, 0, 0);
+}
+.greybutton{
+    background-color: #c4c0c0 !important;
+    border-color: #bbb9b9 !important;
+    color: rgb(20, 13, 13);
+}
 .btnsmall{
     padding:7px;
-    font-size: 16px;
-    
+    font-size: 16px; 
 }
-
 .dashCard>div {
     width: 29%;
 }
@@ -59,7 +76,10 @@ body {
     .dashCard {
         flex-direction: column;
     }
-
+    .btnmedium{
+        padding:5px;
+        font-size: 15px; 
+    }
     .dashCard>div {
         width: 100%;
         margin: auto;
@@ -87,12 +107,23 @@ body {
         padding:3px;
         font-size: 12px;
     }
+    .btn-sm{
+        padding:3px;
+        font-size: 12px;
+    }
     .dashCard {
         flex-direction: column;
     }
     .dashCard>div {
         width: 98%;
         margin: auto;
+    }
+    .loginbtn{
+        flex-direction: column;
+    }
+    .btnmedium{
+        padding:4px;
+        font-size: 13px; 
     }
 }
 

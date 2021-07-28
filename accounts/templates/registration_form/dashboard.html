@@ -21,10 +21,10 @@
 
 {%block content%}
 <div class="d-flex justify-content-end">
-    <a href="{% url 'accounts:add_student_form' %}" class="btn btn-primary">Add Student</a>
+    <a href="{% url 'accounts:add_student_form' %}" class="btn btn-info">Add Student</a>
 </div>
 {% for student in students %}
-<div class="card p-3 m-3" style="width: 18rem;">
+<div class="card shadow p-3 m-3" style="width: 18rem;">
     <div class="card-body">
         <h5 class="card-title">{{ student.name }}</h5>
         <a href="{% url 'accounts:parent_dashboard_student' student.id %}" class="btn btn-primary">Edit Form</a>

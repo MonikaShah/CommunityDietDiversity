@@ -34,7 +34,7 @@
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-8">
-        <div class="card" style="margin:5rem auto;">
+        <div class="card shadow" style="margin:5rem auto;">
             {% if messages %}
             {% for message in messages %}
             <div class="alert alert-primary" role="alert">
@@ -50,12 +50,12 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <form action="{% url 'accounts:get_template'%}">
-                                    <input type="submit" class="btn btn-primary btnsmall filebtn" value="Download Template">
+                                    <input type="submit" class="btn btn-info btnmedium filebtn" value="Download Template">
                                 </form>
                             </div>
                             <div class="col-md-6">
                                 <form action="{% url 'accounts:download_data'%}">
-                                    <input type="submit" class="btn btn-secondary btnsmall filebtn" value="Download Student Data">
+                                    <input type="submit" class="btn btn-secondary greybutton btnmedium filebtn" value="Download Student Data">
                                 </form>
                             </div>
                         </div>
@@ -66,7 +66,7 @@
                                     <input type="file" title="Upload excel file" name="excel_file"
                                         style="border: 1px solid black; padding: 5px;" required="required"
                                         accept=".xlsx" class="filebtn">
-                                    <input type="submit" class="btn btn-success btnsmall filebtn" value="Upload">
+                                    <input type="submit" class="btn btn-primary btnmedium filebtn" value="Upload">
                                 </form>
                                 <br><br>
                                 <p class="text-danger fw-bold">NOTE:</p>
