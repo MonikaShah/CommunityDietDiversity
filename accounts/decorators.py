@@ -10,8 +10,10 @@ def is_student(user):
 def is_parent(user):
     return user.groups.filter(name="Parents").exists()
 
+
 def is_coordinator(user):
     return user.groups.filter(name="Coordinators").exists()
+
 
 def is_parent_or_student(user):
     return (
@@ -60,7 +62,7 @@ def isActive(moduleType, userType):
 
 
 def redirect_to_dashboard(func):
-    def logic(request):
+    def logic(request, *args, **kwargs):
         def my_redirect(request):
             if is_teacher(request.user):
                 return redirect("accounts:teacher_dashboard")
@@ -77,6 +79,15 @@ def redirect_to_dashboard(func):
         if request.user.get_username() != "":
             return my_redirect(request)
         else:
-            return func(request)
+            return func(request, *args, **kwargs)
+
+    return logic
+
+
+def registration_data_cleanup(func):
+    def logic(request, *args, **kwargs):
+        if "data" in request.session:
+            del request.session["data"]
+        return func(request, *args, **kwargs)
 
     return logic

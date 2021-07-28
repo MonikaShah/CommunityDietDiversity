@@ -37,6 +37,7 @@ def root(request):
     return redirect("accounts:loginlink")
 
 
+@registration_data_cleanup
 @redirect_to_dashboard
 def consent(request):
     if request.method == "GET":
@@ -142,6 +143,7 @@ def students_info(request):
             )
 
 
+@registration_data_cleanup
 @redirect_to_dashboard
 def loginU(request):
     if request.method == "GET":
@@ -1802,6 +1804,7 @@ def uploadData(request):
             ct.save()
 
 
+@registration_data_cleanup
 @redirect_to_dashboard
 def forgot_password(request):
     if request.method == "GET":
