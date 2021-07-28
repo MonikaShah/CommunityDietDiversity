@@ -68,8 +68,14 @@ body {
 .dashCard>div {
     width: 29%;
 }
+#parentCard>div {
+    width: 25%;
+}
+.bulkCard {
+    margin: 5rem;
+}
 
-@media only screen and (max-width:600px){
+@media only screen and (max-width:768px){
     .activityImg {
         width: 100%;
     }
@@ -81,7 +87,11 @@ body {
         font-size: 15px; 
     }
     .dashCard>div {
-        width: 100%;
+        width: 98%;
+        margin: auto;
+    }
+    #parentCard>div {
+        width: 75%;
         margin: auto;
     }
     .manage {
@@ -100,9 +110,12 @@ body {
         width: 100%;
         margin-bottom: 0.5rem;
     }
+    .bulkCard {
+        margin: 0 auto 1rem auto;
+    }
 }
 
-@media only screen and (max-width:400px){
+@media only screen and (max-width:480px){
     .btnsmall{
         padding:3px;
         font-size: 12px;
@@ -115,6 +128,10 @@ body {
         flex-direction: column;
     }
     .dashCard>div {
+        width: 98%;
+        margin: auto;
+    }
+    #parentCard>div {
         width: 98%;
         margin: auto;
     }

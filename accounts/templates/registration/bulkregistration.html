@@ -31,53 +31,49 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-        <div class="card shadow" style="margin:5rem auto;">
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-primary" role="alert">
-                {{message}}
-            </div>
-            {% endfor %}
-            {% endif %}
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="consent-card">
-                        <h2>Bulk Registration:</h2>
-                        <br>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <form action="{% url 'accounts:get_template'%}">
-                                    <input type="submit" class="btn btn-info btnmedium filebtn" value="Download Template">
-                                </form>
-                            </div>
-                            <div class="col-md-6">
-                                <form action="{% url 'accounts:download_data'%}">
-                                    <input type="submit" class="btn btn-secondary greybutton btnmedium filebtn" value="Download Student Data">
-                                </form>
-                            </div>
+<div class="col-md-8 offset-md-2">
+    <div class="card shadow bulkCard">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-primary" role="alert">
+            {{message}}
+        </div>
+        {% endfor %}
+        {% endif %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="consent-card">
+                    <h2>Bulk Registration:</h2>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form action="{% url 'accounts:get_template'%}">
+                                <input type="submit" class="btn btn-info btnmedium filebtn" value="Download Template">
+                            </form>
                         </div>
-                        <div class="row" style="margin-top:5%">
-                            <div>
-                                <form action="" method="POST" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    <input type="file" title="Upload excel file" name="excel_file"
-                                        style="border: 1px solid black; padding: 5px;" required="required"
-                                        accept=".xlsx" class="filebtn">
-                                    <input type="submit" class="btn btn-primary btnmedium filebtn" value="Upload">
-                                </form>
-                                <br><br>
-                                <p class="text-danger fw-bold">NOTE:</p>
-                                <p class="fst-italic">Remove the sample row before editing the template file</p>
-                                <p class="fst-italic"><span class="text-danger">DO NOT</span> change the column
-                                    order.</p>
-                                <p class="fst-italic">Fill both the Sheets in the template file provided above.</p>
-                            </div>
+                        <div class="col-md-6">
+                            <form action="{% url 'accounts:download_data'%}">
+                                <input type="submit" class="btn btn-secondary greybutton btnmedium filebtn" value="Download Student Data">
+                            </form>
                         </div>
                     </div>
-
+                    <div class="row" style="margin-top:5%">
+                        <div>
+                            <form action="" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="file" title="Upload excel file" name="excel_file"
+                                    style="border: 1px solid black; padding: 5px;" required="required"
+                                    accept=".xlsx" class="filebtn">
+                                <input type="submit" class="btn btn-primary btnmedium filebtn" value="Upload">
+                            </form>
+                            <br><br>
+                            <p class="text-danger fw-bold">NOTE:</p>
+                            <p class="fst-italic">Remove the sample row before editing the template file</p>
+                            <p class="fst-italic"><span class="text-danger">DO NOT</span> change the column
+                                order.</p>
+                            <p class="fst-italic">Fill both the Sheets in the template file provided above.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
