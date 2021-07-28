@@ -145,7 +145,7 @@
                                 {% for radio in form.microgreen_example %}
                                 <div class="mb-3">
                                     <label for="id_microgreen_example_{{ forloop.counter0 }}">
-                                        <img src="{{ radio.choice_label }}">
+                                        <img src="{{ radio.choice_label }}" class="module_one_images">
                                         <br>
                                         {{ radio.tag }}
                                         {{ radio.choice_label|getValue }}

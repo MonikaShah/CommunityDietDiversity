@@ -6,9 +6,17 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
 import datetime
-from .models import ParentsInfo, StudentsInfo, ModuleOne, FirstModule, Activity, TeacherInCharge
+from .models import (
+    ParentsInfo,
+    StudentsInfo,
+    ModuleOne,
+    FirstModule,
+    Activity,
+    TeacherInCharge,
+)
 from django.core.validators import RegexValidator
 from crispy_forms.helper import FormHelper
+
 
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
@@ -56,6 +64,7 @@ class ParentsInfoForm(ModelForm):
         #         raise ValidationError("Required")
         return self.cleaned_data
 
+
 class StudentsInfoForm(ModelForm):
     alphanumeric = RegexValidator(
         r"^[a-zA-Z\' ]*$", "No Numeric and Special characters are allowed."
@@ -96,11 +105,13 @@ class StudentsInfoForm(ModelForm):
 
         return self.cleaned_data
 
+
 class TeachersInfoForm(ModelForm):
     alphanumeric = RegexValidator(
         r"^[a-zA-Z\' ]*$", "No Numeric and Special characters are allowed."
     )
     name = forms.CharField(max_length=500, validators=[alphanumeric])
+
     class Meta:
         model = TeacherInCharge
         fields = ["school"]
@@ -113,6 +124,7 @@ class TeachersInfoForm(ModelForm):
         #     self.add_error("name", "Name is a required Field")
 
         return self.cleaned_data
+
 
 class FirstModuleForm(ModelForm):
     name = forms.CharField()
@@ -426,7 +438,7 @@ class ModuleOneForm2(forms.ModelForm):
         required=False,
     )
     microgreen_example = forms.ChoiceField(
-        label=("Examples of Microgrens?"),
+        label=("Examples of microgreens?"),
         choices=microgreen_example_choices,
         widget=forms.RadioSelect(),
         required=False,
@@ -606,41 +618,34 @@ class forgot_password_form(forms.ModelForm):
 
 
 class change_password_form(forms.ModelForm):
-    old_password = forms.CharField(widget=forms.PasswordInput(),label="Old Password")
-    password = forms.CharField(widget=forms.PasswordInput(),label="New Password")
+    old_password = forms.CharField(widget=forms.PasswordInput(), label="Old Password")
+    password = forms.CharField(widget=forms.PasswordInput(), label="New Password")
+
     class Meta:
         model = User
         fields = ["password"]
 
-class ActivityForm(forms.ModelForm):
 
+class ActivityForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ActivityForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_show_labels = False 
+        self.helper.form_show_labels = False
 
     weight = forms.FloatField(
-        label=(
-            "What is your Weight? (kgs)"
-        ),
+        label=("What is your Weight? (kgs)"),
         required=False,
     )
     height = forms.FloatField(
-        label=(
-            "What is your Height? (cms)"
-        ),
+        label=("What is your Height? (cms)"),
         required=False,
     )
     waist = forms.FloatField(
-        label=(
-            "Please measure your Waist Circumference and write it below. (cms)"
-        ),
+        label=("Please measure your Waist Circumference and write it below. (cms)"),
         required=False,
     )
     hip = forms.FloatField(
-        label=(
-            "Please measure your Hip Circumference (cms) and mention it below."
-        ),
+        label=("Please measure your Hip Circumference (cms) and mention it below."),
         required=False,
     )
 
