@@ -23,9 +23,9 @@
 <div class="d-flex justify-content-end mb-4">
     <a href="{% url 'accounts:add_student_form' %}" class="btn btn-info">Add Student</a>
 </div>
-<div class="d-flex dashCard mb-3 justify-content-around" id="parentCard">
+<div class="d-flex dashCard justify-content-around" id="parentCard">
     {% for student in students %}
-    <div class="card shadow p-3 mb-4">
+    <div class="card shadow p-3">
         <div class="card-body">
             <center>
                 <h5 class="card-title mb-3">{{ student.name }}</h5>

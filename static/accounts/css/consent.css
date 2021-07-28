@@ -67,9 +67,11 @@ body {
 }
 .dashCard>div {
     width: 29%;
+    margin-bottom: 1.5rem!important;
 }
 #parentCard>div {
     width: 25%;
+    margin-bottom: 1.5rem!important;
 }
 .bulkCard {
     margin: 5rem;
@@ -111,7 +113,13 @@ body {
         margin-bottom: 0.5rem;
     }
     .bulkCard {
-        margin: 0 auto 1rem auto;
+        margin: 0 auto;
+    }
+    #parentCard>div:last-child {
+        margin-bottom: 0!important;
+    }
+    .dashCard>div:last-child {
+        margin-bottom: 0!important;
     }
 }
 

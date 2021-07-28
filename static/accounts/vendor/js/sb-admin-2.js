@@ -1,62 +1,51 @@
-(function($) {
-  "use strict"; // Start of use strict
+jQuery(document).ready(function($) {
+  var bsDefaults = {
+          offset: false,
+          overlay: true,
+          width: '80%'
+      },
+      bsMain = $('.bs-offset-main'),
+      bsOverlay = $('.bs-canvas-overlay');
 
-  // Toggle the side navigation
-  $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
-    $("body").toggleClass("sidebar-toggled");
-    $(".sidebar").toggleClass("toggled");
-    if ($(".sidebar").hasClass("toggled")) {
-      $('.sidebar .collapse').collapse('hide');
-    };
+  $('[data-toggle="canvas"][aria-expanded="false"]').on('click', function() {
+      var canvas = $(this).data('target'),
+          opts = $.extend({}, bsDefaults, $(canvas).data()),
+          prop = $(canvas).hasClass('bs-canvas-right') ? 'margin-right' : 'margin-left';
+
+      if (opts.width === '100%')
+          opts.offset = false;
+      
+      $(canvas).css('width', opts.width);
+      if (opts.offset && bsMain.length)
+          bsMain.css(prop, opts.width);
+
+      $(canvas + ' .bs-canvas-close').attr('aria-expanded', "true");
+      $('[data-toggle="canvas"][data-target="' + canvas + '"]').attr('aria-expanded', "true");
+      if (opts.overlay && bsOverlay.length)
+          bsOverlay.addClass('show');
+      return false;
   });
 
-  if ($(window).width() < 480) {
-    $("body").toggleClass("sidebar-toggled");
-    $(".sidebar").toggleClass("toggled");
-    $('.sidebar .collapse').collapse('hide');
-  };
-
-  // Close any open menu accordions when window is resized below 768px
-  $(window).resize(function() {
-    if ($(window).width() < 768) {
-      $('.sidebar .collapse').collapse('hide');
-    };
-    
-    // Toggle the side navigation when window is resized below 480px
-    if ($(window).width() < 480 && !$(".sidebar").hasClass("toggled")) {
-      $("body").addClass("sidebar-toggled");
-      $(".sidebar").addClass("toggled");
-      $('.sidebar .collapse').collapse('hide');
-    };
+  $('.bs-canvas-close, .bs-canvas-overlay').on('click', function() {
+      var canvas, aria;
+      if ($(this).hasClass('bs-canvas-close')) {
+          canvas = $(this).closest('.bs-canvas');
+          aria = $(this).add($('[data-toggle="canvas"][data-target="#' + canvas.attr('id') + '"]'));
+          if (bsMain.length)
+              bsMain.css(($(canvas).hasClass('bs-canvas-right') ? 'margin-right' : 'margin-left'), '');
+      } else {
+          canvas = $('.bs-canvas');
+          aria = $('.bs-canvas-close, [data-toggle="canvas"]');
+          if (bsMain.length)
+              bsMain.css({
+              'margin-left': '',
+              'margin-right': ''
+              });
+      }
+      canvas.css('width', '');
+      aria.attr('aria-expanded', "false");
+      if (bsOverlay.length)
+          bsOverlay.removeClass('show');
+      return false;
   });
-
-  // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
-  $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
-    if ($(window).width() > 768) {
-      var e0 = e.originalEvent,
-        delta = e0.wheelDelta || -e0.detail;
-      this.scrollTop += (delta < 0 ? 1 : -1) * 30;
-      e.preventDefault();
-    }
-  });
-
-  // Scroll to top button appear
-  $(document).on('scroll', function() {
-    var scrollDistance = $(this).scrollTop();
-    if (scrollDistance > 100) {
-      $('.scroll-to-top').fadeIn();
-    } else {
-      $('.scroll-to-top').fadeOut();
-    }
-  });
-
-  // Smooth scrolling using jQuery easing
-  $(document).on('click', 'a.scroll-to-top', function(e) {
-    var $anchor = $(this);
-    $('html, body').stop().animate({
-      scrollTop: ($($anchor.attr('href')).offset().top)
-    }, 1000, 'easeInOutExpo');
-    e.preventDefault();
-  });
-
-})(jQuery); // End of use strict
+});
