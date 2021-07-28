@@ -1549,117 +1549,106 @@ def manageForms(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 def getFormDetails(request, id):
-    session = FormDetails.objects.get(pk=id)
-    teacher = session.teacher
+    form = FormDetails.objects.get(pk=id)
+    teacher = form.teacher
     total_students = teacher.studentsinfo_set.all()
+    encryptionHelper = EncryptionHelper()
 
     filled_students = []
     not_filled_students = []
-    encryptionHelper = EncryptionHelper()
-    open = True
-    if not session.open:
-        open = False
-        temp_list = [session.form, session.start_timestamp, session.end_timestamp]
+    if not form.open:
+        form_open = False
+        temp_list = [form.form, form.start_timestamp, form.end_timestamp]
     else:
-        temp_list = [session.form, session.start_timestamp]
+        form_open = True
+        temp_list = [form.form, form.start_timestamp]
 
-    if session.pre:
+    if form.pre:
         temp_list.append("Pre Test")
     else:
         temp_list.append("Post Test")
-    count = 0
-    for student in total_students:
-        temp = []
-        if not session.open:
-            if ModuleOne.objects.filter(
-                student=student,
-                submission_timestamp__gte=session.start_timestamp,
-                submission_timestamp__lte=session.end_timestamp,
-            ).exists():
-                draftForm = ModuleOne.objects.filter(
-                    student=student,
-                    submission_timestamp__gte=session.start_timestamp,
-                    submission_timestamp__lte=session.end_timestamp,
-                ).first()
 
-                if not draftForm.draft:
-                    count += 1
-                    temp.append(encryptionHelper.decrypt(student.name))
-                    temp.append(draftForm.submission_timestamp)
-                    filled_students.append(temp)
+    if form.form.name == "moduleOne":
+        for student in total_students:
+            temp = []
+            if form.open:
+                if ModuleOne.objects.filter(
+                    student=student, submission_timestamp__gte=form.start_timestamp
+                ).exists():
+                    draftForm = ModuleOne.objects.filter(
+                        student=student, submission_timestamp__gte=form.start_timestamp
+                    ).first()
 
+                    if draftForm.draft:
+                        temp.append(encryptionHelper.decrypt(student.name))
+                        temp.append("-")
+                        not_filled_students.append(temp)
+                    else:
+                        temp.append(encryptionHelper.decrypt(student.name))
+                        temp.append(draftForm.submission_timestamp)
+                        filled_students.append(temp)
                 else:
                     temp.append(encryptionHelper.decrypt(student.name))
                     temp.append("-")
                     not_filled_students.append(temp)
-            if Activity.objects.filter(
-                student=student,
-                submission_timestamp__gte=session.start_timestamp,
-                submission_timestamp__lte=session.end_timestamp,
-            ).exists():
-                draftForm = Activity.objects.filter(
-                    student=student,
-                    submission_timestamp__gte=session.start_timestamp,
-                    submission_timestamp__lte=session.end_timestamp,
-                ).first()
 
-                if not draftForm.draft:
-                    count += 1
-                    temp.append(encryptionHelper.decrypt(student.name))
-                    temp.append(draftForm.submission_timestamp)
-                    filled_students.append(temp)
-
-                else:
-                    temp.append(encryptionHelper.decrypt(student.name))
-                    temp.append("-")
-                    not_filled_students.append(temp)
             else:
-                temp.append(encryptionHelper.decrypt(student.name))
-                temp.append("-")
-                not_filled_students.append(temp)
-
-        else:
-            if ModuleOne.objects.filter(
-                student=student, submission_timestamp__gte=session.start_timestamp
-            ).exists():
-                draftForm = ModuleOne.objects.filter(
-                    student=student, submission_timestamp__gte=session.start_timestamp
-                ).first()
-
-                if not draftForm.draft:
-                    count += 1
+                if ModuleOne.objects.filter(
+                    student=student,
+                    submission_timestamp__gte=form.start_timestamp,
+                    submission_timestamp__lte=form.end_timestamp,
+                ).exists():
+                    submitted_form = ModuleOne.objects.filter(
+                        student=student, submission_timestamp__gte=form.start_timestamp
+                    ).first()
                     temp.append(encryptionHelper.decrypt(student.name))
-                    temp.append(draftForm.submission_timestamp)
+                    temp.append(submitted_form.submission_timestamp)
                     filled_students.append(temp)
-
                 else:
                     temp.append(encryptionHelper.decrypt(student.name))
                     temp.append("-")
                     not_filled_students.append(temp)
-            if Activity.objects.filter(
-                student=student, submission_timestamp__gte=session.start_timestamp
-            ).exists():
-                draftForm = Activity.objects.filter(
-                    student=student, submission_timestamp__gte=session.start_timestamp
-                ).first()
 
-                if not draftForm.draft:
-                    count += 1
-                    temp.append(encryptionHelper.decrypt(student.name))
-                    temp.append(draftForm.submission_timestamp)
-                    filled_students.append(temp)
+    elif form.form.name == "activity":
+        for student in total_students:
+            temp = []
+            if form.open:
+                if Activity.objects.filter(
+                    student=student, submission_timestamp__gte=form.start_timestamp
+                ).exists():
+                    draftForm = Activity.objects.filter(
+                        student=student, submission_timestamp__gte=form.start_timestamp
+                    ).first()
 
+                    if draftForm.draft:
+                        temp.append(encryptionHelper.decrypt(student.name))
+                        temp.append("-")
+                        not_filled_students.append(temp)
+                    else:
+                        temp.append(encryptionHelper.decrypt(student.name))
+                        temp.append(draftForm.submission_timestamp)
+                        filled_students.append(temp)
                 else:
                     temp.append(encryptionHelper.decrypt(student.name))
                     temp.append("-")
                     not_filled_students.append(temp)
+
             else:
-                temp.append(encryptionHelper.decrypt(student.name))
-                temp.append("-")
-                not_filled_students.append(temp)
-
-    temp_list.append(count)
-    temp_list.append(len(total_students))
+                if Activity.objects.filter(
+                    student=student,
+                    submission_timestamp__gte=form.start_timestamp,
+                    submission_timestamp__lte=form.end_timestamp,
+                ).exists():
+                    submitted_form = Activity.objects.filter(
+                        student=student, submission_timestamp__gte=form.start_timestamp
+                    ).first()
+                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append(submitted_form.submission_timestamp)
+                    filled_students.append(temp)
+                else:
+                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append("-")
+                    not_filled_students.append(temp)
 
     return render(
         request,
@@ -1668,7 +1657,7 @@ def getFormDetails(request, id):
             "result": temp_list,
             "filled_students": filled_students,
             "not_filled_students": not_filled_students,
-            "open": open,
+            "open": form_open,
         },
     )
 
