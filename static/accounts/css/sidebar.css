@@ -83,12 +83,12 @@ body {
     }
     .sidebar-brand i {
         transform: scale(1.5);
+        padding-left: 0.4rem;
     }
     .sidebar-brand:hover i {
         transform: scale(1.7);
     }
     .sidebar-brand-icon {
-        padding-left: 2.5rem;
         padding-top: 1rem;
     }
     .nav-link {
@@ -101,5 +101,8 @@ body {
     }
     .nav-link span {
         text-align: center;
+    }
+    .bs-canvas-content>div>h4 {
+        width: 100%;
     }
 }
