@@ -34,6 +34,8 @@ body {
 .forgotpass{
     text-decoration: none;
     color:#6441A5;
+    display: block;
+    margin: 0;
 }
 .correctlabel label {
     display: inline;
