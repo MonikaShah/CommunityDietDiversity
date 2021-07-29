@@ -77,6 +77,10 @@ body {
     margin: 5rem;
 }
 
+.page-container {
+    min-height: 73vh;
+}
+
 @media only screen and (max-width:768px){
     .activityImg {
         width: 100%;

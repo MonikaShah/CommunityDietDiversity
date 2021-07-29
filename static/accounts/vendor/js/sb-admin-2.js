@@ -2,7 +2,7 @@ jQuery(document).ready(function($) {
   var bsDefaults = {
           offset: false,
           overlay: true,
-          width: '80%'
+          width: '50%'
       },
       bsMain = $('.bs-offset-main'),
       bsOverlay = $('.bs-canvas-overlay');
