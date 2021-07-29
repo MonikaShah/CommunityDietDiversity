@@ -9,10 +9,11 @@
 <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+<link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
 {% endblock %}
 
 {% block title %}
-<title>Consent Form</title>
+<title>Student's Form Types</title>
 {% endblock %}
 
 {% block userinfo %}
@@ -21,33 +22,36 @@
 
 {%block content%}
 
-<div class="d-flex dashCard justify-content-around" id="parentCard">
-  <div class="card shadow p-3 me-3 my-3">
-    <div class="card-body">
-      <h5 class="card-title">Module One</h5>
-      <a href="{% url 'accounts:parentModuleOne' student.id %}" class="btn btn-primary">Fill Form</a>
+<div class="page-container shadow rounded p-3 mb-3 border">
+  <div class="item-container d-flex">
+    <div class="my-card card shadow d-flex text-center">
+      <div class="card-body">
+        <h3 class="card-title mb-3">Module One</h3>
+        <a href="{% url 'accounts:parentModuleOne' student.id %}" class="btn btn-primary">Fill Form</a>
+      </div>
     </div>
-  </div>
 
-  <div class="card shadow p-3 me-3 my-3">
-    <div class="card-body">
-      <h5 class="card-title">Module Two</h5>
-      <a href="#" class="btn btn-primary">Fill Form</a>
+    {% comment %} <div class="my-card card shadow d-flex text-center">
+      <div class="card-body">
+        <h3 class="card-title mb-3">Module Two</h3>
+        <a href="#" class="btn btn-primary">Fill Form</a>
+      </div>
     </div>
-  </div>
 
-  <div class="card shadow p-3 me-3 my-3">
-    <div class="card-body">
-      <h5 class="card-title">Module Three</h5>
-      <a href="#" class="btn btn-primary">Fill Form</a>
-    </div>
-  </div>
+    <div class="my-card card shadow d-flex text-center">
+      <div class="card-body">
+        <h3 class="card-title mb-3">Module Three</h3>
+        <a href="#" class="btn btn-primary">Fill Form</a>
+      </div>
+    </div> {% endcomment %}
 
-  <div class="card shadow p-3 me-3 my-3">
-    <div class="card-body">
-      <h5 class="card-title">Activity</h5>
-      <a href="{% url 'accounts:parentActivity' student.id %}" class="btn btn-primary">Fill Form</a>
+    <div class="my-card card shadow d-flex text-center">
+      <div class="card-body">
+        <h3 class="card-title mb-3">Activity</h3>
+        <a href="{% url 'accounts:parentActivity' student.id %}" class="btn btn-primary">Fill Form</a>
+      </div>
     </div>
   </div>
 </div>
+
 {% endblock %}

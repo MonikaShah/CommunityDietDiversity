@@ -9,6 +9,7 @@
 <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+<link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
 {% endblock %}
 
 {% block title %}
@@ -20,19 +21,21 @@
 {% endblock %}
 
 {%block content%}
+
 <div class="d-flex justify-content-end mb-4">
     <a href="{% url 'accounts:add_student_form' %}" class="btn btn-info">Add Student</a>
 </div>
-<div class="d-flex dashCard justify-content-around" id="parentCard">
+<div class="item-container d-flex" id="parentCard">
     {% for student in students %}
-    <div class="card shadow p-3">
+    <div class="my-card card shadow">
         <div class="card-body">
             <center>
-                <h5 class="card-title mb-3">{{ student.name }}</h5>
+                <h3 class="card-title mb-3">{{ student.name }}</h3>
                 <a href="{% url 'accounts:parent_dashboard_student' student.id %}" class="btn btn-primary">Edit Form</a>
             </center>
         </div>
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}
