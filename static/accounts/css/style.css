@@ -247,17 +247,41 @@ body {
     justify-content: left;
 }
 
-.teacher_info_header{
+.teacher_info_header {
     text-align: center;
     margin: 20px 0;
 }
 
-.teacher_info_header > h3{
+.teacher_info_header>h3 {
     font-weight: bold;
+}
+
+.item-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.page-container {
+    background-color: white;
+    max-width: 98%;
+    margin: auto;
+}
+
+.my-card {
+    width: 280px;
+    margin: 20px;
+    font-size: 16px;
 }
 
 @media only screen and (max-width:600px) {
     .module_one_images {
         width: 100%;
+    }
+    .page-container {
+        max-width: 94%;
+    }
+    .my-card {
+        margin: 20px 0;
     }
 }
