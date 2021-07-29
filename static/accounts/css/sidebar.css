@@ -105,4 +105,7 @@ body {
     .bs-canvas-content>div>h4 {
         width: 100%;
     }
+    .nav-item {
+        font-size: 0.8rem;
+    }
 }
