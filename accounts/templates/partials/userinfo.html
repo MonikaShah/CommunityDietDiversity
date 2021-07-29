@@ -12,15 +12,14 @@
             <img class="img-profile rounded-circle" src="{% static 'accounts/img/undraw_profile.svg' %}">
         </a>
         <!-- Dropdown - User Information -->
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-            <a class="dropdown-item" href="#">
+        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown" style="width:unset;">
                 <a class="dropdown-item" href="{% url 'accounts:change_password' %}">
                     <i class="fa fa-key fa-sm fa-fw mr-2"></i>
-                    Change Password
+                    <span>Change Password</span>
                 </a>
                 <a class="dropdown-item" href="" data-toggle="modal" data-target="#logoutModal">
                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
-                    Logout
+                    <span>Logout</span>
                 </a>
         </div>
     </li>
