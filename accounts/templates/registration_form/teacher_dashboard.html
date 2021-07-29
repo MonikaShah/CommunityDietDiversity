@@ -22,6 +22,7 @@
 
 {%block content%}
 
+{% if results or results2 %}
 <div class="page-container shadow rounded p-3 mb-3 border">
   {% if results2 %}
     <h3 class="mb-3 text-center" style="font-weight: bolder;">OPEN FORMS</h3>
@@ -60,5 +61,6 @@
     </div>
   {% endif %}
 </div>
+{% endif %}
 
 {% endblock %}
