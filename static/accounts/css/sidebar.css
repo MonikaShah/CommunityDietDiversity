@@ -38,36 +38,44 @@ body {
     -moz-transition: all .4s ease-out;
     -ms-transition: all .4s ease-out;
 }
+
 .bs-canvas-close {
     display: none;
     color: white;
 }
+
 .sidebar-brand {
     text-decoration: none;
 }
+
 .toggle-button {
     display: none;
 }
+
 .container-fluid {
     min-height: 76vh;
 }
+
 .bs-canvas-content a:hover {
     text-decoration: none;
-    font-weight:bold;
+    font-weight: bold;
 }
+
 .bs-canvas-content>div>h4>a {
     text-transform: uppercase;
     text-align: center;
     font-size: 1.4rem;
 }
+
 .sidebar-brand:hover i {
     transform: scale(1.2);
 }
+
 .nav-item i {
     margin-right: 0.5rem;
 }
 
-@media only screen and (max-width:768px){
+@media only screen and (max-width:768px) {
     .bs-canvas-close {
         display: inline;
     }
@@ -91,7 +99,7 @@ body {
     .sidebar-brand-icon {
         padding-top: 1rem;
     }
-    .nav-link {
+    .my-nav-link {
         display: flex!important;
         flex-direction: column;
         align-items: center;
@@ -99,7 +107,7 @@ body {
     .nav-item i {
         margin-right: 0;
     }
-    .nav-link span {
+    .my-nav-link span {
         text-align: center;
     }
     .bs-canvas-content>div>h4 {
