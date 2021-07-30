@@ -868,7 +868,7 @@ def coordinator_dashboard(request):
         return render(
             request,
             "registration_form/coordinator_dashboard.html",
-            {"teachers": teachers},
+            {"teachers": teachers, "page_type": "coordinator_dashboard"},
         )
 
 
