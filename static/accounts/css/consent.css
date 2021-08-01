@@ -83,79 +83,24 @@ body {
     min-height: 73vh;
 }
 
-@media only screen and (max-width:768px){
-    .activityImg {
-        width: 100%;
-    }
-    .dashCard {
-        flex-direction: column;
-    }
-    .btnmedium{
-        padding:5px;
-        font-size: 15px; 
-    }
-    .dashCard>div {
-        width: 98%;
-        margin: auto;
-    }
-    #parentCard>div {
-        width: 75%;
-        margin: auto;
-    }
-    .manage {
-        flex-direction: column;
-    }
-    .manage>div {
-        margin-bottom: 1rem;
-    }
-    .top {
-        flex-direction: column;
-    }
-    .top h5 {
-        font-size: 0.9rem;
-    }
-    .filebtn {
-        width: 100%;
-        margin-bottom: 0.5rem;
-    }
-    .bulkCard {
-        margin: 0 auto;
-    }
-    #parentCard>div:last-child {
-        margin-bottom: 0!important;
-    }
-    .dashCard>div:last-child {
-        margin-bottom: 0!important;
-    }
+.btn-info:hover, .btn-info:active, .btn-info:focus {
+    background-color: #003b6e!important;
+    color: white;
 }
 
-@media only screen and (max-width:480px){
-    .btnsmall{
-        padding:3px;
-        font-size: 12px;
-    }
-    .btn-sm{
-        padding:3px;
-        font-size: 12px;
-    }
-    .dashCard {
-        flex-direction: column;
-    }
-    .dashCard>div {
-        width: 98%;
-        margin: auto;
-    }
-    #parentCard>div {
-        width: 98%;
-        margin: auto;
-    }
-    .loginbtn{
-        flex-direction: column;
-    }
-    .btnmedium{
-        padding:4px;
-        font-size: 13px; 
-    }
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+    background-color: #140627!important;
+    color: white;
+}
+
+.btn-secondary:hover, .btn-secondary:active, .btn-secondary:focus {
+    background-color: #9b9b9b!important;
+    color: black;
+}
+
+.btn-warning:hover, .btn-warning:active, .btn-warning:focus {
+    background-color: #e6ad03!important;
+    color: black;
 }
 
 #msform {
@@ -399,9 +344,88 @@ body {
 .consent-card {
     background: #fff;
     padding: 1rem 2rem;
+    width: 80%;
 }
 
 
 .bgPurple{
     background-color: #2b0d52 !important;
+}
+
+@media only screen and (max-width:768px){
+    .consent-card {
+        width: 100%;
+    }
+    .activityImg {
+        width: 100%;
+    }
+    .dashCard {
+        flex-direction: column;
+    }
+    .btnmedium{
+        padding:5px;
+        font-size: 15px; 
+    }
+    .dashCard>div {
+        width: 98%;
+        margin: auto;
+    }
+    #parentCard>div {
+        width: 75%;
+        margin: auto;
+    }
+    .manage {
+        flex-direction: column;
+    }
+    .manage>div {
+        margin-bottom: 1rem;
+    }
+    .top {
+        flex-direction: column;
+    }
+    .top h5 {
+        font-size: 0.9rem;
+    }
+    .filebtn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    .bulkCard {
+        margin: 0 auto;
+    }
+    #parentCard>div:last-child {
+        margin-bottom: 0!important;
+    }
+    .dashCard>div:last-child {
+        margin-bottom: 0!important;
+    }
+}
+
+@media only screen and (max-width:480px){
+    .btnsmall{
+        padding:3px;
+        font-size: 12px;
+    }
+    .btn-sm{
+        padding:3px;
+        font-size: 12px;
+    }
+    .dashCard {
+        flex-direction: column;
+    }
+    .dashCard>div {
+        width: 98%;
+        margin: auto;
+    }
+    #parentCard>div {
+        width: 98%;
+        margin: auto;
+    }
+    .loginbtn{
+        flex-direction: column;
+    }
+    .btnmedium{
+        padding:4px;
+        font-size: 13px; 
+    }
 }
