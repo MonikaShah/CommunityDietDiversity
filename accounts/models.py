@@ -7,20 +7,6 @@ from shared.encryption import EncryptionHelper
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
-# Create your models here.
-# class myValidate:
-#     def validateGreaterThan0(value):
-#         errors = []
-#         if value:
-#             if int(value) < 10:
-#                 errors.append('Enter Age greater than 10')
-#                 # raise ValidationError(
-#                 #     'not an even number',
-#                 #     params={'value': value},
-#                 # )
-#                 return errors
-
-
 class Occupation(models.Model):
     occupation = models.CharField(max_length=255)
 
@@ -87,7 +73,9 @@ class ParentsInfo(models.Model):
     edu = models.ForeignKey(Education, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
-    pincode = models.IntegerField(validators=[MinValueValidator(100000), MaxValueValidator(999999)])
+    pincode = models.IntegerField(
+        validators=[MinValueValidator(100000), MaxValueValidator(999999)]
+    )
     no_of_family_members = models.IntegerField(validators=[MinValueValidator(2)])
     type_of_family = models.ForeignKey(FamilyType, on_delete=models.CASCADE)
     religion = models.ForeignKey(ReligiousBelief, on_delete=models.CASCADE)
@@ -99,6 +87,7 @@ class ParentsInfo(models.Model):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.name)
 
+
 class CoordinatorInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
@@ -107,11 +96,12 @@ class CoordinatorInCharge(models.Model):
     def __str__(self):
         return self.name
 
+
 class TeacherInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    coordinator=models.ForeignKey(CoordinatorInCharge,on_delete=models.CASCADE)
+    coordinator = models.ForeignKey(CoordinatorInCharge, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -127,7 +117,7 @@ class StudentsInfo(models.Model):
     dob = models.DateField(
         validators=[
             MaxValueValidator(limit_value=date.today() - timedelta(days=(365 * 5))),
-            MinValueValidator(limit_value=date.today() - timedelta(days=(365 * 15)))
+            MinValueValidator(limit_value=date.today() - timedelta(days=(365 * 15))),
         ]
     )
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE)
@@ -199,12 +189,21 @@ class ModuleOne(models.Model):
     microgreen_use = models.CharField(max_length=255, null=True)
     submission_timestamp = models.DateTimeField(null=True)
 
+
 class Activity(models.Model):
     student = models.ForeignKey(StudentsInfo, on_delete=models.CASCADE)
     pre = models.BooleanField(null=True)
     draft = models.BooleanField()
-    weight = models.FloatField(null=True, default=None, validators=[MinValueValidator(0)])
-    height = models.FloatField(null=True, default=None, validators=[MinValueValidator(0), MaxValueValidator(214)])
-    waist = models.FloatField(null=True, default=None, validators=[MinValueValidator(0)])
+    weight = models.FloatField(
+        null=True, default=None, validators=[MinValueValidator(0)]
+    )
+    height = models.FloatField(
+        null=True,
+        default=None,
+        validators=[MinValueValidator(0), MaxValueValidator(214)],
+    )
+    waist = models.FloatField(
+        null=True, default=None, validators=[MinValueValidator(0)]
+    )
     hip = models.FloatField(null=True, default=None, validators=[MinValueValidator(0)])
     submission_timestamp = models.DateTimeField(null=True)

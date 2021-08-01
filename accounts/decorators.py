@@ -1,6 +1,12 @@
 from .models import *
 from django.shortcuts import redirect
 from django.contrib.auth import logout
+from django.contrib.auth.models import Group
+
+
+def is_member(user, grp):
+    grp = Group.objects.get(pk=grp)
+    return user.groups.filter(name=grp).exists()
 
 
 def is_student(user):
