@@ -23,12 +23,11 @@
 {%block content%}
 
 {% if results or results2 %}
-<div class="page-container shadow rounded p-3 mb-3 border">
   {% if results2 %}
     <h3 class="mb-3 text-center" style="font-weight: bolder;">OPEN FORMS</h3>
     <div class="item-container d-flex">
       {% for result in results2 %}
-        <div class="my-card card shadow">
+        <div class="my-card card shadow border rounded">
           <h5 class="card-header">{{result.2}}</h5>
           <div class="card-body">
             <h5 class="card-title">{{result.0}}</h5>
@@ -46,7 +45,7 @@
   <h3 class="my-3 text-center" style="font-weight: bolder;">CLOSED FORMS</h3>
       <div class="item-container d-flex">
       {% for result in results %}
-        <div class="my-card card shadow">
+        <div class="my-card card shadow border rounded">
           <h5 class="card-header">{{result.3}}</h5>
           <div class="card-body">
             <h5 class="card-title">{{result.0}}</h5>
@@ -60,7 +59,6 @@
       {% endfor %}
     </div>
   {% endif %}
-</div>
 {% endif %}
 
 {% endblock %}

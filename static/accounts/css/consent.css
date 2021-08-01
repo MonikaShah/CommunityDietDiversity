@@ -344,16 +344,26 @@ body {
 .consent-card {
     background: #fff;
     padding: 1rem 2rem;
+}
+
+.parent-consent-card {
     width: 80%;
 }
 
+.signup-card {
+    padding: 2rem;
+    width: 98%;
+}
 
 .bgPurple{
     background-color: #2b0d52 !important;
 }
 
 @media only screen and (max-width:768px){
-    .consent-card {
+    .parent-consent-card {
+        width: 100%;
+    }
+    .signup-card {
         width: 100%;
     }
     .activityImg {

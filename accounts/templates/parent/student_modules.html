@@ -22,36 +22,34 @@
 
 {%block content%}
 
-<div class="page-container shadow rounded p-3 mb-3 border">
   <div class="item-container d-flex">
-    <div class="my-card card shadow d-flex text-center">
+    <div class="my-card card shadow border rounded d-flex text-center">
       <div class="card-body">
         <h3 class="card-title mb-3">Module One</h3>
         <a href="{% url 'accounts:parentModuleOne' student.id %}" class="btn btn-primary">Fill Form</a>
       </div>
     </div>
 
-    {% comment %} <div class="my-card card shadow d-flex text-center">
+    {% comment %} <div class="my-card card shadow border rounded d-flex text-center">
       <div class="card-body">
         <h3 class="card-title mb-3">Module Two</h3>
         <a href="#" class="btn btn-primary">Fill Form</a>
       </div>
     </div>
 
-    <div class="my-card card shadow d-flex text-center">
+    <div class="my-card card shadow border rounded d-flex text-center">
       <div class="card-body">
         <h3 class="card-title mb-3">Module Three</h3>
         <a href="#" class="btn btn-primary">Fill Form</a>
       </div>
     </div> {% endcomment %}
 
-    <div class="my-card card shadow d-flex text-center">
+    <div class="my-card card shadow border rounded d-flex text-center">
       <div class="card-body">
         <h3 class="card-title mb-3">Activity</h3>
         <a href="{% url 'accounts:parentActivity' student.id %}" class="btn btn-primary">Fill Form</a>
       </div>
     </div>
   </div>
-</div>
 
 {% endblock %}
