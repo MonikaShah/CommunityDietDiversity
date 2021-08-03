@@ -15,8 +15,24 @@ from .models import (
 )
 from django.core.validators import RegexValidator
 from crispy_forms.helper import FormHelper
+import re
+
+# Validation Functions
 
 
+def valid_name(name):
+    return re.match("^[a-zA-Z' ]*$", name)
+
+
+def valid_email(email):
+    return re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
+
+
+def valid_mobile_no(mobile_no):
+    return re.match("^\d{9}$", mobile_no)
+
+
+# --------------------------------------------------------
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
         error_messages={"required": "You must agree to consent form"}, label="I Agree"
@@ -106,23 +122,30 @@ class StudentsInfoForm(ModelForm):
 
 
 class TeachersInfoForm(ModelForm):
-    alphanumeric = RegexValidator(
-        r"^[a-zA-Z\' ]*$", "No Numeric and Special characters are allowed."
-    )
-    name = forms.CharField(max_length=500, validators=[alphanumeric])
+    dob = forms.DateField(widget=DatePickerInput())
 
     class Meta:
         model = TeacherInCharge
-        fields = ["school"]
+        fields = ["user", "email", "name", "dob", "mobile_no", "school"]
+        labels = {"dob": "Date of Birth", "mobile_no": "Mobile Number"}
 
     def clean(self):
-        super(TeachersInfoForm, self).clean()
-
-        # name = self.cleaned_data.get("name")
-        # if not name:
-        #     self.add_error("name", "Name is a required Field")
-
-        return self.cleaned_data
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        name = cleaned_data.get("name")
+        dob = cleaned_data.get("dob")
+        mobile_no = cleaned_data.get("mobile_no")
+        if not valid_email(email):
+            raise forms.ValidationError({"email": "Invalid Email"})
+        if not valid_name(name):
+            raise forms.ValidationError(
+                {"name": "No Numeric and Special characters are allowed."}
+            )
+        if dob == None:
+            raise forms.ValidationError({"dob": "Date of Birth is required."})
+        if not valid_mobile_no(mobile_no):
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
+        return cleaned_data
 
 
 class CustomAuthenticationForm(AuthenticationForm):
