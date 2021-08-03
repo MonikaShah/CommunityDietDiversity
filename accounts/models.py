@@ -6,20 +6,17 @@ from django.contrib.auth.models import User
 from shared.encryption import EncryptionHelper
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
 class Occupation(models.Model):
     occupation = models.CharField(max_length=255)
 
     def __str__(self):
         return self.occupation
 
-
 class State(models.Model):
     state = models.CharField(max_length=255)
 
     def __str__(self):
         return self.state
-
 
 class City(models.Model):
     city = models.CharField(max_length=255)
@@ -28,13 +25,11 @@ class City(models.Model):
     def __str__(self):
         return self.city
 
-
 class FamilyType(models.Model):
     family = models.CharField(max_length=255)
 
     def __str__(self):
         return self.family
-
 
 class ReligiousBelief(models.Model):
     religion = models.CharField(max_length=255)
@@ -42,13 +37,11 @@ class ReligiousBelief(models.Model):
     def __str__(self):
         return self.religion
 
-
 class Education(models.Model):
     education = models.CharField(max_length=255)
 
     def __str__(self):
         return self.education
-
 
 class School(models.Model):
     name = models.CharField(max_length=50)
@@ -60,26 +53,24 @@ class School(models.Model):
     def __str__(self):
         return self.name
 
-
 class ParentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.BinaryField(max_length=500)
+    email = models.BinaryField(max_length=500, null=True)
     consent = models.BooleanField(default=True)
     name = models.BinaryField(max_length=500)
-    gender = models.CharField(max_length=255)
-    age = models.IntegerField(validators=[MinValueValidator(3)])
+    dob = models.BinaryField(max_length=500)
+    mobile_no = models.BinaryField(max_length=1000, null=True)
+    gender = models.BinaryField(max_length=1000)
     occupation = models.ForeignKey(Occupation, on_delete=models.CASCADE)
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     edu = models.ForeignKey(Education, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
-    address = models.CharField(max_length=255)
-    pincode = models.IntegerField(
-        validators=[MinValueValidator(100000), MaxValueValidator(999999)]
-    )
-    no_of_family_members = models.IntegerField(validators=[MinValueValidator(2)])
+    address = models.BinaryField(max_length=1000)
+    pincode = models.BinaryField(max_length=1000)
+    no_of_family_members = models.BinaryField(max_length=1000)
     type_of_family = models.ForeignKey(FamilyType, on_delete=models.CASCADE)
     religion = models.ForeignKey(ReligiousBelief, on_delete=models.CASCADE)
-    children_count = models.IntegerField(validators=[MinValueValidator(1)])
+    children_count = models.BinaryField(max_length=1000)
     first_password = models.CharField(max_length=20, default="helloworld14")
     password_changed = models.BooleanField(default=False)
 
@@ -87,11 +78,25 @@ class ParentsInfo(models.Model):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.name)
 
+class SuperCoordinator(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email = models.BinaryField(max_length=500)
+    name = models.BinaryField(max_length=500)
+    dob = models.BinaryField(max_length=500)
+    mobile_no = models.BinaryField(max_length=1000)
+
+    def __str__(self):
+        return self.name
+
 
 class CoordinatorInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=500)
+    email = models.BinaryField(max_length=500, null=True)
+    name = models.BinaryField(max_length=500)
+    dob = models.BinaryField(max_length=500)
+    mobile_no = models.BinaryField(max_length=1000, null=True)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
+    super_coordinator = models.ForeignKey(SuperCoordinator, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -99,53 +104,56 @@ class CoordinatorInCharge(models.Model):
 
 class TeacherInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=500)
+    email = models.BinaryField(max_length=500, null=True)
+    name = models.BinaryField(max_length=500)
+    dob = models.BinaryField(max_length=500)
+    mobile_no = models.BinaryField(max_length=1000, null=True)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     coordinator = models.ForeignKey(CoordinatorInCharge, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
+class Session(models.Model):
+    name = models.CharField(max_length=50)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField(null=True)
+    coordinator = models.ForeignKey(CoordinatorInCharge, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+class Teacher_Session(models.Model):
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
 
 class StudentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    rollno = models.BinaryField(max_length=500)
     name = models.BinaryField(max_length=500)
+    email = models.BinaryField(max_length=500, null=True)
+    dob = models.BinaryField(max_length=500)
+    mobile_no = models.BinaryField(max_length=1000, null=True)
+    gender = models.BinaryField(max_length=500)
+    consent = models.BooleanField(default=True)
+    adult = models.BinaryField(max_length=1000)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    address = models.CharField(max_length=255)
-    rollno = models.IntegerField(validators=[MinValueValidator(0)])
-    gender = models.CharField(max_length=255)
-    dob = models.DateField(
-        validators=[
-            MaxValueValidator(limit_value=date.today() - timedelta(days=(365 * 5))),
-            MinValueValidator(limit_value=date.today() - timedelta(days=(365 * 15))),
-        ]
-    )
+    address = models.BinaryField(max_length=1000)
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE)
     first_password = models.CharField(max_length=20, default="helloworld14")
     password_changed = models.BooleanField(default=False)
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.name)
-
-
-class FirstModule(models.Model):
-    name = models.CharField(max_length=255)
-    email = models.CharField(max_length=255)
-    tennis = models.CharField(max_length=255)
-    cricket = models.CharField(max_length=255)
-    chess = models.CharField(max_length=255)
-    food = models.CharField(max_length=255)
-    drinks = models.CharField(max_length=255)
-
 
 class Form(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name.capitalize()
-
 
 class FormDetails(models.Model):
     form = models.ForeignKey(Form, on_delete=models.CASCADE)
@@ -154,7 +162,6 @@ class FormDetails(models.Model):
     pre = models.BooleanField()
     start_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField(null=True)
-
 
 class ModuleOne(models.Model):
     student = models.ForeignKey(StudentsInfo, on_delete=models.CASCADE)
@@ -188,7 +195,6 @@ class ModuleOne(models.Model):
     microgreen_watering = models.CharField(max_length=255, null=True)
     microgreen_use = models.CharField(max_length=255, null=True)
     submission_timestamp = models.DateTimeField(null=True)
-
 
 class Activity(models.Model):
     student = models.ForeignKey(StudentsInfo, on_delete=models.CASCADE)

@@ -10,7 +10,6 @@ from .models import (
     ParentsInfo,
     StudentsInfo,
     ModuleOne,
-    FirstModule,
     Activity,
     TeacherInCharge,
 )
@@ -124,60 +123,6 @@ class TeachersInfoForm(ModelForm):
         #     self.add_error("name", "Name is a required Field")
 
         return self.cleaned_data
-
-
-class FirstModuleForm(ModelForm):
-    name = forms.CharField()
-    email = forms.CharField()
-    PRIORITY_CHOICES = [("Daily", ""), ("Once", ""), ("Twice", "")]
-
-    cricket = forms.ChoiceField(
-        choices=PRIORITY_CHOICES, widget=forms.RadioSelect(attrs={"class": "flex-item"})
-    )
-    chess = forms.ChoiceField(
-        choices=PRIORITY_CHOICES, widget=forms.RadioSelect(attrs={"class": "flex-item"})
-    )
-    tennis = forms.ChoiceField(
-        choices=PRIORITY_CHOICES, widget=forms.RadioSelect(attrs={"class": "flex-item"})
-    )
-
-    FOOD_INTAKES = [
-        ("1-5", ""),
-        ("6-10", ""),
-        ("10-15", ""),
-        (">15", ""),
-        ("1 teaspoon", ""),
-        ("1 tablespoon", ""),
-        ("Never", ""),
-    ]
-
-    food = forms.MultipleChoiceField(
-        choices=FOOD_INTAKES,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "flex-item"}),
-    )
-
-    DRINKS_INTAKE = [
-        ("Water", ""),
-        ("Soft Drinks", ""),
-        ("Fruit Juices", ""),
-        ("Energy Drinks", ""),
-        ("No Drinks", ""),
-    ]
-
-    drinks = forms.MultipleChoiceField(
-        choices=DRINKS_INTAKE,
-        widget=forms.CheckboxSelectMultiple(attrs={"class": "flex-item"}),
-    )
-
-    class Meta:
-        model = FirstModule
-        fields = ["name", "cricket", "chess", "tennis"]
-        labels = {
-            "cricket": "Cricket",
-            "chess": "Chess",
-            "tennis": "Tennis",
-            "email": "Email",
-        }
 
 
 class CustomAuthenticationForm(AuthenticationForm):
