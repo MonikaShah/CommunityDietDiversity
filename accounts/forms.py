@@ -122,6 +122,7 @@ class StudentsInfoForm(ModelForm):
 
 
 class TeachersInfoForm(ModelForm):
+    email = forms.EmailField()
     dob = forms.DateField(widget=DatePickerInput())
 
     class Meta:
