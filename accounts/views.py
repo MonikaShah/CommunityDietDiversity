@@ -155,6 +155,8 @@ def loginU(request):
                     return redirect("accounts:teacher_dashboard")
                 elif grp_name == "Coordinators":
                     return redirect("accounts:coordinator_dashboard")
+                elif grp_name == "SuperCoordinators":
+                    return redirect("accounts:supercoordinator_dashboard")
             else:
                 messages.error(request, "User does not belong to selected group")
                 return render(request, "registration/login.html", {"form": form})
@@ -259,6 +261,43 @@ def addTeacherForm(request):
                 request,
                 "coordinator/add_teacher.html",
                 {"form": form, "user_creation_form": teacheruserform},
+            )
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+def addCoordinatorForm(request):
+    if request.method == "GET":
+        form = CoordinatorsInfoForm()
+        user_creation_form = UserCreationForm()
+        return render(
+            request,
+            "supercoordinator/add_coordinator.html",
+            {"form": form, "user_creation_form": user_creation_form},
+        )
+    else:
+        form = CoordinatorsInfoForm(request.POST)
+        coordinatoruserform = UserCreationForm(request.POST)
+        if form.is_valid() and coordinatoruserform.is_valid():
+            coordinatoruser = coordinatoruserform.save(commit=False)
+            coordinatoruser.save()
+            coordinator_group = Group.objects.get(name="Coordinators")
+            coordinatoruser.groups.add(coordinator_group)
+            coordinatoruser.save()
+            coordinator = form.save(commit=False)
+            coordinator.user = coordinatoruser
+            coordinator.first_password = ""
+            coordinator.password_changed = True
+            coordinator.name = request.POST["name"]
+            coordinator.coordinator = CoordinatorInCharge.objects.filter(
+                user=request.user
+            ).first()
+            coordinator.save()
+            return redirect("accounts:supercoordinator_dashboard")
+        else:
+            return render(
+                request,
+                "supercoordinator/add_coordinator.html",
+                {"form": form, "user_creation_form": coordinatoruserform},
             )
 
 

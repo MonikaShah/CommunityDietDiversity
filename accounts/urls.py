@@ -27,6 +27,7 @@ urlpatterns = [
     path("logout/", views.logoutU, name="logoutu"),
     path("addStudentForm/", views.addStudentForm, name="add_student_form"),
     path("addTeacherForm/", views.addTeacherForm, name="add_teacher_form"),
+    path("addCoordinatorForm/", views.addCoordinatorForm, name="add_coordinator_form"),
     path("activity/", views.activity, name="activity"),
     path("moduleOne/", views.moduleOne, name="module_one"),
     path("moduleOne-2/", views.moduleOne2, name="module_one_2"),
