@@ -13,7 +13,7 @@ from .models import (
     Activity,
     TeacherInCharge,
 )
-from django.core.validators import RegexValidator
+from django.core.validators import MaxLengthValidator, RegexValidator
 from crispy_forms.helper import FormHelper
 import re
 
@@ -123,7 +123,9 @@ class StudentsInfoForm(ModelForm):
 
 class TeachersInfoForm(ModelForm):
     email = forms.EmailField()
+    name = forms.CharField(max_length=50)
     dob = forms.DateField(widget=DatePickerInput())
+    mobile_no = forms.IntegerField()
 
     class Meta:
         model = TeacherInCharge
