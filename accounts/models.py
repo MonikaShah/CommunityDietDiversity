@@ -92,6 +92,7 @@ class SuperCoordinator(models.Model):
     email = models.BinaryField()
     name = models.BinaryField()
     dob = models.BinaryField()
+    gender = models.BinaryField()
     mobile_no = models.BinaryField()
 
     def __str__(self):
@@ -103,6 +104,7 @@ class CoordinatorInCharge(models.Model):
     email = models.BinaryField(null=True)
     name = models.BinaryField()
     dob = models.BinaryField()
+    gender = models.BinaryField()
     mobile_no = models.BinaryField(null=True)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     super_coordinator = models.ForeignKey(SuperCoordinator, on_delete=models.CASCADE)
@@ -116,6 +118,7 @@ class TeacherInCharge(models.Model):
     email = models.BinaryField(null=True)
     name = models.BinaryField()
     dob = models.BinaryField()
+    gender = models.BinaryField()
     mobile_no = models.BinaryField(null=True)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     coordinator = models.ForeignKey(CoordinatorInCharge, on_delete=models.CASCADE)
