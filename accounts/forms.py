@@ -79,20 +79,12 @@ class ParentsInfoForm(ModelForm):
         ]
         labels = {
             "edu": "Education",
-            "name": "Name",
-            "email": "E-mail",
             "dob": "date of birth",
             "mobile_no": "Mobile Number",
-            "gender": "Gender",
             "occupation": "Occupation",
             "edu": "Education",
-            "state": "State",
-            "city": "City",
-            "address": "Address",
-            "pincode": "Pincode",
             "no_of_family_members": "Number of family members",
             "type_of_family": "Type of family",
-            "religion": "Religion",
             "children_count": "Number of children"
         }
 
