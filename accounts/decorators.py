@@ -20,6 +20,8 @@ def is_parent(user):
 def is_coordinator(user):
     return user.groups.filter(name="Coordinators").exists()
 
+def is_supercoordinator(user):
+    return user.groups.filter(name="SuperCoordinators").exists()
 
 def is_parent_or_student(user):
     return (
@@ -78,6 +80,8 @@ def redirect_to_dashboard(func):
                 return redirect("accounts:student_dashboard")
             elif is_coordinator(request.user):
                 return redirect("accounts:coordinator_dashboard")
+            elif is_supercoordinator(request.user):
+                return redirect("accounts:supercoordinator_dashboard")
             else:
                 logout(request)
                 return redirect("accounts:loginlink")

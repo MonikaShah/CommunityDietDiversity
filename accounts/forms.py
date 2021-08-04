@@ -210,6 +210,36 @@ class TeachersInfoForm(ModelForm):
         return cleaned_data
 
 
+class CoordinatorsInfoForm(ModelForm):
+    email = forms.EmailField()
+    name = forms.CharField(max_length=50)
+    dob = forms.DateField(widget=DatePickerInput())
+    mobile_no = forms.IntegerField()
+
+    class Meta:
+        model = CoordinatorInCharge
+        fields = ["email", "name", "dob", "mobile_no", "school"]
+        labels = {"dob": "Date of Birth", "mobile_no": "Mobile Number"}
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        name = cleaned_data.get("name")
+        dob = cleaned_data.get("dob")
+        mobile_no = cleaned_data.get("mobile_no")
+        if not valid_email(email):
+            raise forms.ValidationError({"email": "Invalid Email"})
+        if not valid_name(name):
+            raise forms.ValidationError(
+                {"name": "No Numeric and Special characters are allowed."}
+            )
+        if dob == None:
+            raise forms.ValidationError({"dob": "Date of Birth is required."})
+        if not valid_mobile_no(mobile_no):
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
+        return cleaned_data
+
+
 class CustomAuthenticationForm(AuthenticationForm):
     groups = forms.ModelChoiceField(queryset=Group.objects.all())
 
