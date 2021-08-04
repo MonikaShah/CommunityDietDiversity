@@ -21,7 +21,7 @@ import re
 
 
 def valid_name(name):
-    return re.match("^[a-zA-Z' ]*$", name)
+    return re.match("^[a-zA-Z\' ]*$", name)
 
 
 def valid_email(email):
@@ -81,14 +81,12 @@ class ParentsInfoForm(ModelForm):
 
 
 class StudentsInfoForm(ModelForm):
-    alphanumeric = RegexValidator(
-        r"^[a-zA-Z\' ]*$", "No Numeric and Special characters are allowed."
-    )
-    name = forms.CharField(max_length=500, validators=[alphanumeric])
-
+    email = forms.EmailField()
+    name = forms.CharField(max_length=50)
+    dob = forms.DateField(widget=DatePickerInput())
+    mobile_no = forms.IntegerField()
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-
     address = forms.CharField(max_length=255, widget=forms.Textarea())
     dt = datetime.datetime.now()
     dt = dt.replace(year=dt.year - 5)
@@ -96,29 +94,40 @@ class StudentsInfoForm(ModelForm):
         "start_date": DatePickerInput(),  # python date-time format
         "end_date": dt.strftime("%m/%d/%Y"),
     }
-
     dob = forms.DateField(widget=DatePickerInput(widgets))
 
     class Meta:
         model = StudentsInfo
-        fields = ["school", "gender", "rollno", "dob", "address", "teacher"]
+        fields = ["school", "gender","email","mobile_no", "rollno", "dob", "address", "teacher"]
         labels = {
             "dob": "Date Of Birth",
             "teacher": "Teacher InCharge",
-        }
-        labels = {
-            "dob": "Date Of Birth",
-            "teacher": "Teacher InCharge",
+            "mobile_no": "Mobile Number"
         }
 
     def clean(self):
-        super(StudentsInfoForm, self).clean()
+        # super(StudentsInfoForm, self).clean()
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        name = cleaned_data.get("name")
+        dob = cleaned_data.get("dob")
+        address=cleaned_data.get("address")
+        mobile_no = cleaned_data.get("mobile_no")
+        if not valid_email(email):
+            raise forms.ValidationError({"email": "Invalid Email"})
+        if not valid_name(name):
+            raise forms.ValidationError(
+                {"name": "No Numeric and Special characters are allowed."}
+            )
+        if dob == None:
+            raise forms.ValidationError({"dob": "Date of Birth is required."})
+        if address == None:
+            raise forms.ValidationError({"address": "Address is required."})
+        if not valid_mobile_no(mobile_no):
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
 
-        # name = self.cleaned_data.get("name")
-        # if not name:
-        #     self.add_error("name", "Name is a required Field")
-
-        return self.cleaned_data
+        return cleaned_data
+        # return self.cleaned_data
 
 
 class TeachersInfoForm(ModelForm):
