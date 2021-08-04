@@ -23,14 +23,14 @@ import re
 def valid_name(name):
     return re.match("^[a-zA-Z\' ]*$", name)
 
-
 def valid_email(email):
     return re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
-
 
 def valid_mobile_no(mobile_no):
     return re.match("^\d{9}$", mobile_no)
 
+def valid_pincode(pincode):
+    return re.match("^\d{6}$", pincode)
 
 # --------------------------------------------------------
 class ConsentForm(forms.Form):
@@ -40,44 +40,94 @@ class ConsentForm(forms.Form):
 
 
 class ParentsInfoForm(ModelForm):
-    email = forms.EmailField()
-    alphanumeric = RegexValidator(
-        r"^[a-zA-Z\' ]*$", "No Numeric and Special characters are allowed."
-    )
-    name = forms.CharField(max_length=500, validators=[alphanumeric])
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
-    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
+    dt = datetime.datetime.now()
+    dt = dt.replace(year=dt.year - 5)
+    widgets = {
+        "start_date": DatePickerInput(),  # python date-time format
+        "end_date": dt.strftime("%m/%d/%Y"),
+    }
 
+    email = forms.EmailField()
+    name = forms.CharField(max_length=50)
+    dob = forms.DateField(widget=DatePickerInput(widgets))
+    mobile_no = forms.IntegerField()
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     address = forms.CharField(max_length=100, widget=forms.Textarea())
+    pincode = forms.IntegerField()
+    no_of_family_members = forms.IntegerField()
+    children_count = forms.IntegerField()
 
     class Meta:
         model = ParentsInfo
         fields = [
-            "age",
+            "email",
+            "name",
+            "dob",
+            "mobile_no",
+            "gender",
             "occupation",
             "edu",
+            "state",
+            "city",
+            "address",
             "pincode",
             "no_of_family_members",
             "type_of_family",
             "religion",
             "children_count",
-            "gender",
-            "address",
         ]
         labels = {
             "edu": "Education",
+            "name": "Name",
+            "email": "E-mail",
+            "dob": "date of birth",
+            "mobile_no": "Mobile Number",
+            "gender": "Gender",
+            "occupation": "Occupation",
+            "edu": "Education",
+            "state": "State",
+            "city": "City",
+            "address": "Address",
+            "pincode": "Pincode",
+            "no_of_family_members": "Number of family members",
+            "type_of_family": "Type of family",
+            "religion": "Religion",
+            "children_count": "Number of children"
         }
 
     def clean(self):
-        super(ParentsInfoForm, self).clean()
-        # name = self.cleaned_data.get("name")
-        # if not name :
-        #      self.add_error("name", "Name is a required Field")
-        # for field in self.fields:
-        #     if not self.cleaned_data[field]:
-        #          #  self.add_error(field,'Required')
-        #         raise ValidationError("Required")
-        return self.cleaned_data
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        name = cleaned_data.get("name")
+        dob = cleaned_data.get("dob")
+        mobile_no = cleaned_data.get("mobile_no")
+        gender = cleaned_data.get("gender")
+        address = cleaned_data.get("address")
+        pincode = cleaned_data.get("pincode")
+        no_of_family_members = cleaned_data.get("no_of_family_members")
+        children_count = cleaned_data.get("children_count")
+        if not valid_email(email):
+            raise forms.ValidationError({"email": "Invalid Email"})
+        if not valid_name(name):
+            raise forms.ValidationError(
+                {"name": "No Numeric and Special characters are allowed."}
+            )
+        if dob == None:
+            raise forms.ValidationError({"dob": "Date of Birth is required."})
+        if gender == None:
+            raise forms.ValidationError({"gender": "Gender is required."})
+        if address == None:
+            raise forms.ValidationError({"address": "Address is required."})
+        if not valid_mobile_no(mobile_no):
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
+        if not valid_pincode(pincode):
+            raise forms.ValidationError({"pincode": "Invalid Pincode"})
+        if not no_of_family_members > 1:
+            raise forms.ValidationError({"no_of_family_members": "Invalid Input"})
+        if not children_count > 0:
+            raise forms.ValidationError({"children_count": "Invalid Input"})
+        return cleaned_data
 
 
 class StudentsInfoForm(ModelForm):
