@@ -6,13 +6,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
 import datetime
-from .models import (
-    ParentsInfo,
-    StudentsInfo,
-    ModuleOne,
-    Activity,
-    TeacherInCharge,
-)
+from .models import *
 from django.core.validators import MaxLengthValidator, RegexValidator
 from crispy_forms.helper import FormHelper
 import re
