@@ -161,7 +161,7 @@ class StudentsInfo(models.Model):
     first_password = models.CharField(max_length=20, default="helloworld14")
     password_changed = models.BooleanField(default=False)
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
-    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
