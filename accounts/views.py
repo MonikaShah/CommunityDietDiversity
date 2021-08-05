@@ -275,6 +275,7 @@ def addTeacherForm(request):
         teacheruserform = UserCreationForm(request.POST)
         if form.is_valid() and teacheruserform.is_valid():
             teacheruser = teacheruserform.save(commit=False)
+            teacheruser.save()
             teacher_group = Group.objects.get(name="Teachers")
             teacheruser.groups.add(teacher_group)
             teacheruser.save()
