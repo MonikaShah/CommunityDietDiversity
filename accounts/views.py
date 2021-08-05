@@ -222,8 +222,8 @@ def addStudentForm(request):
             )
 
 
-@login_required(login_url="accounts:loginlink")
-@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+# @login_required(login_url="accounts:loginlink")
+# @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def addTeacherForm(request):
     if request.method == "GET":
         form = TeachersInfoForm()
@@ -238,15 +238,16 @@ def addTeacherForm(request):
         teacheruserform = UserCreationForm(request.POST)
         if form.is_valid() and teacheruserform.is_valid():
             teacheruser = teacheruserform.save(commit=False)
-            teacheruser.save()
             teacher_group = Group.objects.get(name="Teachers")
             teacheruser.groups.add(teacher_group)
             teacheruser.save()
             teacher = form.save(commit=False)
             teacher.user = teacheruser
-            teacher.first_password = ""
-            teacher.password_changed = True
-            teacher.name = request.POST["name"]
+            teacher.email = encryptionHelper.encrypt(request.POST["email"])
+            teacher.name = encryptionHelper.encrypt(request.POST["name"])
+            teacher.dob = encryptionHelper.encrypt(request.POST["dob"])
+            teacher.gender = encryptionHelper.encrypt(request.POST["gender"])
+            teacher.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
             teacher.coordinator = CoordinatorInCharge.objects.filter(
                 user=request.user
             ).first()
@@ -281,10 +282,12 @@ def addCoordinatorForm(request):
             coordinatoruser.save()
             coordinator = form.save(commit=False)
             coordinator.user = coordinatoruser
-            coordinator.first_password = ""
-            coordinator.password_changed = True
-            coordinator.name = request.POST["name"]
-            coordinator.coordinator = CoordinatorInCharge.objects.filter(
+            coordinator.email = encryptionHelper.encrypt(request.POST["email"])
+            coordinator.name = encryptionHelper.encrypt(request.POST["name"])
+            coordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
+            coordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
+            coordinator.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+            coordinator.super_coordinator = SuperCoordinator.objects.filter(
                 user=request.user
             ).first()
             coordinator.save()

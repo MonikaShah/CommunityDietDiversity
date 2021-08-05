@@ -202,6 +202,8 @@ class CoordinatorsInfoForm(ModelForm):
     name = forms.CharField(max_length=50)
     dob = forms.DateField(widget=DatePickerInput())
     mobile_no = forms.IntegerField()
+    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
     class Meta:
         model = CoordinatorInCharge
