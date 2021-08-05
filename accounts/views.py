@@ -19,6 +19,7 @@ from .models import *
 from .forms import *
 from shared.encryption import EncryptionHelper
 
+encryptionHelper = EncryptionHelper()
 
 def root(request):
     return redirect("accounts:loginlink")
@@ -78,7 +79,6 @@ def students_info(request):
         parentform = ParentsInfoForm(previousPOST)
         parentuserform = UserCreationForm(previousPOST)
         if form.is_valid() and studentuserform.is_valid():
-            encryptionHelper = EncryptionHelper()
             parentUser = parentuserform.save(commit=False)
             parentUser.save()
             parent_group = Group.objects.get(name="Parents")
@@ -174,19 +174,16 @@ def logoutU(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
 def parent_dashboard(request):
-    if request.method == "GET":
-        students = (
-            ParentsInfo.objects.filter(user=request.user).first().studentsinfo_set.all()
-        )
-        helper = EncryptionHelper()
-        for student in students:
-            print(student.name)
-            student.name = helper.decrypt(student.name)
-        return render(
-            request,
-            "parent/parent_dashboard.html",
-            {"students": students, "page_type": "parent_dashboard"},
-        )
+    students = (
+        ParentsInfo.objects.filter(user=request.user).first().studentsinfo_set.all()
+    )
+    for student in students:
+        student.name = encryptionHelper.decrypt(student.name)
+    return render(
+        request,
+        "parent/parent_dashboard.html",
+        {"students": students, "page_type": "parent_dashboard"},
+    )
 
 
 @login_required(login_url="accounts:loginlink")
@@ -204,7 +201,6 @@ def addStudentForm(request):
         form = StudentsInfoForm(request.POST)
         studentuserform = UserCreationForm(request.POST)
         if form.is_valid() and studentuserform.is_valid():
-            encryptionHelper = EncryptionHelper()
             studentuser = studentuserform.save(commit=False)
             studentuser.save()
             student_group = Group.objects.get(name="Students")
@@ -319,8 +315,6 @@ def bulkRegister(request):
         # getting a particular sheet by name out of many sheets
         parentSheet = wb["Parents Data"]
         studentSheet = wb["Students Data"]
-
-        encryptionHelper = EncryptionHelper()
 
         parent_data = list()
         # iterating over the rows and
@@ -593,7 +587,6 @@ def downloadData(request):
     wb = xlsxwriter.Workbook(output)
     parentSheet = wb.add_worksheet("Parents Data")
     studentSheet = wb.add_worksheet("Students Data")
-    encryptionHelper = EncryptionHelper()
 
     # student sheet
     row_num = 0
@@ -870,14 +863,13 @@ def teacher_dashboard(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def coordinator_dashboard(request):
-    if request.method == "GET":
-        coordinator = CoordinatorInCharge.objects.get(user=request.user)
-        teachers = coordinator.teacherincharge_set.all()
-        return render(
-            request,
-            "coordinator/coordinator_dashboard.html",
-            {"teachers": teachers, "page_type": "coordinator_dashboard"},
-        )
+    coordinator = CoordinatorInCharge.objects.get(user=request.user)
+    teachers = coordinator.teacherincharge_set.all()
+    return render(
+        request,
+        "coordinator/coordinator_dashboard.html",
+        {"teachers": teachers, "page_type": "coordinator_dashboard"},
+    )
 
 
 def createTempDict(postData):
@@ -948,12 +940,8 @@ def draft(request):
             form.pre = 1 if formType == "PreTest" else 0
             form.submission_timestamp = datetime.datetime.now()
             form.save()
-    # 2nd Page
-    elif module == "moduleOne-2":
-        temp = createTempDict(request.POST)
-        creatingOrUpdatingDrafts(temp, user, "moduleOne")
-    # 3rd Page
-    elif module == "moduleOne-3":
+    # 2nd and 3rd Page
+    elif module == "moduleOne-2" or module == "moduleOne-3":
         temp = createTempDict(request.POST)
         creatingOrUpdatingDrafts(temp, user, "moduleOne")
     return redirect(request.META.get("HTTP_REFERER"))
@@ -1227,8 +1215,8 @@ def moduleOne3(request, user=None):
                     if name == "id" or name == "student_id" or name == "draft":
                         continue
                     elif name == "source_fruits_vegetables" or name == "grow_own_food":
-                        list = "; ".join(ast.literal_eval(getattr(draftForm, name)))
-                        setattr(draftForm, name, list)
+                        my_list = "; ".join(ast.literal_eval(getattr(draftForm, name)))
+                        setattr(draftForm, name, my_list)
                     elif name in temp:
                         setattr(draftForm, name, temp[name])
 
@@ -1559,7 +1547,6 @@ def getFormDetails(request, id):
     form = FormDetails.objects.get(pk=id)
     teacher = form.teacher
     total_students = teacher.studentsinfo_set.all()
-    encryptionHelper = EncryptionHelper()
 
     filled_students = []
     not_filled_students = []
@@ -1818,8 +1805,8 @@ def activity(request, user=None):
                     if name == "id" or name == "student_id" or name == "draft":
                         continue
                     elif name == "source_fruits_vegetables" or name == "grow_own_food":
-                        list = "; ".join(ast.literal_eval(getattr(draftForm, name)))
-                        setattr(draftForm, name, list)
+                        my_list = "; ".join(ast.literal_eval(getattr(draftForm, name)))
+                        setattr(draftForm, name, my_list)
                     elif name in temp:
                         setattr(draftForm, name, temp[name])
 

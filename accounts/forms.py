@@ -35,7 +35,7 @@ def valid_pincode(pincode):
 # --------------------------------------------------------
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
-        error_messages={"required": "You must agree to consent form"}, label="I Agree"
+        error_messages={"required": "You must agree to consent form."}, label="I Agree"
     )
 
 
@@ -91,7 +91,7 @@ class ParentsInfoForm(ModelForm):
         no_of_family_members = cleaned_data.get("no_of_family_members")
         children_count = cleaned_data.get("children_count")
         if ((email==None) or (not valid_email(email))):
-            raise forms.ValidationError({"email": "Invalid Email"})
+            raise forms.ValidationError({"email": "Invalid Email."})
         if ((name==None) or (not valid_name(name))):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
@@ -103,13 +103,13 @@ class ParentsInfoForm(ModelForm):
         if address == None:
             raise forms.ValidationError({"address": "Address is required."})
         if ((mobile_no==None) or (not valid_mobile_no(mobile_no))):
-            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         if ((pincode==None) or (not valid_pincode(pincode))):
             raise forms.ValidationError({"pincode": "Invalid Pincode"})
         if ((no_of_family_members==None) or (not no_of_family_members > 1)):
-            raise forms.ValidationError({"no_of_family_members": "Invalid Input"})
+            raise forms.ValidationError({"no_of_family_members": "Invalid Input."})
         if ((children_count==None) or (not children_count > 0)):
-            raise forms.ValidationError({"children_count": "Invalid Input"})
+            raise forms.ValidationError({"children_count": "Invalid Input."})
         return cleaned_data
 
 
@@ -124,7 +124,7 @@ class StudentsInfoForm(ModelForm):
     dt = datetime.datetime.now()
     dt = dt.replace(year=dt.year - 5)
     widgets = {
-        "start_date": DatePickerInput(),  # python date-time format
+        "start_date": DatePickerInput(),
         "end_date": dt.strftime("%m/%d/%Y"),
     }
     dob = forms.DateField(widget=DatePickerInput(widgets))
@@ -142,7 +142,6 @@ class StudentsInfoForm(ModelForm):
         }
 
     def clean(self):
-        # super(StudentsInfoForm, self).clean()
         cleaned_data = super().clean()
         email = cleaned_data.get("email")
         name = cleaned_data.get("name")
@@ -150,7 +149,7 @@ class StudentsInfoForm(ModelForm):
         address = cleaned_data.get("address")
         mobile_no = cleaned_data.get("mobile_no")
         if ((email==None) or (not valid_email(email))):
-            raise forms.ValidationError({"email": "Invalid Email"})
+            raise forms.ValidationError({"email": "Invalid Email."})
         if ((name==None) or (not valid_name(name))):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
@@ -160,10 +159,8 @@ class StudentsInfoForm(ModelForm):
         if address == None:
             raise forms.ValidationError({"address": "Address is required."})
         if ((mobile_no==None) or (not valid_mobile_no(mobile_no))):
-            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
-
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
-        # return self.cleaned_data
 
 
 class TeachersInfoForm(ModelForm):
@@ -218,7 +215,7 @@ class CoordinatorsInfoForm(ModelForm):
         dob = cleaned_data.get("dob")
         mobile_no = cleaned_data.get("mobile_no")
         if ((email==None) or (not valid_email(email))):
-            raise forms.ValidationError({"email": "Invalid Email"})
+            raise forms.ValidationError({"email": "Invalid Email."})
         if ((name==None) or (not valid_name(name))):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
@@ -226,7 +223,7 @@ class CoordinatorsInfoForm(ModelForm):
         if dob == None:
             raise forms.ValidationError({"dob": "Date of Birth is required."})
         if ((mobile_no==None) or (not valid_mobile_no(mobile_no))):
-            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
 
 
