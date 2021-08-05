@@ -40,18 +40,11 @@ class ConsentForm(forms.Form):
 
 
 class ParentsInfoForm(ModelForm):
-    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
-    dt = datetime.datetime.now()
-    dt = dt.replace(year=dt.year - 5)
-    widgets = {
-        "start_date": DatePickerInput(),  # python date-time format
-        "end_date": dt.strftime("%m/%d/%Y"),
-    }
-
     email = forms.EmailField()
     name = forms.CharField(max_length=50)
-    dob = forms.DateField(widget=DatePickerInput(widgets))
+    dob = forms.DateField(widget=DatePickerInput())
     mobile_no = forms.IntegerField()
+    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     address = forms.CharField(max_length=100, widget=forms.Textarea())
     pincode = forms.IntegerField()
