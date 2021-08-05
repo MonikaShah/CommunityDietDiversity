@@ -21,6 +21,7 @@ from shared.encryption import EncryptionHelper
 
 encryptionHelper = EncryptionHelper()
 
+
 def root(request):
     return redirect("accounts:loginlink")
 
@@ -259,6 +260,7 @@ def addTeacherForm(request):
                 "coordinator/add_teacher.html",
                 {"form": form, "user_creation_form": teacheruserform},
             )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
@@ -866,8 +868,13 @@ def teacher_dashboard(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def coordinator_dashboard(request):
-    coordinator = CoordinatorInCharge.objects.get(user=request.user)
-    teachers = coordinator.teacherincharge_set.all()
+    teachers = (
+        CoordinatorInCharge.objects.filter(user=request.user)
+        .first()
+        .teacherincharge_set.all()
+    )
+    for teacher in teachers:
+        teacher.name = encryptionHelper.decrypt(teacher.name)
     return render(
         request,
         "coordinator/coordinator_dashboard.html",
@@ -1250,9 +1257,7 @@ def forbidden(request):
 @user_passes_test(is_parent, login_url="accounts:forbidden")
 def showStudent(request, id):
     student = StudentsInfo.objects.get(pk=id)
-    return render(
-        request, "parent/student_modules.html", {"student": student}
-    )
+    return render(request, "parent/student_modules.html", {"student": student})
 
 
 @login_required(login_url="accounts:loginlink")
