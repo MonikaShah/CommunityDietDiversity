@@ -31,8 +31,16 @@
                 <div id="div_id_email" class="form-group">
                     <label for="id_email" class="requiredField"> Email<span class="asteriskField">*</span></label>
                     <div>
-                        <input type="email" name="email" class="emailinput form-control" required id="id_email">
-                        <small class="form-text text-muted">Email ID is used for password reset.</small>
+                        {% if form.email.errors  %}
+                            <input type="email" name="email" class="emailinput form-control is-invalid" required id="id_email">
+                            <small class="form-text text-muted">Email ID is used for password reset.</small>
+                            <p id="error_1_id_email" class="invalid-feedback">
+                                <strong>{{ form.email.errors }}</strong>
+                            </p>
+                        {% else %}
+                            <input type="email" name="email" class="emailinput form-control" required id="id_email">
+                            <small class="form-text text-muted">Email ID is used for password reset.</small>
+                        {% endif %}
                     </div>
                 </div>
             </div>
