@@ -156,7 +156,7 @@ def loginU(request):
                     return redirect("accounts:teacher_dashboard")
                 elif grp_name == "Coordinators":
                     return redirect("accounts:coordinator_dashboard")
-                elif grp_name == "SuperCoordinators":
+                elif grp_name == "Super Coordinators":
                     return redirect("accounts:supercoordinator_dashboard")
             else:
                 messages.error(request, "User does not belong to selected group")
@@ -186,6 +186,42 @@ def parent_dashboard(request):
         {"students": students, "page_type": "parent_dashboard"},
     )
 
+
+# @login_required(login_url="accounts:loginlink")
+# @user_passes_test(is_admin, login_url="accounts:forbidden")
+def addSuperCoordinatorForm(request):
+    if request.method == "GET":
+        form = SuperCoordinatorsInfoForm()
+        user_creation_form = UserCreationForm()
+        return render(
+            request,
+            "admin/add_supercoordinator.html",
+            {"form": form, "user_creation_form": user_creation_form},
+        )
+    else:
+        form = SuperCoordinatorsInfoForm(request.POST)
+        supercoordinatoruserform = UserCreationForm(request.POST)
+        if form.is_valid() and supercoordinatoruserform.is_valid():
+            supercoordinatoruser = supercoordinatoruserform.save(commit=False)
+            supercoordinatoruser.save()
+            supercoordinator_group = Group.objects.get(name="Super Coordinators")
+            supercoordinatoruser.groups.add(supercoordinator_group)
+            supercoordinatoruser.save()
+            supercoordinator = form.save(commit=False)
+            supercoordinator.user = supercoordinatoruser
+            supercoordinator.email = encryptionHelper.encrypt(request.POST["email"])
+            supercoordinator.name = encryptionHelper.encrypt(request.POST["name"])
+            supercoordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
+            supercoordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
+            supercoordinator.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+            supercoordinator.save()
+            return redirect("accounts:add_supercoordinator_form")
+        else:
+            return render(
+                request,
+                "admin/add_supercoordinator.html",
+                {"form": form, "user_creation_form": supercoordinatoruserform},
+            )
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
@@ -879,6 +915,23 @@ def coordinator_dashboard(request):
         request,
         "coordinator/coordinator_dashboard.html",
         {"teachers": teachers, "page_type": "coordinator_dashboard"},
+    )
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+def supercoordinator_dashboard(request):
+    coordinators = (
+        SuperCoordinator.objects.filter(user=request.user)
+        .first()
+        .coordinatorincharge_set.all()
+    )
+    for coordinator in coordinators:
+        coordinator.name = encryptionHelper.decrypt(coordinator.name)
+        coordinator.school = encryptionHelper.decrypt(coordinator.school)
+    return render(
+        request,
+        "supercoordinator/supercoordinator_dashboard.html",
+        {"coordinators": coordinators, "page_type": "supercoordinator_dashboard"},
     )
 
 

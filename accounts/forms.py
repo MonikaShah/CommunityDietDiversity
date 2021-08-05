@@ -197,6 +197,37 @@ class TeachersInfoForm(ModelForm):
         return cleaned_data
 
 
+class SuperCoordinatorsInfoForm(ModelForm):
+    email = forms.EmailField()
+    name = forms.CharField(max_length=50)
+    dob = forms.DateField(widget=DatePickerInput())
+    mobile_no = forms.IntegerField()
+    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
+
+    class Meta:
+        model = SuperCoordinator
+        fields = []
+        labels = {"dob": "Date of Birth", "mobile_no": "Mobile Number"}
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        name = cleaned_data.get("name")
+        dob = cleaned_data.get("dob")
+        mobile_no = cleaned_data.get("mobile_no")
+        if ((email==None) or (not valid_email(email))):
+            raise forms.ValidationError({"email": "Invalid Email."})
+        if ((name==None) or (not valid_name(name))):
+            raise forms.ValidationError(
+                {"name": "No Numeric and Special characters are allowed."}
+            )
+        if dob == None:
+            raise forms.ValidationError({"dob": "Date of Birth is required."})
+        if ((mobile_no==None) or (not valid_mobile_no(mobile_no))):
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
+        return cleaned_data
+
 class CoordinatorsInfoForm(ModelForm):
     email = forms.EmailField()
     name = forms.CharField(max_length=50)

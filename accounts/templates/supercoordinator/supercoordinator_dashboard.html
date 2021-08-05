@@ -1,0 +1,39 @@
+{% extends 'partials/layout.html' %}
+
+{% load static %} {% load crispy_forms_tags%}
+
+{%block links %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+<link rel="stylesheet" href="{% static 'accounts/css/consent.css' %}">
+<script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+<link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+{% endblock %}
+
+{% block title %}
+<title>Super Coordinator Dashboard</title>
+{% endblock %}
+
+{% block userinfo %}
+{% include 'partials/userinfo.html' %}
+{% endblock %}
+
+{%block content%}
+
+<div class="d-flex justify-content-end mb-4">
+    <a href="{% url 'accounts:add_coordinator_form' %}" class="btn btn-info">Add Coordinator</a>
+</div>
+<div class="item-container d-flex" id="parentCard">
+{% for coordinator in coordinators %}
+    <div class="my-card card shadow border rounded">
+        <div class="card-body">
+            <center><b><h3 class="card-title mb-3">{{ coordinator.name }}</h3></b></center>
+            <h6 class="card-text"><b>School:</b> {{ coordinator.school }}</h6>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
