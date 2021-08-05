@@ -33,10 +33,10 @@
                     <div>
                         {% if form.email.errors  %}
                             <input type="email" name="email" class="emailinput form-control is-invalid" required id="id_email">
-                            <small class="form-text text-muted">Email ID is used for password reset.</small>
                             <p id="error_1_id_email" class="invalid-feedback">
-                                <strong>{{ form.email.errors }}</strong>
+                                <strong>Invalid Email</strong>
                             </p>
+                            <small class="form-text text-muted">Email ID is used for password reset.</small>
                         {% else %}
                             <input type="email" name="email" class="emailinput form-control" required id="id_email">
                             <small class="form-text text-muted">Email ID is used for password reset.</small>
