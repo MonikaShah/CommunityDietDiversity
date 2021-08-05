@@ -61,21 +61,12 @@ class ParentsInfoForm(ModelForm):
     class Meta:
         model = ParentsInfo
         fields = [
-            "email",
-            "name",
-            "dob",
-            "mobile_no",
-            "gender",
             "occupation",
             "edu",
             "state",
             "city",
-            "address",
-            "pincode",
-            "no_of_family_members",
             "type_of_family",
-            "religion",
-            "children_count",
+            "religion"
         ]
         labels = {
             "edu": "Education",
@@ -142,13 +133,7 @@ class StudentsInfoForm(ModelForm):
         model = StudentsInfo
         fields = [
             "school",
-            "gender",
-            "email",
-            "mobile_no",
-            "rollno",
-            "dob",
-            "address",
-            "teacher",
+            "teacher"
         ]
         labels = {
             "dob": "Date Of Birth",
@@ -223,7 +208,7 @@ class CoordinatorsInfoForm(ModelForm):
 
     class Meta:
         model = CoordinatorInCharge
-        fields = ["email", "name", "dob", "mobile_no", "school"]
+        fields = ["school"]
         labels = {"dob": "Date of Birth", "mobile_no": "Mobile Number"}
 
     def clean(self):
