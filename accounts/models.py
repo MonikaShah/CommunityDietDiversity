@@ -96,7 +96,8 @@ class SuperCoordinator(models.Model):
     mobile_no = models.BinaryField()
 
     def __str__(self):
-        return self.name
+        encryptionHelper = EncryptionHelper()
+        return encryptionHelper.decrypt(self.name)
 
 
 class CoordinatorInCharge(models.Model):
@@ -110,7 +111,8 @@ class CoordinatorInCharge(models.Model):
     super_coordinator = models.ForeignKey(SuperCoordinator, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        encryptionHelper = EncryptionHelper()
+        return encryptionHelper.decrypt(self.name)
 
 
 class TeacherInCharge(models.Model):
@@ -124,7 +126,8 @@ class TeacherInCharge(models.Model):
     coordinator = models.ForeignKey(CoordinatorInCharge, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        encryptionHelper = EncryptionHelper()
+        return encryptionHelper.decrypt(self.name)
 
 
 class Session(models.Model):

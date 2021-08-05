@@ -21,16 +21,20 @@ import re
 
 
 def valid_name(name):
-    return re.match("^[a-zA-Z\' ]*$", name)
+    return re.match("^[a-zA-Z' ]*$", name)
+
 
 def valid_email(email):
     return re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
 
+
 def valid_mobile_no(mobile_no):
     return re.match("^\d{9}$", mobile_no)
 
+
 def valid_pincode(pincode):
     return re.match("^\d{6}$", pincode)
+
 
 # --------------------------------------------------------
 class ConsentForm(forms.Form):
@@ -79,13 +83,13 @@ class ParentsInfoForm(ModelForm):
         ]
         labels = {
             "edu": "Education",
-            "dob": "date of birth",
+            "dob": "Date of Birth",
             "mobile_no": "Mobile Number",
             "occupation": "Occupation",
             "edu": "Education",
-            "no_of_family_members": "Number of family members",
-            "type_of_family": "Type of family",
-            "children_count": "Number of children"
+            "no_of_family_members": "Number of Family Members",
+            "type_of_family": "Type of Family",
+            "children_count": "Number of Children",
         }
 
     def clean(self):
@@ -140,11 +144,20 @@ class StudentsInfoForm(ModelForm):
 
     class Meta:
         model = StudentsInfo
-        fields = ["school", "gender","email","mobile_no", "rollno", "dob", "address", "teacher"]
+        fields = [
+            "school",
+            "gender",
+            "email",
+            "mobile_no",
+            "rollno",
+            "dob",
+            "address",
+            "teacher",
+        ]
         labels = {
             "dob": "Date Of Birth",
             "teacher": "Teacher InCharge",
-            "mobile_no": "Mobile Number"
+            "mobile_no": "Mobile Number",
         }
 
     def clean(self):
@@ -153,7 +166,7 @@ class StudentsInfoForm(ModelForm):
         email = cleaned_data.get("email")
         name = cleaned_data.get("name")
         dob = cleaned_data.get("dob")
-        address=cleaned_data.get("address")
+        address = cleaned_data.get("address")
         mobile_no = cleaned_data.get("mobile_no")
         if not valid_email(email):
             raise forms.ValidationError({"email": "Invalid Email"})
@@ -175,19 +188,21 @@ class StudentsInfoForm(ModelForm):
 class TeachersInfoForm(ModelForm):
     email = forms.EmailField()
     name = forms.CharField(max_length=50)
-    dob = forms.DateField(widget=DatePickerInput())
-    mobile_no = forms.IntegerField()
+    dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
+    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
+    mobile_no = forms.IntegerField(label="Mobile Number")
 
     class Meta:
         model = TeacherInCharge
-        fields = ["user", "email", "name", "dob", "mobile_no", "school"]
-        labels = {"dob": "Date of Birth", "mobile_no": "Mobile Number"}
+        fields = ["school"]
 
     def clean(self):
         cleaned_data = super().clean()
         email = cleaned_data.get("email")
         name = cleaned_data.get("name")
         dob = cleaned_data.get("dob")
+        gender = cleaned_data.get("gender")
         mobile_no = cleaned_data.get("mobile_no")
         if not valid_email(email):
             raise forms.ValidationError({"email": "Invalid Email"})
@@ -197,6 +212,8 @@ class TeachersInfoForm(ModelForm):
             )
         if dob == None:
             raise forms.ValidationError({"dob": "Date of Birth is required."})
+        if gender == None:
+            raise forms.ValidationError({"gender": "Gender is required."})
         if not valid_mobile_no(mobile_no):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
         return cleaned_data
