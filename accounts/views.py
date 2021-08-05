@@ -927,7 +927,6 @@ def supercoordinator_dashboard(request):
     )
     for coordinator in coordinators:
         coordinator.name = encryptionHelper.decrypt(coordinator.name)
-        coordinator.school = encryptionHelper.decrypt(coordinator.school)
     return render(
         request,
         "supercoordinator/supercoordinator_dashboard.html",
