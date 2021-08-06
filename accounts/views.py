@@ -344,31 +344,30 @@ def addCoordinatorForm(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
-def addSchoolForm(request):
+def addOrganizationForm(request):
     if request.method == "GET":
-        form = SchoolsInfoForm()
+        form = OrganizationsInfoForm()
         return render(
             request,
-            "supercoordinator/add_school.html",
+            "supercoordinator/add_organization.html",
             {"form": form},
         )
     else:
-        form = SchoolsInfoForm(request.POST)
+        form = OrganizationsInfoForm(request.POST)
         if form.is_valid():
-            school = form.save(commit=False)
-            school.name = request.POST["name"]
-            school.address = request.POST["address"]
-            school.pincode = request.POST["pincode"]
-            school.state = State.objects.get(
+            organization = form.save(commit=False)
+            organization.state = State.objects.get(
                 state__icontains=request.POST["state"].strip()
             )
-            school.city = City.objects.get(city__icontains=request.POST["city"].strip())
-            school.save()
+            organization.city = City.objects.get(
+                city__icontains=request.POST["city"].strip()
+            )
+            organization.save()
             return redirect("accounts:supercoordinator_dashboard")
         else:
             return render(
                 request,
-                "supercoordinator/add_school.html",
+                "supercoordinator/add_organization.html",
                 {"form": form},
             )
 
@@ -544,7 +543,9 @@ def bulkRegister(request):
                     if encryptionHelper.decrypt(tempparent.email) == row[7]:
                         parent = tempparent
 
-                school = School.objects.filter(name__icontains=row[6]).first()
+                organization = Organization.objects.filter(
+                    name__icontains=row[6]
+                ).first()
                 teacher = TeacherInCharge.objects.filter(user=request.user).first()
                 # creating student
                 dob = datetime.datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S").strftime(
@@ -556,7 +557,7 @@ def bulkRegister(request):
                     rollno=row[3],
                     gender=row[4],
                     dob=dob,
-                    school=school,
+                    organization=organization,
                     first_password=password,
                     teacher=teacher,
                 )
@@ -599,7 +600,7 @@ def getTemplate(request):
         "Registration No",
         "Gender",
         "DOB",
-        "School",
+        "Organization",
         "Parents email",
     ]
 
@@ -626,7 +627,7 @@ def getTemplate(request):
         "1234",
         "Female",
         date.today().strftime("%d-%m-%Y"),
-        "K.J Somaiya School",
+        "K.J Somaiya College of Engineering",
         "john@gmail.com",
     ]
     row_num = 0
@@ -672,7 +673,7 @@ def downloadData(request):
         "DOB",
         "Gender",
         "Address",
-        "School",
+        "Organization",
         "Parent's Email",
         "Username",
         "Password",
@@ -689,7 +690,7 @@ def downloadData(request):
         "dob",
         "gender",
         "address",
-        "school",
+        "organization",
         "parent",
         "user",
         "first_password",
@@ -708,8 +709,8 @@ def downloadData(request):
                 studentSheet.write(row_num, col_num, row[col_num].strftime("%d/%b/%Y"))
 
             elif col_num == 5:
-                school = School.objects.get(pk=row[col_num])
-                studentSheet.write(row_num, col_num, school.name)
+                organization = Organization.objects.get(pk=row[col_num])
+                studentSheet.write(row_num, col_num, organization.name)
 
             elif col_num == 6:
                 parent = ParentsInfo.objects.get(pk=row[col_num])

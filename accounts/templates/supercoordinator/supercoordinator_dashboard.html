@@ -24,14 +24,14 @@
 
 <div class="d-flex justify-content-end mb-4">
     <a href="{% url 'accounts:add_coordinator_form' %}" class="btn btn-info">Add Coordinator</a>
-    <a href="{% url 'accounts:add_school_form' %}" class="btn btn-info">Add School</a>
+    <a href="{% url 'accounts:add_organization_form' %}" class="btn btn-info">Add Organization</a>
 </div>
 <div class="item-container d-flex" id="parentCard">
 {% for coordinator in coordinators %}
     <div class="my-card card shadow border rounded">
         <div class="card-body">
             <center><b><h3 class="card-title mb-3">{{ coordinator.name }}</h3></b></center>
-            <h6 class="card-text"><b>School:</b> {{ coordinator.school }}</h6>
+            <h6 class="card-text"><b>Organization:</b> {{ coordinator.organization }}</h6>
         </div>
     </div>
     {% endfor %}

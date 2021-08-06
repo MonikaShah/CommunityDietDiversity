@@ -1,12 +1,6 @@
 from django.contrib import auth, admin
 from django.contrib.auth.admin import UserAdmin
-from .models import (
-    TeacherInCharge,
-    School,
-    CoordinatorInCharge,
-    SuperCoordinator
-)
-
+from .models import *
 
 class AccountsUserCustomization(UserAdmin):
     fieldsets = (
@@ -32,7 +26,7 @@ class AccountsAdminArea(admin.AdminSite):
 accounts_admin_area = AccountsAdminArea(name="accounts_admin")
 
 accounts_admin_area.register(auth.models.User, AccountsUserCustomization)
-accounts_admin_area.register(School)
+accounts_admin_area.register(Organization)
 accounts_admin_area.register(SuperCoordinator)
 accounts_admin_area.register(CoordinatorInCharge)
 accounts_admin_area.register(TeacherInCharge)

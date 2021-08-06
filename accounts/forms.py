@@ -113,7 +113,7 @@ class StudentsInfoForm(ModelForm):
 
     class Meta:
         model = StudentsInfo
-        fields = ["school", "teacher"]
+        fields = ["organization", "teacher"]
         labels = {"teacher": "Teacher InCharge"}
 
     def clean(self):
@@ -148,7 +148,7 @@ class TeachersInfoForm(ModelForm):
 
     class Meta:
         model = TeacherInCharge
-        fields = ["school"]
+        fields = ["organization"]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -206,15 +206,14 @@ class SuperCoordinatorsInfoForm(ModelForm):
 class CoordinatorsInfoForm(ModelForm):
     email = forms.EmailField()
     name = forms.CharField(max_length=50)
-    dob = forms.DateField(widget=DatePickerInput())
-    mobile_no = forms.IntegerField()
+    dob = forms.DateField(widget=DatePickerInput(),label="Date of Birth")
+    mobile_no = forms.IntegerField(label="Mobile Number")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
     class Meta:
         model = CoordinatorInCharge
-        fields = ["school"]
-        labels = {"dob": "Date of Birth", "mobile_no": "Mobile Number"}
+        fields = ["organization"]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -235,12 +234,12 @@ class CoordinatorsInfoForm(ModelForm):
         return cleaned_data
 
 
-class SchoolsInfoForm(ModelForm):
+class OrganizationsInfoForm(ModelForm):
     address = forms.CharField(widget=forms.Textarea())
 
     class Meta:
-        model = School
-        fields = ["name","address","pincode"]
+        model = Organization
+        fields = ["name","address","pincode","type"]
 
     def clean(self):
         cleaned_data = super().clean()
