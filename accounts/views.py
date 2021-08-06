@@ -289,6 +289,11 @@ def addTeacherForm(request):
             teacher.dob = encryptionHelper.encrypt(request.POST["dob"])
             teacher.gender = encryptionHelper.encrypt(request.POST["gender"])
             teacher.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+            teacher.organization = Organization.objects.filter(
+                name=CoordinatorInCharge.objects.filter(user=request.user)
+                .first()
+                .organization
+            ).first()
             teacher.coordinator = CoordinatorInCharge.objects.filter(
                 user=request.user
             ).first()
@@ -1342,7 +1347,7 @@ def forbidden(request):
     login = False
     if request.user.get_username() != "":
         login = True
-    return render(request, "other/forbidden.html", {"login":login})
+    return render(request, "other/forbidden.html", {"login": login})
 
 
 @login_required(login_url="accounts:loginlink")

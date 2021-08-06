@@ -139,16 +139,16 @@ class StudentsInfoForm(ModelForm):
 
 
 class TeachersInfoForm(ModelForm):
-    email = forms.EmailField()
+    email = forms.EmailField(required=False)
     name = forms.CharField(max_length=50)
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-    mobile_no = forms.IntegerField(label="Mobile Number")
+    mobile_no = forms.IntegerField(label="Mobile Number",required=False)
 
     class Meta:
         model = TeacherInCharge
-        fields = ["organization"]
+        fields = []
 
     def clean(self):
         cleaned_data = super().clean()
@@ -157,7 +157,7 @@ class TeachersInfoForm(ModelForm):
         dob = cleaned_data.get("dob")
         gender = cleaned_data.get("gender")
         mobile_no = cleaned_data.get("mobile_no")
-        if (email == None) or (not valid_email(email)):
+        if (email != None) and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
@@ -167,7 +167,7 @@ class TeachersInfoForm(ModelForm):
             raise forms.ValidationError({"dob": "Date of Birth is required."})
         if gender == None:
             raise forms.ValidationError({"gender": "Gender is required."})
-        if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
+        if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
 
@@ -204,10 +204,10 @@ class SuperCoordinatorsInfoForm(ModelForm):
 
 
 class CoordinatorsInfoForm(ModelForm):
-    email = forms.EmailField()
+    email = forms.EmailField(required=False)
     name = forms.CharField(max_length=50)
     dob = forms.DateField(widget=DatePickerInput(),label="Date of Birth")
-    mobile_no = forms.IntegerField(label="Mobile Number")
+    mobile_no = forms.IntegerField(label="Mobile Number", required=False)
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
@@ -221,7 +221,7 @@ class CoordinatorsInfoForm(ModelForm):
         name = cleaned_data.get("name")
         dob = cleaned_data.get("dob")
         mobile_no = cleaned_data.get("mobile_no")
-        if (email == None) or (not valid_email(email)):
+        if (email != None) and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
@@ -229,7 +229,7 @@ class CoordinatorsInfoForm(ModelForm):
             )
         if dob == None:
             raise forms.ValidationError({"dob": "Date of Birth is required."})
-        if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
+        if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
 

@@ -29,16 +29,16 @@
             <h2 class="mb-4">Coordinator Information</h2>
             <div class="col-md-12">
                 <div id="div_id_email" class="form-group">
-                    <label for="id_email" class="requiredField"> Email<span class="asteriskField">*</span></label>
+                    <label for="id_email"> Email</label>
                     <div>
                         {% if form.email.errors  %}
-                            <input type="email" name="email" class="emailinput form-control is-invalid" required id="id_email">
+                            <input type="email" name="email" class="emailinput form-control is-invalid" id="id_email">
                             <p id="error_1_id_email" class="invalid-feedback">
                                 <strong>Invalid Email</strong>
                             </p>
                             <small class="form-text text-muted">Email ID is used for password reset.</small>
                         {% else %}
-                            <input type="email" name="email" class="emailinput form-control" required id="id_email">
+                            <input type="email" name="email" class="emailinput form-control" id="id_email">
                             <small class="form-text text-muted">Email ID is used for password reset.</small>
                         {% endif %}
                     </div>
