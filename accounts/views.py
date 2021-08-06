@@ -213,7 +213,9 @@ def addSuperCoordinatorForm(request):
             supercoordinator.name = encryptionHelper.encrypt(request.POST["name"])
             supercoordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
             supercoordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
-            supercoordinator.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+            supercoordinator.mobile_no = encryptionHelper.encrypt(
+                request.POST["mobile_no"]
+            )
             supercoordinator.save()
             return redirect("accounts:add_supercoordinator_form")
         else:
@@ -222,6 +224,7 @@ def addSuperCoordinatorForm(request):
                 "admin/add_supercoordinator.html",
                 {"form": form, "user_creation_form": supercoordinatoruserform},
             )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
@@ -259,8 +262,8 @@ def addStudentForm(request):
             )
 
 
-# @login_required(login_url="accounts:loginlink")
-# @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def addTeacherForm(request):
     if request.method == "GET":
         form = TeachersInfoForm()
@@ -337,6 +340,8 @@ def addCoordinatorForm(request):
                 "supercoordinator/add_coordinator.html",
                 {"form": form, "user_creation_form": coordinatoruserform},
             )
+
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
 def addSchoolForm(request):
@@ -349,13 +354,11 @@ def addSchoolForm(request):
         )
     else:
         form = SchoolsInfoForm(request.POST)
-        print(form.is_valid())
         if form.is_valid():
-            print("hello")
             school = form.save(commit=False)
             school.name = request.POST["name"]
-            school.address =request.POST["address"]
-            school.pincode =request.POST["pincode"]
+            school.address = request.POST["address"]
+            school.pincode = request.POST["pincode"]
             school.state = State.objects.get(
                 state__icontains=request.POST["state"].strip()
             )
@@ -948,6 +951,7 @@ def coordinator_dashboard(request):
         "coordinator/coordinator_dashboard.html",
         {"teachers": teachers, "page_type": "coordinator_dashboard"},
     )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")

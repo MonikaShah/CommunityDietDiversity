@@ -53,7 +53,7 @@ class ParentsInfoForm(ModelForm):
 
     class Meta:
         model = ParentsInfo
-        fields = ["occupation", "edu", "state", "city", "type_of_family", "religion"]
+        fields = ["occupation", "edu", "type_of_family", "religion"]
         labels = {
             "occupation": "Occupation",
             "edu": "Education",
@@ -180,6 +180,10 @@ class SuperCoordinatorsInfoForm(ModelForm):
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
+    class Meta:
+        model = SuperCoordinator
+        fields = []
+
     def clean(self):
         cleaned_data = super().clean()
         email = cleaned_data.get("email")
@@ -232,27 +236,24 @@ class CoordinatorsInfoForm(ModelForm):
 
 
 class SchoolsInfoForm(ModelForm):
-    name = forms.CharField()
     address = forms.CharField(widget=forms.Textarea())
-    pincode = forms.IntegerField()
+
     class Meta:
         model = School
-        fields = [
-            "state",
-            "city",
-        ]
+        fields = ["name","address","pincode"]
 
     def clean(self):
         cleaned_data = super().clean()
         name = cleaned_data.get("name")
         pincode = cleaned_data.get("pincode")
-        if ((name==None) or (not valid_name(name))):
+        if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
-        if ((pincode==None) or (not valid_pincode(pincode))):
+        if (pincode == None) or (not valid_pincode(pincode)):
             raise forms.ValidationError({"pincode": "Invalid Pincode"})
         return cleaned_data
+
 
 class CustomAuthenticationForm(AuthenticationForm):
     groups = forms.ModelChoiceField(queryset=Group.objects.all())

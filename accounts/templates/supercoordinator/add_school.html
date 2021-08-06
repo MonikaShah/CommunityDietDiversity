@@ -34,15 +34,18 @@
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-6">
-                        <label for="sts">State*</label>
-                        <select onchange="print_city('state', this.selectedIndex);" id="sts" name="state"
+                        <div class="form-group">
+                            <label for="sts">State*</label>
+                            <select onchange="print_city('state', this.selectedIndex);" id="sts" name="state"
                             class="form-control" required></select>
+                        </div>
                     </div>
-
                     <div class="col-md-6">
-                        <label for="state">City*</label>
-                        <select id="state" class="form-control" required name="city"></select>
-                        <script language="javascript">print_state("sts");</script>
+                        <div class="form-group">
+                            <label for="state">City*</label>
+                            <select id="state" class="form-control" required name="city"></select>
+                            <script language="javascript">print_state("sts");</script>
+                        </div>
                     </div>
                 </div>
             </div>
