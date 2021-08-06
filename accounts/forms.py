@@ -231,6 +231,29 @@ class CoordinatorsInfoForm(ModelForm):
         return cleaned_data
 
 
+class SchoolsInfoForm(ModelForm):
+    name = forms.CharField()
+    address = forms.CharField(widget=forms.Textarea())
+    pincode = forms.IntegerField()
+    class Meta:
+        model = School
+        fields = [
+            "state",
+            "city",
+        ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get("name")
+        pincode = cleaned_data.get("pincode")
+        if ((name==None) or (not valid_name(name))):
+            raise forms.ValidationError(
+                {"name": "No Numeric and Special characters are allowed."}
+            )
+        if ((pincode==None) or (not valid_pincode(pincode))):
+            raise forms.ValidationError({"pincode": "Invalid Pincode"})
+        return cleaned_data
+
 class CustomAuthenticationForm(AuthenticationForm):
     groups = forms.ModelChoiceField(queryset=Group.objects.all())
 

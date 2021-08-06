@@ -337,6 +337,37 @@ def addCoordinatorForm(request):
                 "supercoordinator/add_coordinator.html",
                 {"form": form, "user_creation_form": coordinatoruserform},
             )
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+def addSchoolForm(request):
+    if request.method == "GET":
+        form = SchoolsInfoForm()
+        return render(
+            request,
+            "supercoordinator/add_school.html",
+            {"form": form},
+        )
+    else:
+        form = SchoolsInfoForm(request.POST)
+        print(form.is_valid())
+        if form.is_valid():
+            print("hello")
+            school = form.save(commit=False)
+            school.name = request.POST["name"]
+            school.address =request.POST["address"]
+            school.pincode =request.POST["pincode"]
+            school.state = State.objects.get(
+                state__icontains=request.POST["state"].strip()
+            )
+            school.city = City.objects.get(city__icontains=request.POST["city"].strip())
+            school.save()
+            return redirect("accounts:supercoordinator_dashboard")
+        else:
+            return render(
+                request,
+                "supercoordinator/add_school.html",
+                {"form": form},
+            )
 
 
 @login_required(login_url="accounts:loginlink")
