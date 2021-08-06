@@ -1339,7 +1339,10 @@ def moduleOne3(request, user=None):
 
 
 def forbidden(request):
-    raise PermissionDenied
+    login = False
+    if request.user.get_username() != "":
+        login = True
+    return render(request, "other/forbidden.html", {"login":login})
 
 
 @login_required(login_url="accounts:loginlink")
