@@ -1,22 +1,5 @@
-from django.contrib import auth, admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib import admin
 from .models import *
-
-class AccountsUserCustomization(UserAdmin):
-    fieldsets = (
-        (
-            "Details",
-            {
-                "fields": (
-                    "username",
-                    "password",
-                    "first_name",
-                    "last_name",
-                    "groups",
-                )
-            },
-        ),
-    )
 
 
 class AccountsAdminArea(admin.AdminSite):
@@ -25,8 +8,9 @@ class AccountsAdminArea(admin.AdminSite):
 
 accounts_admin_area = AccountsAdminArea(name="accounts_admin")
 
-accounts_admin_area.register(auth.models.User, AccountsUserCustomization)
-accounts_admin_area.register(Organization)
-accounts_admin_area.register(SuperCoordinator)
-accounts_admin_area.register(CoordinatorInCharge)
-accounts_admin_area.register(TeacherInCharge)
+accounts_admin_area.register(Occupation)
+accounts_admin_area.register(FamilyType)
+accounts_admin_area.register(ReligiousBelief)
+accounts_admin_area.register(Education)
+accounts_admin_area.register(OrganizationTypes)
+accounts_admin_area.register(Form)
