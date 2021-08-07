@@ -67,7 +67,7 @@ class ParentsInfoForm(ModelForm):
         pincode = cleaned_data.get("pincode")
         no_of_family_members = cleaned_data.get("no_of_family_members")
         children_count = cleaned_data.get("children_count")
-        if (email != None) and (not valid_email(email)):
+        if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
@@ -120,7 +120,7 @@ class StudentsInfoForm(ModelForm):
         address = cleaned_data.get("address")
         mobile_no = cleaned_data.get("mobile_no")
         pincode = cleaned_data.get("pincode")
-        if (email != None) and (not valid_email(email)):
+        if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
@@ -156,7 +156,7 @@ class TeachersInfoForm(ModelForm):
         dob = cleaned_data.get("dob")
         gender = cleaned_data.get("gender")
         mobile_no = cleaned_data.get("mobile_no")
-        if (email != None) and (not valid_email(email)):
+        if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
@@ -189,7 +189,7 @@ class SuperCoordinatorsInfoForm(ModelForm):
         name = cleaned_data.get("name")
         dob = cleaned_data.get("dob")
         mobile_no = cleaned_data.get("mobile_no")
-        if (email == None) or (not valid_email(email)):
+        if (email == "") or (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
@@ -220,7 +220,7 @@ class CoordinatorsInfoForm(ModelForm):
         name = cleaned_data.get("name")
         dob = cleaned_data.get("dob")
         mobile_no = cleaned_data.get("mobile_no")
-        if (email != None) and (not valid_email(email)):
+        if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
