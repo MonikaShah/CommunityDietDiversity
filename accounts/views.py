@@ -962,19 +962,31 @@ def coordinator_dashboard(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
 def supercoordinator_dashboard(request):
+    organizations = Organization.objects.all()
+
+    return render(
+        request,
+        "supercoordinator/supercoordinator_dashboard.html",
+        {"organizations": organizations, "page_type": "supercoordinator_dashboard"},
+    )
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+def viewCoordinators(request, id):
     coordinators = (
-        SuperCoordinator.objects.filter(user=request.user)
+        Organization.objects.filter(id=id)
         .first()
         .coordinatorincharge_set.all()
     )
     for coordinator in coordinators:
         coordinator.name = encryptionHelper.decrypt(coordinator.name)
+        coordinator.mobile_no = encryptionHelper.decrypt(coordinator.mobile_no)
+        coordinator.email = encryptionHelper.decrypt(coordinator.email)
     return render(
         request,
-        "supercoordinator/supercoordinator_dashboard.html",
-        {"coordinators": coordinators, "page_type": "supercoordinator_dashboard"},
+        "supercoordinator/view_coordinators.html",
+        {"coordinators": coordinators, "page_type": "view_coordinators"},
     )
-
 
 def createTempDict(postData):
     temp = {}

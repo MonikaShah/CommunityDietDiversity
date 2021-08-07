@@ -21,6 +21,7 @@ urlpatterns = [
     path("coordinator_dashboard/", views.coordinator_dashboard, name="coordinator_dashboard"),
     path("supercoordinator_dashboard/", views.supercoordinator_dashboard, name="supercoordinator_dashboard"),
     path("teacher_dashboard/<int:id>/", views.getFormDetails, name="get_form_details"),
+    path("view_coordinators/<int:id>/", views.viewCoordinators, name="view_coordinators"),
     path("logout/", views.logoutU, name="logoutu"),
     path("addStudentForm/", views.addStudentForm, name="add_student_form"),
     path("addTeacherForm/", views.addTeacherForm, name="add_teacher_form"),
