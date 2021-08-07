@@ -38,7 +38,7 @@ def is_adult(dob):
             is_adult = True
         elif (today_month == student_dob_month) and (today_date >= student_dob_date):
             is_adult = True
-    return is_adult
+    return str(is_adult)
 
 
 def root(request):
