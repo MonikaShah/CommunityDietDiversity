@@ -58,14 +58,7 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <div class="row">
-                    <div class="col-md-6">
-                        {{ form.mobile_no|as_crispy_field }}
-                    </div>
-                    <div class="col-md-6">
-                        {{ form.organization|as_crispy_field }}
-                    </div>
-                </div>
+                {{ form.mobile_no|as_crispy_field }}
             </div>
             <div class="col-md-12">
                 {{user_creation_form|crispy}}

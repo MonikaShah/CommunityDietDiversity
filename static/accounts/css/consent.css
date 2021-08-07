@@ -359,6 +359,10 @@ body {
     background-color: #2b0d52 !important;
 }
 
+.rounded {
+    border-radius: 0.5rem!important;
+}
+
 @media only screen and (max-width:768px){
     .parent-consent-card {
         width: 100%;

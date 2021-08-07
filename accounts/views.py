@@ -367,7 +367,7 @@ def addTeacherForm(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
-def addCoordinatorForm(request):
+def addCoordinatorForm(request, id):
     if request.method == "GET":
         form = CoordinatorsInfoForm()
         user_creation_form = UserCreationForm()
@@ -392,11 +392,10 @@ def addCoordinatorForm(request):
             coordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
             coordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
             coordinator.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
-            coordinator.super_coordinator = SuperCoordinator.objects.filter(
-                user=request.user
-            ).first()
+            coordinator.super_coordinator = SuperCoordinator.objects.filter(user=request.user).first()
+            coordinator.organization = Organization.objects.filter(id = id).first()
             coordinator.save()
-            return redirect("accounts:supercoordinator_dashboard")
+            return redirect('accounts:view_coordinators', id)
         else:
             return render(
                 request,
@@ -1043,7 +1042,7 @@ def viewCoordinators(request, id):
     return render(
         request,
         "supercoordinator/view_coordinators.html",
-        {"coordinators": coordinators, "page_type": "view_coordinators"},
+        {"coordinators": coordinators, "page_type": "view_coordinators", "org_id": id},
     )
 
 def createTempDict(postData):
