@@ -35,48 +35,29 @@ def valid_pincode(pincode):
 # --------------------------------------------------------
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
-        error_messages={"required": "You must agree to consent form"}, label="I Agree"
+        error_messages={"required": "You must agree to consent form."}, label="I Agree"
     )
 
 
 class ParentsInfoForm(ModelForm):
-    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
-    dt = datetime.datetime.now()
-    dt = dt.replace(year=dt.year - 5)
-    widgets = {
-        "start_date": DatePickerInput(),  # python date-time format
-        "end_date": dt.strftime("%m/%d/%Y"),
-    }
-
     email = forms.EmailField()
     name = forms.CharField(max_length=50)
-    dob = forms.DateField(widget=DatePickerInput(widgets))
-    mobile_no = forms.IntegerField()
+    dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
+    mobile_no = forms.IntegerField(label="Mobile Number")
+    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     address = forms.CharField(max_length=100, widget=forms.Textarea())
     pincode = forms.IntegerField()
-    no_of_family_members = forms.IntegerField()
-    children_count = forms.IntegerField()
+    no_of_family_members = forms.IntegerField(label="Number of Family Members")
+    children_count = forms.IntegerField(label="Number of Children")
 
     class Meta:
         model = ParentsInfo
-        fields = [
-            "occupation",
-            "edu",
-            "state",
-            "city",
-            "type_of_family",
-            "religion"
-        ]
+        fields = ["occupation", "edu", "type_of_family", "religion"]
         labels = {
-            "edu": "Education",
-            "dob": "Date of Birth",
-            "mobile_no": "Mobile Number",
             "occupation": "Occupation",
             "edu": "Education",
-            "no_of_family_members": "Number of Family Members",
             "type_of_family": "Type of Family",
-            "children_count": "Number of Children",
         }
 
     def clean(self):
@@ -90,9 +71,9 @@ class ParentsInfoForm(ModelForm):
         pincode = cleaned_data.get("pincode")
         no_of_family_members = cleaned_data.get("no_of_family_members")
         children_count = cleaned_data.get("children_count")
-        if ((email==None) or (not valid_email(email))):
-            raise forms.ValidationError({"email": "Invalid Email"})
-        if ((name==None) or (not valid_name(name))):
+        if (email == None) or (not valid_email(email)):
+            raise forms.ValidationError({"email": "Invalid Email."})
+        if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
@@ -102,56 +83,49 @@ class ParentsInfoForm(ModelForm):
             raise forms.ValidationError({"gender": "Gender is required."})
         if address == None:
             raise forms.ValidationError({"address": "Address is required."})
-        if ((mobile_no==None) or (not valid_mobile_no(mobile_no))):
-            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
-        if ((pincode==None) or (not valid_pincode(pincode))):
+        if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
+        if (pincode == None) or (not valid_pincode(pincode)):
             raise forms.ValidationError({"pincode": "Invalid Pincode"})
-        if ((no_of_family_members==None) or (not no_of_family_members > 1)):
-            raise forms.ValidationError({"no_of_family_members": "Invalid Input"})
-        if ((children_count==None) or (not children_count > 0)):
-            raise forms.ValidationError({"children_count": "Invalid Input"})
+        if (no_of_family_members == None) or (not no_of_family_members > 1):
+            raise forms.ValidationError({"no_of_family_members": "Invalid Input."})
+        if (children_count == None) or (not children_count > 0):
+            raise forms.ValidationError({"children_count": "Invalid Input."})
         return cleaned_data
 
 
 class StudentsInfoForm(ModelForm):
+    rollno = forms.IntegerField(label="Roll Number")
     email = forms.EmailField()
     name = forms.CharField(max_length=50)
-    dob = forms.DateField(widget=DatePickerInput())
-    mobile_no = forms.IntegerField()
+    dob = forms.DateField(widget=DatePickerInput(), label="Date Of Birth")
+    mobile_no = forms.IntegerField(label="Mobile Number")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     address = forms.CharField(max_length=255, widget=forms.Textarea())
     dt = datetime.datetime.now()
     dt = dt.replace(year=dt.year - 5)
     widgets = {
-        "start_date": DatePickerInput(),  # python date-time format
+        "start_date": DatePickerInput(),
         "end_date": dt.strftime("%m/%d/%Y"),
     }
     dob = forms.DateField(widget=DatePickerInput(widgets))
 
     class Meta:
         model = StudentsInfo
-        fields = [
-            "school",
-            "teacher"
-        ]
-        labels = {
-            "dob": "Date Of Birth",
-            "teacher": "Teacher InCharge",
-            "mobile_no": "Mobile Number",
-        }
+        fields = ["organization", "teacher"]
+        labels = {"teacher": "Teacher InCharge"}
 
     def clean(self):
-        # super(StudentsInfoForm, self).clean()
         cleaned_data = super().clean()
         email = cleaned_data.get("email")
         name = cleaned_data.get("name")
         dob = cleaned_data.get("dob")
         address = cleaned_data.get("address")
         mobile_no = cleaned_data.get("mobile_no")
-        if ((email==None) or (not valid_email(email))):
-            raise forms.ValidationError({"email": "Invalid Email"})
-        if ((name==None) or (not valid_name(name))):
+        if (email == None) or (not valid_email(email)):
+            raise forms.ValidationError({"email": "Invalid Email."})
+        if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
@@ -159,24 +133,22 @@ class StudentsInfoForm(ModelForm):
             raise forms.ValidationError({"dob": "Date of Birth is required."})
         if address == None:
             raise forms.ValidationError({"address": "Address is required."})
-        if ((mobile_no==None) or (not valid_mobile_no(mobile_no))):
-            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
-
+        if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
-        # return self.cleaned_data
 
 
 class TeachersInfoForm(ModelForm):
-    email = forms.EmailField()
+    email = forms.EmailField(required=False)
     name = forms.CharField(max_length=50)
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-    mobile_no = forms.IntegerField(label="Mobile Number")
+    mobile_no = forms.IntegerField(label="Mobile Number",required=False)
 
     class Meta:
         model = TeacherInCharge
-        fields = ["school"]
+        fields = []
 
     def clean(self):
         cleaned_data = super().clean()
@@ -185,9 +157,9 @@ class TeachersInfoForm(ModelForm):
         dob = cleaned_data.get("dob")
         gender = cleaned_data.get("gender")
         mobile_no = cleaned_data.get("mobile_no")
-        if ((email==None) or (not valid_email(email))):
+        if (email != None) and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
-        if ((name==None) or (not valid_name(name))):
+        if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
@@ -195,21 +167,22 @@ class TeachersInfoForm(ModelForm):
             raise forms.ValidationError({"dob": "Date of Birth is required."})
         if gender == None:
             raise forms.ValidationError({"gender": "Gender is required."})
-        if ((mobile_no==None) or (not valid_mobile_no(mobile_no))):
+        if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
 
 
-class CoordinatorsInfoForm(ModelForm):
+class SuperCoordinatorsInfoForm(ModelForm):
     email = forms.EmailField()
     name = forms.CharField(max_length=50)
-    dob = forms.DateField(widget=DatePickerInput())
-    mobile_no = forms.IntegerField()
+    dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
+    mobile_no = forms.IntegerField(label="Mobile Number")
+    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
     class Meta:
-        model = CoordinatorInCharge
-        fields = ["school"]
-        labels = {"dob": "Date of Birth", "mobile_no": "Mobile Number"}
+        model = SuperCoordinator
+        fields = []
 
     def clean(self):
         cleaned_data = super().clean()
@@ -217,16 +190,67 @@ class CoordinatorsInfoForm(ModelForm):
         name = cleaned_data.get("name")
         dob = cleaned_data.get("dob")
         mobile_no = cleaned_data.get("mobile_no")
-        if ((email==None) or (not valid_email(email))):
-            raise forms.ValidationError({"email": "Invalid Email"})
-        if ((name==None) or (not valid_name(name))):
+        if (email == None) or (not valid_email(email)):
+            raise forms.ValidationError({"email": "Invalid Email."})
+        if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
         if dob == None:
             raise forms.ValidationError({"dob": "Date of Birth is required."})
-        if ((mobile_no==None) or (not valid_mobile_no(mobile_no))):
-            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number"})
+        if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
+        return cleaned_data
+
+
+class CoordinatorsInfoForm(ModelForm):
+    email = forms.EmailField(required=False)
+    name = forms.CharField(max_length=50)
+    dob = forms.DateField(widget=DatePickerInput(),label="Date of Birth")
+    mobile_no = forms.IntegerField(label="Mobile Number", required=False)
+    GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
+
+    class Meta:
+        model = CoordinatorInCharge
+        fields = ["organization"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        name = cleaned_data.get("name")
+        dob = cleaned_data.get("dob")
+        mobile_no = cleaned_data.get("mobile_no")
+        if (email != None) and (not valid_email(email)):
+            raise forms.ValidationError({"email": "Invalid Email."})
+        if (name == None) or (not valid_name(name)):
+            raise forms.ValidationError(
+                {"name": "No Numeric and Special characters are allowed."}
+            )
+        if dob == None:
+            raise forms.ValidationError({"dob": "Date of Birth is required."})
+        if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
+            raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
+        return cleaned_data
+
+
+class OrganizationsInfoForm(ModelForm):
+    address = forms.CharField(widget=forms.Textarea())
+
+    class Meta:
+        model = Organization
+        fields = ["name","address","pincode","type"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get("name")
+        pincode = cleaned_data.get("pincode")
+        if (name == None) or (not valid_name(name)):
+            raise forms.ValidationError(
+                {"name": "No Numeric and Special characters are allowed."}
+            )
+        if (pincode == None) or (not valid_pincode(pincode)):
+            raise forms.ValidationError({"pincode": "Invalid Pincode"})
         return cleaned_data
 
 

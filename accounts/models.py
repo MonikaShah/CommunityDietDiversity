@@ -50,12 +50,20 @@ class Education(models.Model):
         return self.education
 
 
-class School(models.Model):
+class OrganizationTypes(models.Model):
+    type = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.type
+
+
+class Organization(models.Model):
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     pincode = models.IntegerField()
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
+    type = models.ForeignKey(OrganizationTypes, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -107,7 +115,7 @@ class CoordinatorInCharge(models.Model):
     dob = models.BinaryField()
     gender = models.BinaryField()
     mobile_no = models.BinaryField(null=True)
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     super_coordinator = models.ForeignKey(SuperCoordinator, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -122,7 +130,7 @@ class TeacherInCharge(models.Model):
     dob = models.BinaryField()
     gender = models.BinaryField()
     mobile_no = models.BinaryField(null=True)
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     coordinator = models.ForeignKey(CoordinatorInCharge, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -155,13 +163,13 @@ class StudentsInfo(models.Model):
     gender = models.BinaryField()
     consent = models.BooleanField(default=True)
     adult = models.BinaryField()
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     address = models.BinaryField()
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE)
     first_password = models.CharField(max_length=20, default="helloworld14")
     password_changed = models.BooleanField(default=False)
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
-    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
@@ -177,11 +185,12 @@ class Form(models.Model):
 
 class FormDetails(models.Model):
     form = models.ForeignKey(Form, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
     open = models.BooleanField()
     pre = models.BooleanField()
     start_timestamp = models.DateTimeField()
     end_timestamp = models.DateTimeField(null=True)
+    teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
 
 
 class ModuleOne(models.Model):

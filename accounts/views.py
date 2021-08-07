@@ -19,6 +19,8 @@ from .models import *
 from .forms import *
 from shared.encryption import EncryptionHelper
 
+encryptionHelper = EncryptionHelper()
+
 
 def root(request):
     return redirect("accounts:loginlink")
@@ -78,7 +80,6 @@ def students_info(request):
         parentform = ParentsInfoForm(previousPOST)
         parentuserform = UserCreationForm(previousPOST)
         if form.is_valid() and studentuserform.is_valid():
-            encryptionHelper = EncryptionHelper()
             parentUser = parentuserform.save(commit=False)
             parentUser.save()
             parent_group = Group.objects.get(name="Parents")
@@ -155,7 +156,7 @@ def loginU(request):
                     return redirect("accounts:teacher_dashboard")
                 elif grp_name == "Coordinators":
                     return redirect("accounts:coordinator_dashboard")
-                elif grp_name == "SuperCoordinators":
+                elif grp_name == "Super Coordinators":
                     return redirect("accounts:supercoordinator_dashboard")
             else:
                 messages.error(request, "User does not belong to selected group")
@@ -174,19 +175,55 @@ def logoutU(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
 def parent_dashboard(request):
+    students = (
+        ParentsInfo.objects.filter(user=request.user).first().studentsinfo_set.all()
+    )
+    for student in students:
+        student.name = encryptionHelper.decrypt(student.name)
+    return render(
+        request,
+        "parent/parent_dashboard.html",
+        {"students": students, "page_type": "parent_dashboard"},
+    )
+
+
+# @login_required(login_url="accounts:loginlink")
+# @user_passes_test(is_admin, login_url="accounts:forbidden")
+def addSuperCoordinatorForm(request):
     if request.method == "GET":
-        students = (
-            ParentsInfo.objects.filter(user=request.user).first().studentsinfo_set.all()
-        )
-        helper = EncryptionHelper()
-        for student in students:
-            print(student.name)
-            student.name = helper.decrypt(student.name)
+        form = SuperCoordinatorsInfoForm()
+        user_creation_form = UserCreationForm()
         return render(
             request,
-            "parent/parent_dashboard.html",
-            {"students": students, "page_type": "parent_dashboard"},
+            "admin/add_supercoordinator.html",
+            {"form": form, "user_creation_form": user_creation_form},
         )
+    else:
+        form = SuperCoordinatorsInfoForm(request.POST)
+        supercoordinatoruserform = UserCreationForm(request.POST)
+        if form.is_valid() and supercoordinatoruserform.is_valid():
+            supercoordinatoruser = supercoordinatoruserform.save(commit=False)
+            supercoordinatoruser.save()
+            supercoordinator_group = Group.objects.get(name="Super Coordinators")
+            supercoordinatoruser.groups.add(supercoordinator_group)
+            supercoordinatoruser.save()
+            supercoordinator = form.save(commit=False)
+            supercoordinator.user = supercoordinatoruser
+            supercoordinator.email = encryptionHelper.encrypt(request.POST["email"])
+            supercoordinator.name = encryptionHelper.encrypt(request.POST["name"])
+            supercoordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
+            supercoordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
+            supercoordinator.mobile_no = encryptionHelper.encrypt(
+                request.POST["mobile_no"]
+            )
+            supercoordinator.save()
+            return redirect("accounts:add_supercoordinator_form")
+        else:
+            return render(
+                request,
+                "admin/add_supercoordinator.html",
+                {"form": form, "user_creation_form": supercoordinatoruserform},
+            )
 
 
 @login_required(login_url="accounts:loginlink")
@@ -204,7 +241,6 @@ def addStudentForm(request):
         form = StudentsInfoForm(request.POST)
         studentuserform = UserCreationForm(request.POST)
         if form.is_valid() and studentuserform.is_valid():
-            encryptionHelper = EncryptionHelper()
             studentuser = studentuserform.save(commit=False)
             studentuser.save()
             student_group = Group.objects.get(name="Students")
@@ -248,9 +284,16 @@ def addTeacherForm(request):
             teacheruser.save()
             teacher = form.save(commit=False)
             teacher.user = teacheruser
-            teacher.first_password = ""
-            teacher.password_changed = True
-            teacher.name = request.POST["name"]
+            teacher.email = encryptionHelper.encrypt(request.POST["email"])
+            teacher.name = encryptionHelper.encrypt(request.POST["name"])
+            teacher.dob = encryptionHelper.encrypt(request.POST["dob"])
+            teacher.gender = encryptionHelper.encrypt(request.POST["gender"])
+            teacher.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+            teacher.organization = Organization.objects.filter(
+                name=CoordinatorInCharge.objects.filter(user=request.user)
+                .first()
+                .organization
+            ).first()
             teacher.coordinator = CoordinatorInCharge.objects.filter(
                 user=request.user
             ).first()
@@ -262,6 +305,7 @@ def addTeacherForm(request):
                 "coordinator/add_teacher.html",
                 {"form": form, "user_creation_form": teacheruserform},
             )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
@@ -285,10 +329,12 @@ def addCoordinatorForm(request):
             coordinatoruser.save()
             coordinator = form.save(commit=False)
             coordinator.user = coordinatoruser
-            coordinator.first_password = ""
-            coordinator.password_changed = True
-            coordinator.name = request.POST["name"]
-            coordinator.coordinator = CoordinatorInCharge.objects.filter(
+            coordinator.email = encryptionHelper.encrypt(request.POST["email"])
+            coordinator.name = encryptionHelper.encrypt(request.POST["name"])
+            coordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
+            coordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
+            coordinator.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+            coordinator.super_coordinator = SuperCoordinator.objects.filter(
                 user=request.user
             ).first()
             coordinator.save()
@@ -298,6 +344,36 @@ def addCoordinatorForm(request):
                 request,
                 "supercoordinator/add_coordinator.html",
                 {"form": form, "user_creation_form": coordinatoruserform},
+            )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+def addOrganizationForm(request):
+    if request.method == "GET":
+        form = OrganizationsInfoForm()
+        return render(
+            request,
+            "supercoordinator/add_organization.html",
+            {"form": form},
+        )
+    else:
+        form = OrganizationsInfoForm(request.POST)
+        if form.is_valid():
+            organization = form.save(commit=False)
+            organization.state = State.objects.get(
+                state__icontains=request.POST["state"].strip()
+            )
+            organization.city = City.objects.get(
+                city__icontains=request.POST["city"].strip()
+            )
+            organization.save()
+            return redirect("accounts:supercoordinator_dashboard")
+        else:
+            return render(
+                request,
+                "supercoordinator/add_organization.html",
+                {"form": form},
             )
 
 
@@ -319,8 +395,6 @@ def bulkRegister(request):
         # getting a particular sheet by name out of many sheets
         parentSheet = wb["Parents Data"]
         studentSheet = wb["Students Data"]
-
-        encryptionHelper = EncryptionHelper()
 
         parent_data = list()
         # iterating over the rows and
@@ -474,7 +548,9 @@ def bulkRegister(request):
                     if encryptionHelper.decrypt(tempparent.email) == row[7]:
                         parent = tempparent
 
-                school = School.objects.filter(name__icontains=row[6]).first()
+                organization = Organization.objects.filter(
+                    name__icontains=row[6]
+                ).first()
                 teacher = TeacherInCharge.objects.filter(user=request.user).first()
                 # creating student
                 dob = datetime.datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S").strftime(
@@ -486,7 +562,7 @@ def bulkRegister(request):
                     rollno=row[3],
                     gender=row[4],
                     dob=dob,
-                    school=school,
+                    organization=organization,
                     first_password=password,
                     teacher=teacher,
                 )
@@ -529,7 +605,7 @@ def getTemplate(request):
         "Registration No",
         "Gender",
         "DOB",
-        "School",
+        "Organization",
         "Parents email",
     ]
 
@@ -556,7 +632,7 @@ def getTemplate(request):
         "1234",
         "Female",
         date.today().strftime("%d-%m-%Y"),
-        "K.J Somaiya School",
+        "K.J Somaiya College of Engineering",
         "john@gmail.com",
     ]
     row_num = 0
@@ -593,7 +669,6 @@ def downloadData(request):
     wb = xlsxwriter.Workbook(output)
     parentSheet = wb.add_worksheet("Parents Data")
     studentSheet = wb.add_worksheet("Students Data")
-    encryptionHelper = EncryptionHelper()
 
     # student sheet
     row_num = 0
@@ -603,7 +678,7 @@ def downloadData(request):
         "DOB",
         "Gender",
         "Address",
-        "School",
+        "Organization",
         "Parent's Email",
         "Username",
         "Password",
@@ -620,7 +695,7 @@ def downloadData(request):
         "dob",
         "gender",
         "address",
-        "school",
+        "organization",
         "parent",
         "user",
         "first_password",
@@ -639,8 +714,8 @@ def downloadData(request):
                 studentSheet.write(row_num, col_num, row[col_num].strftime("%d/%b/%Y"))
 
             elif col_num == 5:
-                school = School.objects.get(pk=row[col_num])
-                studentSheet.write(row_num, col_num, school.name)
+                organization = Organization.objects.get(pk=row[col_num])
+                studentSheet.write(row_num, col_num, organization.name)
 
             elif col_num == 6:
                 parent = ParentsInfo.objects.get(pk=row[col_num])
@@ -870,14 +945,35 @@ def teacher_dashboard(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def coordinator_dashboard(request):
-    if request.method == "GET":
-        coordinator = CoordinatorInCharge.objects.get(user=request.user)
-        teachers = coordinator.teacherincharge_set.all()
-        return render(
-            request,
-            "coordinator/coordinator_dashboard.html",
-            {"teachers": teachers, "page_type": "coordinator_dashboard"},
-        )
+    teachers = (
+        CoordinatorInCharge.objects.filter(user=request.user)
+        .first()
+        .teacherincharge_set.all()
+    )
+    for teacher in teachers:
+        teacher.name = encryptionHelper.decrypt(teacher.name)
+    return render(
+        request,
+        "coordinator/coordinator_dashboard.html",
+        {"teachers": teachers, "page_type": "coordinator_dashboard"},
+    )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+def supercoordinator_dashboard(request):
+    coordinators = (
+        SuperCoordinator.objects.filter(user=request.user)
+        .first()
+        .coordinatorincharge_set.all()
+    )
+    for coordinator in coordinators:
+        coordinator.name = encryptionHelper.decrypt(coordinator.name)
+    return render(
+        request,
+        "supercoordinator/supercoordinator_dashboard.html",
+        {"coordinators": coordinators, "page_type": "supercoordinator_dashboard"},
+    )
 
 
 def createTempDict(postData):
@@ -948,12 +1044,8 @@ def draft(request):
             form.pre = 1 if formType == "PreTest" else 0
             form.submission_timestamp = datetime.datetime.now()
             form.save()
-    # 2nd Page
-    elif module == "moduleOne-2":
-        temp = createTempDict(request.POST)
-        creatingOrUpdatingDrafts(temp, user, "moduleOne")
-    # 3rd Page
-    elif module == "moduleOne-3":
+    # 2nd and 3rd Page
+    elif module == "moduleOne-2" or module == "moduleOne-3":
         temp = createTempDict(request.POST)
         creatingOrUpdatingDrafts(temp, user, "moduleOne")
     return redirect(request.META.get("HTTP_REFERER"))
@@ -1227,8 +1319,8 @@ def moduleOne3(request, user=None):
                     if name == "id" or name == "student_id" or name == "draft":
                         continue
                     elif name == "source_fruits_vegetables" or name == "grow_own_food":
-                        list = "; ".join(ast.literal_eval(getattr(draftForm, name)))
-                        setattr(draftForm, name, list)
+                        my_list = "; ".join(ast.literal_eval(getattr(draftForm, name)))
+                        setattr(draftForm, name, my_list)
                     elif name in temp:
                         setattr(draftForm, name, temp[name])
 
@@ -1252,16 +1344,17 @@ def moduleOne3(request, user=None):
 
 
 def forbidden(request):
-    raise PermissionDenied
+    login = False
+    if request.user.get_username() != "":
+        login = True
+    return render(request, "other/forbidden.html", {"login": login})
 
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
 def showStudent(request, id):
     student = StudentsInfo.objects.get(pk=id)
-    return render(
-        request, "parent/student_modules.html", {"student": student}
-    )
+    return render(request, "parent/student_modules.html", {"student": student})
 
 
 @login_required(login_url="accounts:loginlink")
@@ -1559,7 +1652,6 @@ def getFormDetails(request, id):
     form = FormDetails.objects.get(pk=id)
     teacher = form.teacher
     total_students = teacher.studentsinfo_set.all()
-    encryptionHelper = EncryptionHelper()
 
     filled_students = []
     not_filled_students = []
@@ -1818,8 +1910,8 @@ def activity(request, user=None):
                     if name == "id" or name == "student_id" or name == "draft":
                         continue
                     elif name == "source_fruits_vegetables" or name == "grow_own_food":
-                        list = "; ".join(ast.literal_eval(getattr(draftForm, name)))
-                        setattr(draftForm, name, list)
+                        my_list = "; ".join(ast.literal_eval(getattr(draftForm, name)))
+                        setattr(draftForm, name, my_list)
                     elif name in temp:
                         setattr(draftForm, name, temp[name])
 
