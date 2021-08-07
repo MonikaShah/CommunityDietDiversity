@@ -4,6 +4,7 @@ from .models import (
     TeacherInCharge,
     School,
     CoordinatorInCharge,
+    SuperCoordinator
 )
 
 
@@ -34,3 +35,4 @@ accounts_admin_area.register(auth.models.User, AccountsUserCustomization)
 accounts_admin_area.register(School)
 accounts_admin_area.register(CoordinatorInCharge)
 accounts_admin_area.register(TeacherInCharge)
+accounts_admin_area.register(SuperCoordinator)
