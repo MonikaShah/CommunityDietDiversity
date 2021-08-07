@@ -231,8 +231,8 @@ def parent_dashboard(request):
     )
 
 
-# @login_required(login_url="accounts:loginlink")
-# @user_passes_test(is_admin, login_url="accounts:forbidden")
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_admin, login_url="accounts:forbidden")
 def addSuperCoordinatorForm(request):
     if request.method == "GET":
         form = SuperCoordinatorsInfoForm()

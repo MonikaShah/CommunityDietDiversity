@@ -23,6 +23,9 @@ def is_coordinator(user):
 def is_supercoordinator(user):
     return user.groups.filter(name="Super Coordinators").exists()
 
+def is_admin(user):
+    return user.is_superuser
+
 def is_parent_or_student(user):
     return (
         user.groups.filter(name="Parents").exists()
