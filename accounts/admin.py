@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from django.contrib import auth, admin
 from django.contrib.auth.admin import UserAdmin
 from .models import (
@@ -24,10 +23,6 @@ class AccountsUserCustomization(UserAdmin):
             },
         ),
     )
-=======
-from django.contrib import admin
-from .models import *
->>>>>>> 2f36fb072e5cd4844ea108b1d9ed082164b427d8
 
 
 class AccountsAdminArea(admin.AdminSite):
