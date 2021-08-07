@@ -1,7 +1,4 @@
-from os import name
-from datetime import date, timedelta
 from django.db import models
-from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from shared.encryption import EncryptionHelper
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -164,11 +161,14 @@ class StudentsInfo(models.Model):
     consent = models.BooleanField(default=True)
     adult = models.BinaryField()
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    state = models.ForeignKey(State, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    pincode = models.BinaryField()
     address = models.BinaryField()
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE)
     first_password = models.CharField(max_length=20, default="helloworld14")
     password_changed = models.BooleanField(default=False)
-    teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE, null=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
 
     def __str__(self):

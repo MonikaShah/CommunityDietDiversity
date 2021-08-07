@@ -22,6 +22,25 @@ from shared.encryption import EncryptionHelper
 encryptionHelper = EncryptionHelper()
 
 
+def is_adult(dob):
+    today = str(date.today())
+    student_dob_year = int(dob[6:])
+    student_dob_month = int(dob[:2])
+    student_dob_date = int(dob[3:5])
+    today_year = int(today[:4])
+    today_month = int(today[5:7])
+    today_date = int(today[8:])
+    is_adult = False
+    if today_year - 18 > student_dob_year:
+        is_adult = True
+    elif today_year - 18 == student_dob_year:
+        if today_month > student_dob_month:
+            is_adult = True
+        elif (today_month == student_dob_month) and (today_date >= student_dob_date):
+            is_adult = True
+    return is_adult
+
+
 def root(request):
     return redirect("accounts:loginlink")
 
@@ -88,14 +107,25 @@ def students_info(request):
 
             parent = parentform.save(commit=False)
             parent.user = parentUser
-            parent.first_password = ""
-            parent.password_changed = True
-            parent.name = encryptionHelper.encrypt(previousPOST["name"])
             parent.email = encryptionHelper.encrypt(previousPOST["email"])
+            parent.name = encryptionHelper.encrypt(previousPOST["name"])
+            parent.dob = encryptionHelper.encrypt(previousPOST["dob"])
+            parent.mobile_no = encryptionHelper.encrypt(previousPOST["mobile_no"])
+            parent.gender = encryptionHelper.encrypt(previousPOST["gender"])
             parent.state = State.objects.get(
                 state__icontains=previousPOST["state"].strip()
             )
             parent.city = City.objects.get(city__icontains=previousPOST["city"].strip())
+            parent.address = encryptionHelper.encrypt(previousPOST["address"])
+            parent.pincode = encryptionHelper.encrypt(previousPOST["pincode"])
+            parent.no_of_family_members = encryptionHelper.encrypt(
+                previousPOST["no_of_family_members"]
+            )
+            parent.children_count = encryptionHelper.encrypt(
+                previousPOST["children_count"]
+            )
+            parent.first_password = ""
+            parent.password_changed = True
             parent.save()
 
             studentuser = studentuserform.save(commit=False)
@@ -106,10 +136,24 @@ def students_info(request):
 
             student = form.save(commit=False)
             student.user = studentuser
+            student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
+            student.name = encryptionHelper.encrypt(request.POST["name"])
+            student.email = encryptionHelper.encrypt(request.POST["email"])
+            student.dob = encryptionHelper.encrypt(request.POST["dob"])
+            student.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+            student.gender = encryptionHelper.encrypt(request.POST["gender"])
+            student.adult = encryptionHelper.encrypt(is_adult(request.POST["dob"]))
+            student.state = State.objects.get(
+                state__icontains=request.POST["state"].strip()
+            )
+            student.city = City.objects.get(
+                city__icontains=request.POST["city"].strip()
+            )
+            student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
+            student.address = encryptionHelper.encrypt(request.POST["address"])
+            student.parent = parent
             student.first_password = ""
             student.password_changed = True
-            student.name = encryptionHelper.encrypt(request.POST["name"])
-            student.parent = parent
             student.save()
 
             user = authenticate(
@@ -248,10 +292,24 @@ def addStudentForm(request):
             studentuser.save()
             student = form.save(commit=False)
             student.user = studentuser
+            student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
+            student.name = encryptionHelper.encrypt(request.POST["name"])
+            student.email = encryptionHelper.encrypt(request.POST["email"])
+            student.dob = encryptionHelper.encrypt(request.POST["dob"])
+            student.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+            student.gender = encryptionHelper.encrypt(request.POST["gender"])
+            student.adult = encryptionHelper.encrypt(is_adult(request.POST["dob"]))
+            student.state = State.objects.get(
+                state__icontains=request.POST["state"].strip()
+            )
+            student.city = City.objects.get(
+                city__icontains=request.POST["city"].strip()
+            )
+            student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
+            student.address = encryptionHelper.encrypt(request.POST["address"])
+            student.parent = ParentsInfo.objects.filter(user=request.user).first()
             student.first_password = ""
             student.password_changed = True
-            student.name = encryptionHelper.encrypt(request.POST["name"])
-            student.parent = ParentsInfo.objects.filter(user=request.user).first()
             student.save()
             return redirect("accounts:parent_dashboard")
         else:
