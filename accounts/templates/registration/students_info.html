@@ -30,20 +30,16 @@
             <div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="50" aria-valuemin="0"
                 aria-valuemax="100"></div>
         </div>
-        <button type="button"
-            class="position-absolute top-0 start-0 translate-middle btn btn-sm btn-primary rounded-pill"
-            style="width: 2rem; height:2rem;">1</button>
+        <a class="position-absolute top-0 start-0 translate-middle btn btn-sm btn-primary rounded-pill"
+            style="width: 2rem; height:2rem;" href="{% url 'accounts:consent' %}">1</a>
         {% if is_adult %}
-        <button type="button"
-            class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-primary rounded-pill"
-            style="width: 2rem; height:2rem;">2</button>
+        <a class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-primary rounded-pill"
+            style="width: 2rem; height:2rem;">2</a>
         {% else %}
-        <button type="button"
-            class="position-absolute top-0 start-50 translate-middle btn btn-sm btn-primary rounded-pill"
-            style="width: 2rem; height:2rem;">2</button>
-        <button type="button"
-            class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-primary rounded-pill"
-            style="width: 2rem; height:2rem;">3</button>
+        <a class="position-absolute top-0 start-50 translate-middle btn btn-sm btn-primary rounded-pill"
+            style="width: 2rem; height:2rem;" href="{% url 'accounts:parents_info' %}">2</a>
+        <a class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-primary rounded-pill"
+            style="width: 2rem; height:2rem;">3</a>
         {% endif %}
     </div>
 </div>
