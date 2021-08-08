@@ -37,7 +37,7 @@
             {% endif %}
                 <a class="my-nav-link nav-link" href="{% url 'accounts:all_coordinators' %}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>All Coordinators</span>
+                    <span>Coordinators</span>
                 </a>
             </li>
 
@@ -49,7 +49,17 @@
             {% endif %}
                 <a class="my-nav-link nav-link" href="{% url 'accounts:coordinator_dashboard' %}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
+                    <span>Teachers</span>
+                </a>
+            </li>
+            {% if page_type == "all_sessions" %}
+            <li class="nav-item active">
+            {% else %}
+            <li class="nav-item">
+            {% endif %}
+                <a class="my-nav-link nav-link" href="{% url 'accounts:all_sessions' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Sessions</span>
                 </a>
             </li>
 

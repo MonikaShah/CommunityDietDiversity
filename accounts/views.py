@@ -433,6 +433,11 @@ def addOrganizationForm(request):
                 {"form": form},
             )
 
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def addSessionForm(request):
+    pass
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
@@ -1030,11 +1035,8 @@ def supercoordinator_dashboard(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
 def viewCoordinators(request, id):
-    coordinators = (
-        Organization.objects.filter(id=id)
-        .first()
-        .coordinatorincharge_set.all()
-    )
+    organization = Organization.objects.filter(id=id).first()
+    coordinators = organization.coordinatorincharge_set.all()
     for coordinator in coordinators:
         coordinator.name = encryptionHelper.decrypt(coordinator.name)
         coordinator.mobile_no = encryptionHelper.decrypt(coordinator.mobile_no)
@@ -1042,7 +1044,7 @@ def viewCoordinators(request, id):
     return render(
         request,
         "supercoordinator/view_coordinators.html",
-        {"coordinators": coordinators, "page_type": "view_coordinators", "org_id": id},
+        {"coordinators": coordinators, "organization": organization, "page_type": "view_coordinators", "org_id": id},
     )
 
 @login_required(login_url="accounts:loginlink")
@@ -1058,6 +1060,18 @@ def allCoordinators(request):
         "supercoordinator/all_coordinators.html",
         {"coordinators": coordinators, "page_type": "all_coordinators"},
     )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def allSessions(request):
+    sessions =  CoordinatorInCharge.objects.filter(user=request.user).first().session_set.all()
+    return render(
+        request,
+        "coordinator/all_sessions.html",
+        {"sessions": sessions, "page_type": "all_sessions"},
+    )
+
 
 def createTempDict(postData):
     temp = {}

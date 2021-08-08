@@ -21,8 +21,22 @@
 {% endblock %}
 
 {%block content%}
+<center><h2 class="mb-3">Organization Information</h2></center>
+<div class="col-md-10 offset-md-1 mb-3">
+    <ul class="list-group">
+        <h6>
+            <li class="list-group-item"><b>Name: </b>{{ organization.name }}</li>
+            <li class="list-group-item"><b>Type: </b>{{ organization.type }}</li>
+            <li class="list-group-item"><b>Address: </b>{{ organization.address }}</li>
+            <li class="list-group-item"><b>Pincode: </b>{{ organization.pincode }}</li>
+            <li class="list-group-item"><b>City: </b>{{ organization.city }}</li>
+            <li class="list-group-item"><b>State: </b>{{ organization.state }}</li>
+        </h6>
+    </ul>
+</div>
 
-<center><h1>Coordinators</h1></center>
+
+<center><h2>Coordinators</h2></center>
 
 <div class="d-flex justify-content-end mb-4">
     <a href="{% url 'accounts:add_coordinator_form' org_id %}" class="btn btn-info btnmedium">Add Coordinator</a>
@@ -38,6 +52,20 @@
         </div>
     </div>
     {% endfor %}
+    <div class="my-card card shadow border rounded">
+        <div class="card-body">
+            <center><b><h3 class="card-title mb-3">djcnwuefbrwj</h3></b></center>
+            <h6 class="card-text"><b>Mobile No. </b> jfbwuefbwrjf</h6>
+            <h6 class="card-text"><b>Email: </b> jkvniuwrbrjn</h6>
+        </div>
+    </div>
+    <div class="my-card card shadow border rounded">
+        <div class="card-body">
+            <center><b><h3 class="card-title mb-3">wjhvburvbrvb</h3></b></center>
+            <h6 class="card-text"><b>Mobile No. </b> rvnwjhrbvrhvnrw</h6>
+            <h6 class="card-text"><b>Email: </b> vnwrigvbrubr</h6>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
