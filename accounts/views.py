@@ -1045,6 +1045,20 @@ def viewCoordinators(request, id):
         {"coordinators": coordinators, "page_type": "view_coordinators", "org_id": id},
     )
 
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+def allCoordinators(request):
+    coordinators = CoordinatorInCharge.objects.all()
+    for coordinator in coordinators:
+        coordinator.name = encryptionHelper.decrypt(coordinator.name)
+        coordinator.mobile_no = encryptionHelper.decrypt(coordinator.mobile_no)
+        coordinator.email = encryptionHelper.decrypt(coordinator.email)
+    return render(
+        request,
+        "supercoordinator/all_coordinators.html",
+        {"coordinators": coordinators, "page_type": "all_coordinators"},
+    )
+
 def createTempDict(postData):
     temp = {}
     for key in postData:

@@ -27,7 +27,17 @@
             {% endif %}
                 <a class="my-nav-link nav-link" href="{% url 'accounts:supercoordinator_dashboard' %}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
+                    <span>Organizations</span>
+                </a>
+            </li>
+            {% if page_type == "all_coordinators" %}
+            <li class="nav-item active">
+            {% else %}
+            <li class="nav-item">
+            {% endif %}
+                <a class="my-nav-link nav-link" href="{% url 'accounts:all_coordinators' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>All Coordinators</span>
                 </a>
             </li>
 
