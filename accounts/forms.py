@@ -1,11 +1,11 @@
 from django.contrib.auth.models import Group, User
+from datetime import datetime, date
 from django.core.exceptions import ValidationError
 from django.db.models.fields import CharField
 from django.forms import ModelForm, fields
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
-import datetime
 from .models import *
 from django.core.validators import MaxLengthValidator, RegexValidator
 from crispy_forms.helper import FormHelper
@@ -14,11 +14,53 @@ import re
 # Validation Functions
 
 
+def valid_adult(dob):
+    today = str(date.today())
+    student_dob_year = int(dob[:4])
+    student_dob_month = int(dob[5:7])
+    student_dob_date = int(dob[8:])
+    today_year = int(today[:4])
+    today_month = int(today[5:7])
+    today_date = int(today[8:])
+    is_valid = False
+    if (today_year - 18 > student_dob_year) or (
+        (today_year - 18 == student_dob_year)
+        and (
+            (today_month > student_dob_month)
+            or ((today_month == student_dob_month) and (today_date >= student_dob_date))
+        )
+    ):
+        is_valid = True
+    return is_valid
+
+
+def valid_dob(dob):
+    today = str(date.today())
+    student_dob_year = int(dob[:4])
+    student_dob_month = int(dob[5:7])
+    student_dob_date = int(dob[8:])
+    today_year = int(today[:4])
+    today_month = int(today[5:7])
+    today_date = int(today[8:])
+    is_valid = False
+    if (today_year - 5 > student_dob_year) or (
+        (today_year - 5 == student_dob_year)
+        and (
+            (today_month > student_dob_month)
+            or ((today_month == student_dob_month) and (today_date >= student_dob_date))
+        )
+    ):
+        is_valid = True
+    return is_valid
+
+
 def valid_name(name):
+    name = str(name)
     return re.match("^[a-zA-Z' ]*$", name)
 
 
 def valid_email(email):
+    email = str(email)
     return re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
 
 
@@ -33,6 +75,19 @@ def valid_pincode(pincode):
 
 
 # --------------------------------------------------------
+class RegistrationForm(forms.Form):
+    dob = forms.DateField(widget=DatePickerInput(), label="")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        dob = cleaned_data.get("dob")
+        if dob != None and not valid_dob(str(dob)):
+            raise forms.ValidationError(
+                {"dob": "Student should be at least 5 years or older."}
+            )
+        return cleaned_data
+
+
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(
         error_messages={"required": "You must agree to consent form."}, label="I Agree"
@@ -58,27 +113,21 @@ class ParentsInfoForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        dob = cleaned_data.get("dob")
         email = cleaned_data.get("email")
         name = cleaned_data.get("name")
-        dob = cleaned_data.get("dob")
         mobile_no = cleaned_data.get("mobile_no")
-        gender = cleaned_data.get("gender")
-        address = cleaned_data.get("address")
         pincode = cleaned_data.get("pincode")
         no_of_family_members = cleaned_data.get("no_of_family_members")
         children_count = cleaned_data.get("children_count")
+        if dob != None and not valid_adult(str(dob)):
+            raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
-        if dob == None:
-            raise forms.ValidationError({"dob": "Date of Birth is required."})
-        if gender == None:
-            raise forms.ValidationError({"gender": "Gender is required."})
-        if address == None:
-            raise forms.ValidationError({"address": "Address is required."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         if (pincode == None) or (not valid_pincode(pincode)):
@@ -100,13 +149,6 @@ class StudentsInfoForm(ModelForm):
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     pincode = forms.IntegerField()
     address = forms.CharField(max_length=255, widget=forms.Textarea())
-    dt = datetime.datetime.now()
-    dt = dt.replace(year=dt.year - 5)
-    widgets = {
-        "start_date": DatePickerInput(),
-        "end_date": dt.strftime("%m/%d/%Y"),
-    }
-    dob = forms.DateField(widget=DatePickerInput(widgets))
 
     class Meta:
         model = StudentsInfo
@@ -116,20 +158,19 @@ class StudentsInfoForm(ModelForm):
         cleaned_data = super().clean()
         email = cleaned_data.get("email")
         name = cleaned_data.get("name")
-        dob = cleaned_data.get("dob")
-        address = cleaned_data.get("address")
         mobile_no = cleaned_data.get("mobile_no")
         pincode = cleaned_data.get("pincode")
+        dob = cleaned_data.get("dob")
+        if dob != None and not valid_dob(str(dob)):
+            raise forms.ValidationError(
+                {"dob": "Student should be at least 5 years or older."}
+            )
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
-        if dob == None:
-            raise forms.ValidationError({"dob": "Date of Birth is required."})
-        if address == None:
-            raise forms.ValidationError({"address": "Address is required."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         if (pincode == None) or (not valid_pincode(pincode)):
@@ -151,21 +192,18 @@ class TeachersInfoForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        dob = cleaned_data.get("dob")
         email = cleaned_data.get("email")
         name = cleaned_data.get("name")
-        dob = cleaned_data.get("dob")
-        gender = cleaned_data.get("gender")
         mobile_no = cleaned_data.get("mobile_no")
+        if dob != None and not valid_adult(str(dob)):
+            raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
-        if dob == None:
-            raise forms.ValidationError({"dob": "Date of Birth is required."})
-        if gender == None:
-            raise forms.ValidationError({"gender": "Gender is required."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
@@ -185,18 +223,18 @@ class SuperCoordinatorsInfoForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        dob = cleaned_data.get("dob")
         email = cleaned_data.get("email")
         name = cleaned_data.get("name")
-        dob = cleaned_data.get("dob")
         mobile_no = cleaned_data.get("mobile_no")
+        if dob != None and not valid_adult(str(dob)):
+            raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email == "") or (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
-        if dob == None:
-            raise forms.ValidationError({"dob": "Date of Birth is required."})
         if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
@@ -216,18 +254,18 @@ class CoordinatorsInfoForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        dob = cleaned_data.get("dob")
         email = cleaned_data.get("email")
         name = cleaned_data.get("name")
-        dob = cleaned_data.get("dob")
         mobile_no = cleaned_data.get("mobile_no")
+        if dob != None and not valid_adult(str(dob)):
+            raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
-        if dob == None:
-            raise forms.ValidationError({"dob": "Date of Birth is required."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data

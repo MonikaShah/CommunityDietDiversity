@@ -1,0 +1,43 @@
+{% extends 'partials/layout.html' %}
+
+{% load static %} {% load crispy_forms_tags%}
+
+{%block links %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+<link rel="stylesheet" href="{% static 'accounts/css/consent.css' %}">
+<script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js "></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js "></script>
+{% endblock %}
+
+{% block title %}
+<title>Registration</title>
+{% endblock %}
+
+{%block content%}
+<style>
+.invalid-feedback{
+    display:block;
+}
+</style>
+<div class="d-flex justify-content-center">
+    <div class="card shadow border rounded signup-card">
+        <form action="" method="POST">
+            {{form.media}}
+            {% csrf_token %}
+            <h3 class="mb-4 d-flex justify-content-around">Enter Student's Date of Birth</h3>
+            <div class="container mb-4">
+                <div class="row justify-content-md-center">
+                    <div class="col-md-4">
+                        {{ form.dob|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-around">
+                <input type="submit" class="btn btn-primary btnmedium" value="Next">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

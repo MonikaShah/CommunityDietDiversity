@@ -19,7 +19,7 @@
 <body>
     <div class="full-height d-flex align-items-center justify-content-center">
         <div class="card shadow border rounded">
-            <div class="consent-card">
+            <div class="consent-card rounded">
                 {% if messages %}
                 {% for message in messages %}
                 <div class="alert alert-danger" role="alert">
@@ -41,10 +41,10 @@
                     </div>
                     <div class="mt-4 d-flex">
                         <div style="padding-right:6px;">
-                            <input type="submit" value="Login"  class="btn btn-primary">
+                            <input type="submit" value="Login"  class="btn btn-primary btnmedium">
                         </div>
                         <div style="padding-left:6px;">
-                            <a href="{% url 'accounts:consent'  %}"  class="btn btn-info"> Sign up</a>
+                            <a href="{% url 'accounts:registration' %}"  class="btn btn-info btnmedium"> Sign up</a>
                         </div>
                     </div>
                     <div class="my-lower-links mt-3 mb-1">
