@@ -27,7 +27,11 @@
         <div class="card-body">
             <center><b><h3 class="card-title mb-3">{{ session.name }}</h3></b></center>
             <h6 class="card-text"><b>Start Date: </b> {{ session.start_date}}</h6>
-            <h6 class="card-text"><b>End Date: </b> {{ session.end_date }}</h6>
+            {% if end_date == None %}
+                <h6 class="card-text"><b>End Date: </b> Ongoing </h6>
+            {% else %}
+                <h6 class="card-text"><b>End Date: </b> {{ session.end_date }}</h6>
+            {% endif %}
             <center><a href="{% url 'accounts:view_session_teachers' session.id %}" class="btn btn-primary btnmedium">View Teachers</a></center>
         </div>
     </div>
