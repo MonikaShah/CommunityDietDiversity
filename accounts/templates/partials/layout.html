@@ -10,11 +10,20 @@
     <link href="{% static 'accounts/css/sidebar.css' %}" rel="stylesheet"> 
     <link href="{% static 'accounts/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="{% static 'accounts/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'accounts/css/consent.css' %}">
     {% block links %}{% endblock %}
     {% block title %}{% endblock %}
 </head>
 
-<body id="page-top">
+
+<style>
+    .extra-purple-bars-fix {
+        padding-right: 0!important;
+    }
+</style>
+
+<body class="extra-purple-bars-fix" id="page-top">
     <div class="bs-canvas-overlay bs-canvas-anim bg-dark position-fixed w-100 h-100"></div>
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -76,13 +85,11 @@
             </div>
         </div>
     </div>
+    
     <script src="{% static 'accounts/vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'accounts/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <!-- Core plugin JavaScript-->
     <script src="{% static 'accounts/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
-    <!-- Custom scripts for all pages-->
     <script src="{% static 'accounts/vendor/js/sb-admin-2.js' %}"></script>
-    <!-- Page level plugins -->
     <script src="{% static 'accounts/vendor/chart.js/Chart.min.js' %}"></script>
 </body>
 
