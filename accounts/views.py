@@ -625,7 +625,27 @@ def addOrganizationForm(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def addSessionForm(request):
-    pass
+    if request.method == "GET":
+        form = SessionsInfoForm()
+        return render(
+            request,
+            "coordinator/add_session.html",
+            {"form": form},
+        )
+    else:
+        form = SessionsInfoForm(request.POST)
+        if form.is_valid():
+            session = form.save(commit=False)
+            session.start_date = datetime.now()
+            session.coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
+            session.save()
+            return redirect("accounts:all_sessions")
+        else:
+            return render(
+                request,
+                "coordinator/add_session.html",
+                {"form": form},
+            )
 
 
 @login_required(login_url="accounts:loginlink")
@@ -1270,6 +1290,22 @@ def allSessions(request):
         {"sessions": sessions, "page_type": "all_sessions"},
     )
 
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def viewSessionTeachers(request, id):
+    session = Session.objects.filter(id=id).first()
+    objects = Teacher_Session.objects.filter(session=session)
+    teachers = []
+    for object in objects:
+        object.teacher.name = encryptionHelper.decrypt(object.teacher.name)
+        teachers.append(object.teacher)
+
+    return render(
+        request,
+        "coordinator/view_session_teachers.html",
+        {"teachers": teachers, "session": session, "page_type": "view_session_teachers"},
+    )
 
 def createTempDict(postData):
     temp = {}

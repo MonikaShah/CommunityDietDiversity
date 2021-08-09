@@ -276,6 +276,13 @@ class CoordinatorsInfoForm(ModelForm):
         return cleaned_data
 
 
+class SessionsInfoForm(ModelForm):
+
+    class Meta:
+        model = Session
+        fields = ["name"]
+
+
 class OrganizationsInfoForm(ModelForm):
     address = forms.CharField(widget=forms.Textarea())
 
