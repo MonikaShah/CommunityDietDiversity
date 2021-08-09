@@ -103,6 +103,12 @@ def registration_data_cleanup(func):
             del request.session["data"]
         if "dob" in request.session:
             del request.session["dob"]
+        if "registration_visited" in request.session:
+            del request.session["registration_visited"]
+        if "consent_visited" in request.session:
+            del request.session["consent_visited"]
+        if "parents_info_visited" in request.session:
+            del request.session["parents_info_visited"]
         return func(request, *args, **kwargs)
 
     return logic

@@ -56,6 +56,7 @@ def registration(request):
         if form.is_valid():
             dob = request.POST["dob"]
             request.session["dob"] = dob
+            request.session["registration_visited"] = True
             if is_adult_func(dob) == "True":
                 return redirect("accounts:consent_adult")
             else:
@@ -65,10 +66,22 @@ def registration(request):
 
 
 def consent_adult(request):
-    form = ConsentForm()
-    return render(
-        request, "registration/consent.html", {"form": form, "is_adult": True}
-    )
+    if "registration_visited" not in request.session:
+        return redirect("accounts:registration")
+    if request.method == "GET":
+        form = ConsentForm()
+        return render(
+            request, "registration/consent.html", {"form": form, "is_adult": True}
+        )
+    else:
+        form = ConsentForm(request.POST)
+        if form.is_valid():
+            request.session["consent_visited"] = True
+            return redirect("accounts:students_info_adult")
+        else:
+            return render(
+                request, "registration/consent.html", {"form": form, "is_adult": True}
+            )
 
 
 def students_info_adult(request):
@@ -77,14 +90,30 @@ def students_info_adult(request):
 
 @redirect_to_dashboard
 def consent(request):
-    form = ConsentForm()
-    return render(
-        request, "registration/consent.html", {"form": form, "is_adult": False}
-    )
+    if "registration_visited" not in request.session:
+        return redirect("accounts:registration")
+    if request.method == "GET":
+        form = ConsentForm()
+        return render(
+            request, "registration/consent.html", {"form": form, "is_adult": False}
+        )
+    else:
+        form = ConsentForm(request.POST)
+        if form.is_valid():
+            request.session["consent_visited"] = True
+            return redirect("accounts:students_info")
+        else:
+            return render(
+                request, "registration/consent.html", {"form": form, "is_adult": False}
+            )
 
 
 @redirect_to_dashboard
 def parents_info(request):
+    if "registration_visited" not in request.session:
+        return redirect("accounts:registration")
+    if "consent_visited" not in request.session:
+        return redirect("accounts:consent")
     if request.method == "GET":
         if request.session.get("data"):
             form = ParentsInfoForm(request.session.get("data"))
@@ -103,6 +132,7 @@ def parents_info(request):
 
         if form.is_valid() and user_creation_form.is_valid():
             request.session["data"] = request.POST
+            request.session["parents_info_visited"] = True
             return redirect("accounts:students_info")
         else:
             return render(
@@ -114,6 +144,18 @@ def parents_info(request):
 
 @redirect_to_dashboard
 def students_info(request, is_adult=False):
+    if is_adult:
+        if "registration_visited" not in request.session:
+            return redirect("accounts:registration")
+        if "consent_visited" not in request.session:
+            return redirect("accounts:consent_adult")
+    else:
+        if "registration_visited" not in request.session:
+            return redirect("accounts:registration")
+        if "consent_visited" not in request.session:
+            return redirect("accounts:consent")
+        if "parents_info_visited" not in request.session:
+            return redirect("accounts:parents_info")
     student_dob = request.session["dob"]
     if request.method == "GET":
         form = StudentsInfoForm()
@@ -125,11 +167,11 @@ def students_info(request, is_adult=False):
                 "form": form,
                 "user_creation_form": user_creation_form,
                 "is_adult": is_adult,
-                "student_dob":student_dob
+                "student_dob": student_dob,
             },
         )
     else:
-        if is_adult == False:
+        if not is_adult:
             previousPOST = request.session["data"]
             form = StudentsInfoForm(request.POST)
             studentuserform = UserCreationForm(request.POST)
@@ -152,7 +194,9 @@ def students_info(request, is_adult=False):
                 parent.state = State.objects.get(
                     state__icontains=previousPOST["state"].strip()
                 )
-                parent.city = City.objects.get(city__icontains=previousPOST["city"].strip())
+                parent.city = City.objects.get(
+                    city__icontains=previousPOST["city"].strip()
+                )
                 parent.address = encryptionHelper.encrypt(previousPOST["address"])
                 parent.pincode = encryptionHelper.encrypt(previousPOST["pincode"])
                 parent.no_of_family_members = encryptionHelper.encrypt(
@@ -202,10 +246,11 @@ def students_info(request, is_adult=False):
                 if user is not None:
                     login(request, user)
 
-                if "data" in request.session:
-                    del request.session["data"]
-                if "dob" in request.session:
-                    del request.session["dob"]
+                del request.session["data"]
+                del request.session["dob"]
+                del request.session["registration_visited"]
+                del request.session["consent_visited"]
+                del request.session["parents_info_visited"]
                 return redirect("accounts:parent_dashboard")
             else:
                 return render(
@@ -215,7 +260,7 @@ def students_info(request, is_adult=False):
                         "form": form,
                         "user_creation_form": studentuserform,
                         "is_adult": is_adult,
-                        "student_dob":student_dob
+                        "student_dob": student_dob,
                     },
                 )
         else:
@@ -223,7 +268,9 @@ def students_info(request, is_adult=False):
             studentuserform = UserCreationForm(request.POST)
             if form.is_valid() and studentuserform.is_valid():
                 if not User.objects.filter(username="dummyParent").exists():
-                    parentUser = User.objects.create_user(username='dummyParent',password='django12')
+                    parentUser = User.objects.create_user(
+                        username="dummyParent", password="django12"
+                    )
                     parent_group = Group.objects.get(name="Parents")
                     parentUser.groups.add(parent_group)
                     parentUser.save()
@@ -234,10 +281,18 @@ def students_info(request, is_adult=False):
                     parent.name = encryptionHelper.encrypt("Dummy Parent")
                     parent.dob = encryptionHelper.encrypt("01/01/2000")
                     parent.gender = encryptionHelper.encrypt("Male")
-                    parent.occupation = Occupation.objects.get(occupation__icontains="Professional")
-                    parent.edu = Education.objects.get(education__icontains="Graduate (Bachelors)")
-                    parent.type_of_family = FamilyType.objects.get(family__icontains="Joint")
-                    parent.religion = ReligiousBelief.objects.get(religion__icontains="Hinduism")
+                    parent.occupation = Occupation.objects.get(
+                        occupation__icontains="Professional"
+                    )
+                    parent.edu = Education.objects.get(
+                        education__icontains="Graduate (Bachelors)"
+                    )
+                    parent.type_of_family = FamilyType.objects.get(
+                        family__icontains="Joint"
+                    )
+                    parent.religion = ReligiousBelief.objects.get(
+                        religion__icontains="Hinduism"
+                    )
                     parent.state = State.objects.get(state__icontains="Maharashtra")
                     parent.city = City.objects.get(city__icontains="Mumbai")
                     parent.address = encryptionHelper.encrypt("Vidyavihar")
@@ -248,7 +303,9 @@ def students_info(request, is_adult=False):
                     parent.password_changed = True
                     parent.save()
 
-                parent = ParentsInfo.objects.filter(user=User.objects.get(username="dummyParent")).first()
+                parent = ParentsInfo.objects.filter(
+                    user=User.objects.get(username="dummyParent")
+                ).first()
                 studentuser = studentuserform.save(commit=False)
                 studentuser.save()
                 student_group = Group.objects.get(name="Students")
@@ -279,17 +336,17 @@ def students_info(request, is_adult=False):
 
                 user = authenticate(
                     request,
-                    username= request.POST["username"],
-                    password= request.POST["password1"],
+                    username=request.POST["username"],
+                    password=request.POST["password1"],
                 )
                 request.session.set_expiry(86400)
                 if user is not None:
                     login(request, user)
 
-                if "data" in request.session:
-                    del request.session["data"]
-                if "dob" in request.session:
-                    del request.session["dob"]
+                del request.session["data"]
+                del request.session["dob"]
+                del request.session["registration_visited"]
+                del request.session["consent_visited"]
                 return redirect("accounts:student_dashboard")
             else:
                 return render(
@@ -299,7 +356,7 @@ def students_info(request, is_adult=False):
                         "form": form,
                         "user_creation_form": studentuserform,
                         "is_adult": is_adult,
-                        "student_dob":student_dob
+                        "student_dob": student_dob,
                     },
                 )
 
@@ -563,6 +620,7 @@ def addOrganizationForm(request):
                 "supercoordinator/add_organization.html",
                 {"form": form},
             )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
@@ -1176,8 +1234,14 @@ def viewCoordinators(request, id):
     return render(
         request,
         "supercoordinator/view_coordinators.html",
-        {"coordinators": coordinators, "organization": organization, "page_type": "view_coordinators", "org_id": id},
+        {
+            "coordinators": coordinators,
+            "organization": organization,
+            "page_type": "view_coordinators",
+            "org_id": id,
+        },
     )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
@@ -1197,7 +1261,9 @@ def allCoordinators(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def allSessions(request):
-    sessions =  CoordinatorInCharge.objects.filter(user=request.user).first().session_set.all()
+    sessions = (
+        CoordinatorInCharge.objects.filter(user=request.user).first().session_set.all()
+    )
     return render(
         request,
         "coordinator/all_sessions.html",
