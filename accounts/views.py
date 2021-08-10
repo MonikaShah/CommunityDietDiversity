@@ -647,6 +647,93 @@ def addSessionForm(request):
                 {"form": form},
             )
 
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def getSessionTeachersTemplate(request):
+    output = io.BytesIO()
+
+    wb = xlsxwriter.Workbook(output)
+    ws = wb.add_worksheet("Session Teachers Data")
+
+    columns = [
+        "Teacher Username",
+    ]
+
+    sampleTeacherData = [
+        "username",
+    ]
+    row_num = 0
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num])  # at 0 row 0 column
+
+    row_num += 1
+    for col_num in range(len(sampleTeacherData)):
+        ws.write(row_num, col_num, sampleTeacherData[col_num])
+    wb.close()
+
+    # construct response
+    output.seek(0)
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = "attachment; filename=sessionTeacherTemplate.xlsx"
+    return response
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def addSessionTeachers(request,id):
+    if request.method == "GET":
+        return render(
+            request,
+            "coordinator/add_session_teachers.html",
+            {"page_type": "add_session_teachers"},
+        )
+    else:
+        excel_file = request.FILES["excel_file"]
+
+        # you may put validations here to check extension or file size
+        wb = openpyxl.load_workbook(excel_file)
+
+        # getting a particular sheet by name out of many sheets
+        teacherSheet = wb["Session Teachers Data"]
+
+        teacher_data = list()
+        # iterating over the rows and
+        # getting value from each cell in row
+        for row in teacherSheet.iter_rows():
+            for cell in row:
+                if cell.row == 1:
+                    continue
+                if cell.column_letter == "A":
+                    teacher_data.append(str(cell.value))
+
+        teacherData = TeacherInCharge.objects.all()
+        session = Session.objects.filter(id=id).first()
+        objects = Teacher_Session.objects.filter(session=session)
+        teachers = []
+        for object in objects:
+            object.teacher.name = encryptionHelper.decrypt(object.teacher.name)
+            teachers.append(object.teacher)
+
+        for index, t in enumerate(teacher_data): 
+            for teacher in teachers:
+                if teacher.user.username ==t:
+                    teacher_data.remove(t)
+            
+        for teacher in teacher_data:
+            print(1) 
+            teacher_session=Teacher_Session()
+            teacher_session.session =session
+            teacherUser=User.objects.filter(username=t).first()
+            teacher_session.teacher=TeacherInCharge.objects.filter(user=teacherUser).first()
+            teacher_session.save()
+
+        return redirect("accounts:view_session_teachers",id)
+
+
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
