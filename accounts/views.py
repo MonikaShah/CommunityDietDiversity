@@ -714,33 +714,84 @@ def addSessionTeachers(request,id):
         objects = Teacher_Session.objects.filter(session=session)
         organization = session.coordinator.organization
         teachers = []
+        user_does_not_exist = []
+        teacher_already_registered = []
+        incorrect_organization = []
         for object in objects:
             object.teacher.name = encryptionHelper.decrypt(object.teacher.name)
             teachers.append(object.teacher)
 
         for index, t in enumerate(teacher_data):
 
-            skipTeacher = True
+            skipTeacher = 'None'
 
             for teacher in teacherData:
                 if teacher.user.username == t:
-                    skipTeacher = False
+                    skipTeacher = 'False'
+                    break
 
-            if skipTeacher == False:
+            if skipTeacher == 'False':
                 for teacher in teachers:
-                    if teacher.user.username == t or teacher.organization == organization:
-                        skipTeacher = True
+                    if teacher.user.username == t:
+                        skipTeacher = 'True'
+                        break
 
-            if not skipTeacher:
+                if skipTeacher == 'True':
+                    teacher_already_registered.append(t)
+                    continue
+
+                if skipTeacher == 'False':
+                    for teacher in teachers:
+                        if teacher.organization != organization:
+                            skipTeacher = 'True'
+                            break
+                        
+                    if skipTeacher == 'True':
+                        incorrect_organization.append(t)
+
+            if skipTeacher == 'None':
+                user_does_not_exist.append(t)
+                skipTeacher = 'True'
+
+            if skipTeacher == 'False':
                 teacher_session=Teacher_Session()
                 teacher_session.session =session
                 teacherUser=User.objects.filter(username=t).first()
                 teacher_session.teacher=TeacherInCharge.objects.filter(user=teacherUser).first()
                 teacher_session.save()
 
-        return redirect("accounts:view_session_teachers",id)
+        user_does_not_exist_str = "Incorrect Username: "
+        teacher_already_registered_str = "Teacher already exists in this session: "
+        incorrect_organization_str = "Organization of teacher does not match with your organization: "
+        
+        for index, i in enumerate(user_does_not_exist):
+            if index == len(user_does_not_exist) - 1:
+                user_does_not_exist_str += str(i)
+            else:
+                user_does_not_exist_str += str(i) + ', '
+        
+        for index, i in enumerate(teacher_already_registered):
+            if index == len(teacher_already_registered) - 1:
+                teacher_already_registered_str += str(i)
+            else:
+                teacher_already_registered_str += str(i) + ', '
+        
+        for index, i in enumerate(incorrect_organization):
+            if index == len(incorrect_organization) - 1:
+                incorrect_organization_str += str(i)
+            else:
+                incorrect_organization_str += str(i) + ', '
 
+        if user_does_not_exist_str != "Incorrect Username: ":
+            messages.error(request, user_does_not_exist_str)
+        elif teacher_already_registered_str != "Teacher already exists in this session: ":
+            messages.error(request, teacher_already_registered_str)
+        elif incorrect_organization_str != "Organization of teacher does not match with your organization: ":
+            messages.error(request, incorrect_organization_str)
+        else:
+            messages.success(request, 'All Teachers added to this session successfully!')
 
+        return redirect("accounts:view_session_teachers", id)
 
 
 @login_required(login_url="accounts:loginlink")
