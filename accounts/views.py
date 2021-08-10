@@ -69,7 +69,10 @@ def consent_adult(request):
     if "registration_visited" not in request.session:
         return redirect("accounts:registration")
     if request.method == "GET":
-        form = ConsentForm()
+        if request.session.get("consent_data"):
+            form = ConsentForm(request.session.get("consent_data"))
+        else:
+            form = ConsentForm()
         return render(
             request, "registration/consent.html", {"form": form, "is_adult": True}
         )
@@ -77,6 +80,7 @@ def consent_adult(request):
         form = ConsentForm(request.POST)
         if form.is_valid():
             request.session["consent_visited"] = True
+            request.session["consent_data"] = request.POST
             return redirect("accounts:students_info_adult")
         else:
             return render(
