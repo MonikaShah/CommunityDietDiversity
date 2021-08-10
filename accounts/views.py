@@ -712,6 +712,7 @@ def addSessionTeachers(request,id):
         teacherData = TeacherInCharge.objects.all()
         session = Session.objects.filter(id=id).first()
         objects = Teacher_Session.objects.filter(session=session)
+        organization = session.coordinator.organization
         teachers = []
         for object in objects:
             object.teacher.name = encryptionHelper.decrypt(object.teacher.name)
@@ -727,7 +728,7 @@ def addSessionTeachers(request,id):
 
             if skipTeacher == False:
                 for teacher in teachers:
-                    if teacher.user.username == t:
+                    if teacher.user.username == t or teacher.organization == organization:
                         skipTeacher = True
 
             if not skipTeacher:
