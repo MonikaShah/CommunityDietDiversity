@@ -95,7 +95,7 @@ class ConsentForm(forms.Form):
         cleaned_data = super().clean()
         consent = cleaned_data.get("consent")
         if consent == None:
-            raise forms.ValidationError({"consent": "You must agree to consent form."})
+            raise forms.ValidationError({"consent"})
         return cleaned_data
 
 
