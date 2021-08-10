@@ -99,6 +99,8 @@ def redirect_to_dashboard(func):
 
 def registration_data_cleanup(func):
     def logic(request, *args, **kwargs):
+        if "consent_data" in request.session:
+            del request.session["consent_data"]
         if "data" in request.session:
             del request.session["data"]
         if "dob" in request.session:
