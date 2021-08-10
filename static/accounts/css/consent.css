@@ -1,7 +1,6 @@
 /*custom font*/
 
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
-
 /*basic reset*/
 
 * {
@@ -17,64 +16,71 @@ html {
     /* Chrome 10-25, Safari 5.1-6 */
 }
 
-
-
 body {
     font-family: montserrat, arial, verdana;
     background: transparent;
     font-size: 0.8rem;
 }
 
-
 /*form styles*/
-.full-height{
-    height:100vh;
+
+.full-height {
+    height: 100vh;
 }
 
-.forgotpass{
+.forgotpass {
     text-decoration: none;
-    color:#6441A5;
+    color: #6441A5;
     display: block;
     margin: 0;
 }
+
 .correctlabel label {
     display: inline;
 }
 
-.moduleform{
+.moduleform {
     font-size: 1.1rem;
 }
-.btn-primary{
+
+.btn-primary {
     background-color: #2b0d52 !important;
     border-color: #6441A5 !important;
 }
-.btn-info{
+
+.btn-info {
     background-color: #035397!important;
     border-color: #033866 !important;
     color: white;
 }
-.lightyellowbutton{
+
+.lightyellowbutton {
     background-color: #dbe490 !important;
     border-color: #a4a560 !important;
     color: rgb(0, 0, 0);
 }
-.greybutton{
+
+.greybutton {
     background-color: #c4c0c0 !important;
     border-color: #bbb9b9 !important;
     color: rgb(20, 13, 13);
 }
-.btnsmall{
-    padding:7px;
-    font-size: 16px; 
+
+.btnsmall {
+    padding: 7px;
+    font-size: 16px;
 }
+
 .dashCard>div {
     width: 29%;
     margin-bottom: 1.5rem!important;
 }
+
 #parentCard>div {
     width: 25%;
     margin-bottom: 1.5rem!important;
 }
+
 .bulkCard {
     margin: 5rem;
 }
@@ -104,9 +110,9 @@ body {
 }
 
 #msform {
-        text-align: left;
-        position: relative;
-        margin-top: 30px;
+    text-align: left;
+    position: relative;
+    margin-top: 30px;
 }
 
 #msform fieldset {
@@ -122,18 +128,15 @@ body {
     position: relative;
 }
 
-
 /*Hide all except first fieldset*/
 
 #msform fieldset:not(:first-of-type) {
     display: none;
 }
 
-
 /*inputs*/
 
-#msform input,
-#msform textarea {
+#msform input, #msform textarea {
     padding: 15px;
     border: 1px solid #ccc;
     border-radius: 0px;
@@ -145,8 +148,7 @@ body {
     font-size: 13px;
 }
 
-#msform input:focus,
-#msform textarea:focus {
+#msform input:focus, #msform textarea:focus {
     -moz-box-shadow: none !important;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
@@ -157,7 +159,6 @@ body {
     -moz-transition: All 0.5s ease-in;
     -o-transition: All 0.5s ease-in;
 }
-
 
 /*buttons*/
 
@@ -173,8 +174,7 @@ body {
     margin: 10px 5px;
 }
 
-#msform .action-button:hover,
-#msform .action-button:focus {
+#msform .action-button:hover, #msform .action-button:focus {
     box-shadow: 0 0 0 2px white, 0 0 0 3px #ee0979;
 }
 
@@ -190,11 +190,9 @@ body {
     margin: 10px 5px;
 }
 
-#msform .action-button-previous:hover,
-#msform .action-button-previous:focus {
+#msform .action-button-previous:hover, #msform .action-button-previous:focus {
     box-shadow: 0 0 0 2px white, 0 0 0 3px #C5C5F1;
 }
-
 
 /*headings*/
 
@@ -213,7 +211,6 @@ body {
     color: #666;
     margin-bottom: 20px;
 }
-
 
 /*progressbar*/
 
@@ -249,7 +246,6 @@ body {
     margin: 0 auto 10px auto;
 }
 
-
 /*progressbar connectors*/
 
 #progressbar li:after {
@@ -269,14 +265,11 @@ body {
     content: none;
 }
 
-
 /*marking active/completed steps green*/
-
 
 /*The number of the step and the connector before it = green*/
 
-#progressbar li.active:before,
-#progressbar li.active:after {
+#progressbar li.active:before, #progressbar li.active:after {
     background: #ee0979;
     color: white;
 }
@@ -290,8 +283,7 @@ body {
     margin-bottom: 1em
 }
 
-.grid-row,
-.grid-header {
+.grid-row, .grid-header {
     display: flex;
     /*   flex: 1 0 auto; */
     /*   height: auto; */
@@ -355,7 +347,7 @@ body {
     width: 98%;
 }
 
-.bgPurple{
+.bgPurple {
     background-color: #2b0d52 !important;
 }
 
@@ -363,7 +355,11 @@ body {
     border-radius: 0.5rem!important;
 }
 
-@media only screen and (max-width:768px){
+.page-fit {
+    min-height: 92vh;
+}
+
+@media only screen and (max-width:768px) {
     .parent-consent-card {
         width: 100%;
     }
@@ -376,9 +372,9 @@ body {
     .dashCard {
         flex-direction: column;
     }
-    .btnmedium{
-        padding:5px;
-        font-size: 15px; 
+    .btnmedium {
+        padding: 5px;
+        font-size: 15px;
     }
     .dashCard>div {
         width: 98%;
@@ -415,13 +411,13 @@ body {
     }
 }
 
-@media only screen and (max-width:480px){
-    .btnsmall{
-        padding:3px;
+@media only screen and (max-width:480px) {
+    .btnsmall {
+        padding: 3px;
         font-size: 12px;
     }
-    .btn-sm{
-        padding:3px;
+    .btn-sm {
+        padding: 3px;
         font-size: 12px;
     }
     .dashCard {
@@ -435,11 +431,14 @@ body {
         width: 98%;
         margin: auto;
     }
-    .loginbtn{
+    .loginbtn {
         flex-direction: column;
     }
-    .btnmedium{
-        padding:4px;
-        font-size: 13px; 
+    .btnmedium {
+        padding: 4px;
+        font-size: 13px;
+    }
+    .page-fit {
+        min-height: 86vh;
     }
 }
