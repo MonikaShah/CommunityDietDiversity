@@ -267,45 +267,6 @@ def students_info(request, is_adult=False):
             form = StudentsInfoForm(request.POST)
             studentuserform = UserCreationForm(request.POST)
             if form.is_valid() and studentuserform.is_valid():
-                if not User.objects.filter(username="dummyParent").exists():
-                    parentUser = User.objects.create_user(
-                        username="dummyParent", password="django12"
-                    )
-                    parent_group = Group.objects.get(name="Parents")
-                    parentUser.groups.add(parent_group)
-                    parentUser.save()
-
-                    parentform = ParentsInfoForm()
-                    parent = parentform.save(commit=False)
-                    parent.user = parentUser
-                    parent.name = encryptionHelper.encrypt("Dummy Parent")
-                    parent.dob = encryptionHelper.encrypt("01/01/2000")
-                    parent.gender = encryptionHelper.encrypt("Male")
-                    parent.occupation = Occupation.objects.get(
-                        occupation__icontains="Professional"
-                    )
-                    parent.edu = Education.objects.get(
-                        education__icontains="Graduate (Bachelors)"
-                    )
-                    parent.type_of_family = FamilyType.objects.get(
-                        family__icontains="Joint"
-                    )
-                    parent.religion = ReligiousBelief.objects.get(
-                        religion__icontains="Hinduism"
-                    )
-                    parent.state = State.objects.get(state__icontains="Maharashtra")
-                    parent.city = City.objects.get(city__icontains="Mumbai")
-                    parent.address = encryptionHelper.encrypt("Vidyavihar")
-                    parent.pincode = encryptionHelper.encrypt("400079")
-                    parent.no_of_family_members = encryptionHelper.encrypt("5")
-                    parent.children_count = encryptionHelper.encrypt("3")
-                    parent.first_password = ""
-                    parent.password_changed = True
-                    parent.save()
-
-                parent = ParentsInfo.objects.filter(
-                    user=User.objects.get(username="dummyParent")
-                ).first()
                 studentuser = studentuserform.save(commit=False)
                 studentuser.save()
                 student_group = Group.objects.get(name="Students")
@@ -329,7 +290,6 @@ def students_info(request, is_adult=False):
                 )
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
                 student.address = encryptionHelper.encrypt(request.POST["address"])
-                student.parent = parent
                 student.first_password = ""
                 student.password_changed = True
                 student.save()
@@ -343,7 +303,6 @@ def students_info(request, is_adult=False):
                 if user is not None:
                     login(request, user)
 
-                del request.session["data"]
                 del request.session["dob"]
                 del request.session["registration_visited"]
                 del request.session["consent_visited"]
