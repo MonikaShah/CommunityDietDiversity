@@ -717,18 +717,25 @@ def addSessionTeachers(request,id):
             object.teacher.name = encryptionHelper.decrypt(object.teacher.name)
             teachers.append(object.teacher)
 
-        for index, t in enumerate(teacher_data): 
-            for teacher in teachers:
-                if teacher.user.username ==t:
-                    teacher_data.remove(t)
-            
-        for teacher in teacher_data:
-            print(1) 
-            teacher_session=Teacher_Session()
-            teacher_session.session =session
-            teacherUser=User.objects.filter(username=t).first()
-            teacher_session.teacher=TeacherInCharge.objects.filter(user=teacherUser).first()
-            teacher_session.save()
+        for index, t in enumerate(teacher_data):
+
+            skipTeacher = True
+
+            for teacher in teacherData:
+                if teacher.user.username == t:
+                    skipTeacher = False
+
+            if skipTeacher == False:
+                for teacher in teachers:
+                    if teacher.user.username == t:
+                        skipTeacher = True
+
+            if not skipTeacher:
+                teacher_session=Teacher_Session()
+                teacher_session.session =session
+                teacherUser=User.objects.filter(username=t).first()
+                teacher_session.teacher=TeacherInCharge.objects.filter(user=teacherUser).first()
+                teacher_session.save()
 
         return redirect("accounts:view_session_teachers",id)
 
@@ -1371,10 +1378,21 @@ def allSessions(request):
     sessions = (
         CoordinatorInCharge.objects.filter(user=request.user).first().session_set.all()
     )
+    open_sessions = []
+    close_sessions = []
+    open = False
+    close = False
+    for session in sessions:
+        if session.end_date == None:
+            open_sessions.append(session)
+            open = True
+        else:
+            close_sessions.append(session)
+            close = True
     return render(
         request,
         "coordinator/all_sessions.html",
-        {"sessions": sessions, "page_type": "all_sessions"},
+        {"open_sessions": open_sessions, "close_sessions": close_sessions, "open": open, "close": close, "page_type": "all_sessions"},
     )
 
 
