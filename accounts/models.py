@@ -165,7 +165,7 @@ class StudentsInfo(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     pincode = models.BinaryField()
     address = models.BinaryField()
-    parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE)
+    parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE, null=True)
     first_password = models.CharField(max_length=20, default="helloworld14")
     password_changed = models.BooleanField(default=False)
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE, null=True)
