@@ -34,8 +34,11 @@ urlpatterns = [
     path("teacher_dashboard/<int:id>/", views.getFormDetails, name="get_form_details"),
     path("all_coordinators/", views.allCoordinators, name="all_coordinators"),
     path("view_session_teachers/<int:id>/", views.viewSessionTeachers, name="view_session_teachers"),
+    path("view_session_students/<int:id>/", views.viewSessionStudents, name="view_session_students"),
     path("all_sessions/", views.allSessions, name="all_sessions"),
+    path("teacher_all_sessions/", views.teacherAllSessions, name="teacher_all_sessions"),
     path("add_session_teachers/<int:id>/", views.addSessionTeachers, name="add_session_teachers"),
+    path("add_session_students/<int:id>/", views.addSessionStudents, name="add_session_students"),
     path("get_session_teachers_template/", views.getSessionTeachersTemplate, name="get_session_teachers_template"),
     path(
         "view_coordinators/<int:id>/", views.viewCoordinators, name="view_coordinators"

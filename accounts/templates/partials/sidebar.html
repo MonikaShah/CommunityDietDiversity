@@ -74,7 +74,16 @@
                     <span>Dashboard</span>
                 </a>
             </li>
-
+            {% if page_type == "teacher_all_sessions" %}
+            <li class="nav-item active">
+            {% else %}
+            <li class="nav-item">
+            {% endif %}
+                <a class="my-nav-link nav-link" href="{% url 'accounts:teacher_all_sessions' %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Sessions</span>
+                </a>
+            </li>
             {% if page_type == "bulk_register" %}
             <li class="nav-item active">
             {% else %}
