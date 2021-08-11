@@ -2418,6 +2418,24 @@ def getFormDetails(request, id):
     )
 
 
+# @login_required(login_url="accounts:loginlink")
+# @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+def supercoordinator_reset_password(request):
+    form = SuperCoordPasswordReset()
+    return render(
+        request, "supercoordinator/supercoordinator_reset_password.html", {"form": form}
+    )
+
+
+# @login_required(login_url="accounts:loginlink")
+# @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def coordinator_reset_password(request):
+    form = CoordPasswordReset()
+    return render(
+        request, "coordinator/coordinator_reset_password.html", {"form": form}
+    )
+
+
 @registration_data_cleanup
 @redirect_to_dashboard
 def forgot_password(request):

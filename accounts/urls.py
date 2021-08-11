@@ -33,13 +33,35 @@ urlpatterns = [
     ),
     path("teacher_dashboard/<int:id>/", views.getFormDetails, name="get_form_details"),
     path("all_coordinators/", views.allCoordinators, name="all_coordinators"),
-    path("view_session_teachers/<int:id>/", views.viewSessionTeachers, name="view_session_teachers"),
-    path("view_session_students/<int:id>/", views.viewSessionStudents, name="view_session_students"),
+    path(
+        "view_session_teachers/<int:id>/",
+        views.viewSessionTeachers,
+        name="view_session_teachers",
+    ),
+    path(
+        "view_session_students/<int:id>/",
+        views.viewSessionStudents,
+        name="view_session_students",
+    ),
     path("all_sessions/", views.allSessions, name="all_sessions"),
-    path("teacher_all_sessions/", views.teacherAllSessions, name="teacher_all_sessions"),
-    path("add_session_teachers/<int:id>/", views.addSessionTeachers, name="add_session_teachers"),
-    path("add_session_students/<int:id>/", views.addSessionStudents, name="add_session_students"),
-    path("get_session_teachers_template/", views.getSessionTeachersTemplate, name="get_session_teachers_template"),
+    path(
+        "teacher_all_sessions/", views.teacherAllSessions, name="teacher_all_sessions"
+    ),
+    path(
+        "add_session_teachers/<int:id>/",
+        views.addSessionTeachers,
+        name="add_session_teachers",
+    ),
+    path(
+        "add_session_students/<int:id>/",
+        views.addSessionStudents,
+        name="add_session_students",
+    ),
+    path(
+        "get_session_teachers_template/",
+        views.getSessionTeachersTemplate,
+        name="get_session_teachers_template",
+    ),
     path(
         "view_coordinators/<int:id>/", views.viewCoordinators, name="view_coordinators"
     ),
@@ -103,4 +125,14 @@ urlpatterns = [
     path("forgot_password/", views.forgot_password, name="forgot_password"),
     path("change_password/", views.change_password, name="change_password"),
     path("password_changed/", views.password_changed, name="password_changed"),
+    path(
+        "supercoordinator_reset_password/",
+        views.supercoordinator_reset_password,
+        name="supercoordinator_reset_password",
+    ),
+    path(
+        "coordinator_reset_password/",
+        views.coordinator_reset_password,
+        name="coordinator_reset_password",
+    ),
 ]

@@ -274,9 +274,14 @@ body {
     font-size: 16px;
 }
 
-.my-lower-links{
+.my-lower-links {
     display: flex;
     flex-direction: row;
+}
+
+.reset-password {
+    width: 70%;
+    padding: 18px;
 }
 
 @media only screen and (max-width:600px) {
@@ -288,5 +293,8 @@ body {
     }
     .my-card {
         margin: 20px 0;
+    }
+    .reset-password {
+        width: 94%;
     }
 }

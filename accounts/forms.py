@@ -270,7 +270,6 @@ class CoordinatorsInfoForm(ModelForm):
 
 
 class SessionsInfoForm(ModelForm):
-
     class Meta:
         model = Session
         fields = ["name"]
@@ -721,6 +720,14 @@ class ModuleOneForm3(forms.ModelForm):
             if not self.cleaned_data[field]:
                 self.add_error(field, "Required")
         return self.cleaned_data
+
+
+class SuperCoordPasswordReset(forms.Form):
+    username = forms.CharField(max_length=150, label="Coordinator's Username")
+
+
+class CoordPasswordReset(forms.Form):
+    username = forms.CharField(max_length=150, label="Username")
 
 
 class forgot_password_form(forms.ModelForm):
