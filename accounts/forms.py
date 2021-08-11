@@ -91,13 +91,6 @@ class RegistrationForm(forms.Form):
 class ConsentForm(forms.Form):
     consent = forms.BooleanField(label="I Agree")
 
-    def clean(self):
-        cleaned_data = super().clean()
-        consent = cleaned_data.get("consent")
-        if consent == None:
-            raise forms.ValidationError({"consent": "You must agree to consent form."})
-        return cleaned_data
-
 
 class ParentsInfoForm(ModelForm):
     email = forms.EmailField(required=False)
