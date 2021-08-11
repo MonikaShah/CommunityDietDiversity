@@ -21,11 +21,6 @@ from shared.encryption import EncryptionHelper
 
 encryptionHelper = EncryptionHelper()
 
-def add():
-    a+b
-
-def sub():
-    a+b
 
 def is_adult_func(dob):
     today = str(date.today())
