@@ -69,7 +69,13 @@
                 change. Any information generated in this program will be used for educational purposes and not
                 published on any social media platform. Thanking you. CTARA TEAM
             </p>
-            <br> {{form|crispy}}
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.consent|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
             <div class="d-flex justify-content-around">
                 <a href="{% url 'accounts:registration'%}" class="btn btn-secondary greybutton btnmedium">Previous</a>
                 <input type="submit" class="btn btn-primary btnmedium" value="Next">
