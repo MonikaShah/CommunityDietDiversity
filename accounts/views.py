@@ -785,6 +785,123 @@ def addSessionTeachers(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+def addSessionStudents(request, id):
+    if request.method == "GET":
+        return render(
+            request,
+            "teacher/add_session_students.html",
+            {"page_type": "add_session_students"},
+        )
+    else:
+        excel_file = request.FILES["excel_file"]
+
+        # you may put validations here to check extension or file size
+        wb = openpyxl.load_workbook(excel_file)
+
+        # getting a particular sheet by name out of many sheets
+        studentSheet = wb["Session Students Data"]
+
+        student_data = list()
+        # iterating over the rows and
+        # getting value from each cell in row
+        for row in studentSheet.iter_rows():
+            for cell in row:
+                if cell.row == 1:
+                    continue
+                if cell.column_letter == "A":
+                    student_data.append(str(cell.value))
+
+        studentData = StudentsInfo.objects.all()
+        session = Session.objects.filter(id=id).first()
+        students = StudentsInfo.objects.filter(session=session)
+        organization = session.coordinator.organization
+        user_does_not_exist = []
+        student_already_registered = []
+        incorrect_organization = []
+
+        for index, t in enumerate(student_data):
+
+            skipStudent = "None"
+
+            for student in studentData:
+                if student.user.username == t:
+                    skipStudent = "False"
+                    break
+
+            if skipStudent == "False":
+                for student in students:
+                    if student.user.username == t:
+                        skipStudent = "True"
+                        break
+
+                if skipStudent == "True":
+                    student_already_registered.append(t)
+                    continue
+
+                if skipStudent == "False":
+                    for student in students:
+                        if student.organization != organization:
+                            skipStudent = "True"
+                            break
+
+                    if skipStudent == "True":
+                        incorrect_organization.append(t)
+
+            if skipStudent == "None":
+                user_does_not_exist.append(t)
+                skipStudent = "True"
+
+            if skipStudent == "False":
+                student.session = session
+                student.save()
+
+        user_does_not_exist_str = "Incorrect Username: "
+        student_already_registered_str = "Student already exists in this session: "
+        incorrect_organization_str = (
+            "Organization of student does not match with your organization: "
+        )
+
+        for index, i in enumerate(user_does_not_exist):
+            if index == len(user_does_not_exist) - 1:
+                user_does_not_exist_str += str(i)
+            else:
+                user_does_not_exist_str += str(i) + ", "
+
+        for index, i in enumerate(student_already_registered):
+            if index == len(student_already_registered) - 1:
+                student_already_registered_str += str(i)
+            else:
+                student_already_registered_str += str(i) + ", "
+
+        for index, i in enumerate(incorrect_organization):
+            if index == len(incorrect_organization) - 1:
+                incorrect_organization_str += str(i)
+            else:
+                incorrect_organization_str += str(i) + ", "
+
+        if user_does_not_exist_str != "Incorrect Username: ":
+            messages.error(request, user_does_not_exist_str)
+        if student_already_registered_str != "Student already exists in this session: ":
+            messages.error(request, student_already_registered_str)
+        if (
+            incorrect_organization_str
+            != "Organization of student does not match with your organization: "
+        ):
+            messages.error(request, incorrect_organization_str)
+        if (
+            len(user_does_not_exist) == 0
+            and len(student_already_registered) == 0
+            and len(incorrect_organization) == 0
+        ):
+            messages.success(
+                request, "All Students added to this session successfully!"
+            )
+
+        return redirect("accounts:view_session_students", id)
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
 def bulkRegister(request):
     if request.method == "GET":
         return render(
@@ -1460,6 +1577,58 @@ def viewSessionTeachers(request, id):
             "teachers": teachers,
             "session": session,
             "page_type": "view_session_teachers",
+        },
+    )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
+def teacherAllSessions(request):
+    teacher = TeacherInCharge.objects.filter(user=request.user).first()
+    objects = Teacher_Session.objects.filter(teacher=teacher)
+    sessions = []
+    for object in objects:
+        sessions.append(object.session)
+    open_sessions = []
+    close_sessions = []
+    open = False
+    close = False
+    for session in sessions:
+        if session.end_date == None:
+            open_sessions.append(session)
+            open = True
+        else:
+            close_sessions.append(session)
+            close = True
+    return render(
+        request,
+        "teacher/teacher_all_sessions.html",
+        {
+            "open_sessions": open_sessions,
+            "close_sessions": close_sessions,
+            "open": open,
+            "close": close,
+            "page_type": "teacher_all_sessions",
+        },
+    )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
+def viewSessionStudents(request, id):
+    session = Session.objects.filter(id=id).first()
+    students = StudentsInfo.objects.filter(session=session)
+    for student in students:
+        student.name = encryptionHelper.decrypt(student.name)
+        student.rollno = encryptionHelper.decrypt(student.rollno)
+
+    return render(
+        request,
+        "teacher/view_session_students.html",
+        {
+            "students": students,
+            "session": session,
+            "page_type": "view_session_students",
         },
     )
 
