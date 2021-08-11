@@ -47,6 +47,7 @@ def root(request):
 
 
 @registration_data_cleanup
+@redirect_to_dashboard
 def registration(request):
     if request.method == "GET":
         form = RegistrationForm()
@@ -65,6 +66,7 @@ def registration(request):
             return render(request, "registration/registration.html", {"form": form})
 
 
+@redirect_to_dashboard
 def consent_adult(request):
     if "registration_visited" not in request.session:
         return redirect("accounts:registration")
@@ -73,6 +75,9 @@ def consent_adult(request):
             form = ConsentForm(request.session.get("consent_data"))
         else:
             form = ConsentForm()
+        return render(
+            request, "registration/consent.html", {"form": form, "is_adult": True}
+        )
     else:
         form = ConsentForm(request.POST)
         if form.is_valid():
@@ -85,6 +90,7 @@ def consent_adult(request):
             )
 
 
+@redirect_to_dashboard
 def students_info_adult(request):
     return students_info(request, True)
 
@@ -98,6 +104,9 @@ def consent(request):
             form = ConsentForm(request.session.get("consent_data"))
         else:
             form = ConsentForm()
+        return render(
+            request, "registration/consent.html", {"form": form, "is_adult": False}
+        )
     else:
         form = ConsentForm(request.POST)
         if form.is_valid():
@@ -600,7 +609,9 @@ def addSessionForm(request):
         if form.is_valid():
             session = form.save(commit=False)
             session.start_date = datetime.now()
-            session.coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
+            session.coordinator = CoordinatorInCharge.objects.filter(
+                user=request.user
+            ).first()
             session.save()
             return redirect("accounts:all_sessions")
         else:
@@ -609,6 +620,7 @@ def addSessionForm(request):
                 "coordinator/add_session.html",
                 {"form": form},
             )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
@@ -644,9 +656,10 @@ def getSessionTeachersTemplate(request):
     response["Content-Disposition"] = "attachment; filename=sessionTeacherTemplate.xlsx"
     return response
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
-def addSessionTeachers(request,id):
+def addSessionTeachers(request, id):
     if request.method == "GET":
         return render(
             request,
@@ -686,73 +699,86 @@ def addSessionTeachers(request,id):
 
         for index, t in enumerate(teacher_data):
 
-            skipTeacher = 'None'
+            skipTeacher = "None"
 
             for teacher in teacherData:
                 if teacher.user.username == t:
-                    skipTeacher = 'False'
+                    skipTeacher = "False"
                     break
 
-            if skipTeacher == 'False':
+            if skipTeacher == "False":
                 for teacher in teachers:
                     if teacher.user.username == t:
-                        skipTeacher = 'True'
+                        skipTeacher = "True"
                         break
 
-                if skipTeacher == 'True':
+                if skipTeacher == "True":
                     teacher_already_registered.append(t)
                     continue
 
-                if skipTeacher == 'False':
+                if skipTeacher == "False":
                     for teacher in teachers:
                         if teacher.organization != organization:
-                            skipTeacher = 'True'
+                            skipTeacher = "True"
                             break
-                        
-                    if skipTeacher == 'True':
+
+                    if skipTeacher == "True":
                         incorrect_organization.append(t)
 
-            if skipTeacher == 'None':
+            if skipTeacher == "None":
                 user_does_not_exist.append(t)
-                skipTeacher = 'True'
+                skipTeacher = "True"
 
-            if skipTeacher == 'False':
-                teacher_session=Teacher_Session()
-                teacher_session.session =session
-                teacherUser=User.objects.filter(username=t).first()
-                teacher_session.teacher=TeacherInCharge.objects.filter(user=teacherUser).first()
+            if skipTeacher == "False":
+                teacher_session = Teacher_Session()
+                teacher_session.session = session
+                teacherUser = User.objects.filter(username=t).first()
+                teacher_session.teacher = TeacherInCharge.objects.filter(
+                    user=teacherUser
+                ).first()
                 teacher_session.save()
 
         user_does_not_exist_str = "Incorrect Username: "
         teacher_already_registered_str = "Teacher already exists in this session: "
-        incorrect_organization_str = "Organization of teacher does not match with your organization: "
-        
+        incorrect_organization_str = (
+            "Organization of teacher does not match with your organization: "
+        )
+
         for index, i in enumerate(user_does_not_exist):
             if index == len(user_does_not_exist) - 1:
                 user_does_not_exist_str += str(i)
             else:
-                user_does_not_exist_str += str(i) + ', '
-        
+                user_does_not_exist_str += str(i) + ", "
+
         for index, i in enumerate(teacher_already_registered):
             if index == len(teacher_already_registered) - 1:
                 teacher_already_registered_str += str(i)
             else:
-                teacher_already_registered_str += str(i) + ', '
-        
+                teacher_already_registered_str += str(i) + ", "
+
         for index, i in enumerate(incorrect_organization):
             if index == len(incorrect_organization) - 1:
                 incorrect_organization_str += str(i)
             else:
-                incorrect_organization_str += str(i) + ', '
+                incorrect_organization_str += str(i) + ", "
 
         if user_does_not_exist_str != "Incorrect Username: ":
             messages.error(request, user_does_not_exist_str)
         if teacher_already_registered_str != "Teacher already exists in this session: ":
             messages.error(request, teacher_already_registered_str)
-        if incorrect_organization_str != "Organization of teacher does not match with your organization: ":
+        if (
+            incorrect_organization_str
+            != "Organization of teacher does not match with your organization: "
+        ):
             messages.error(request, incorrect_organization_str)
-        if len(user_does_not_exist) == 0 and len(teacher_already_registered) == 0 and len(incorrect_organization) == 0:
-            messages.success(request, 'All Teachers added to this session successfully!')
+        if (
+            len(user_does_not_exist) == 0
+            and len(teacher_already_registered) == 0
+            and len(incorrect_organization) == 0
+        ):
+            messages.success(
+                request, "All Teachers added to this session successfully!"
+            )
 
         return redirect("accounts:view_session_teachers", id)
 
@@ -1407,7 +1433,13 @@ def allSessions(request):
     return render(
         request,
         "coordinator/all_sessions.html",
-        {"open_sessions": open_sessions, "close_sessions": close_sessions, "open": open, "close": close, "page_type": "all_sessions"},
+        {
+            "open_sessions": open_sessions,
+            "close_sessions": close_sessions,
+            "open": open,
+            "close": close,
+            "page_type": "all_sessions",
+        },
     )
 
 
@@ -1424,8 +1456,13 @@ def viewSessionTeachers(request, id):
     return render(
         request,
         "coordinator/view_session_teachers.html",
-        {"teachers": teachers, "session": session, "page_type": "view_session_teachers"},
+        {
+            "teachers": teachers,
+            "session": session,
+            "page_type": "view_session_teachers",
+        },
     )
+
 
 def createTempDict(postData):
     temp = {}
