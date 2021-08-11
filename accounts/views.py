@@ -660,7 +660,7 @@ def getSessionTeachersTemplate(request):
     ]
 
     sampleTeacherData = [
-        "username",
+        "sampleusername",
     ]
     row_num = 0
 
