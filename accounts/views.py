@@ -2479,6 +2479,16 @@ def change_password(request):
                     else:
                         user.set_password(new_password)
                         user.save()
+                        if user.groups.filter(name="Students").exists():
+                            student = StudentsInfo.objects.get(user=user)
+                            student.password_changes = True
+                            student.first_password = ""
+                            student.save()
+                        else:
+                            parent = ParentsInfo.objects.get(user=user)
+                            parent.password_changes = True
+                            parent.first_password = ""
+                            parent.save()
                         logout(request)
                         return redirect("accounts:password_changed")
                 except ValidationError as e:
