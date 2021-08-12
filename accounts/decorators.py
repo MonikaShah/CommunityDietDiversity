@@ -76,7 +76,7 @@ def redirect_to_dashboard(func):
     def logic(request, *args, **kwargs):
         def my_redirect(request):
             if is_teacher(request.user):
-                return redirect("accounts:teacher_dashboard")
+                return redirect("accounts:teacher_all_sessions")
             elif is_parent(request.user):
                 return redirect("accounts:parent_dashboard")
             elif is_student(request.user):

@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block title %}
-<title>Teacher Dashboard</title>
+<title> Session Forms</title>
 {% endblock %}
 
 {% block userinfo %}
@@ -15,6 +15,26 @@
 {% endblock %}
 
 {%block content%}
+
+<center><h2 class="mb-3">Session Information</h2></center>
+<div class="col-md-10 offset-md-1 mb-3">
+    <ul class="list-group">
+        <h6>
+            <li class="list-group-item"><b>Name: </b>{{ session.name }}</li>
+            <li class="list-group-item"><b>Start Date: </b>{{ session.start_date }}</li>
+            {% if end_date == None %}
+                <li class="list-group-item"><b>End Date: </b> Ongoing</li>
+            {% else %}
+                <li class="list-group-item"><b>End Date: </b>{{ session.end_date }}</li>
+            {% endif %}
+        </h6>
+    </ul>
+</div>
+
+
+<div class="d-flex justify-content-end mb-4">
+    <a href="{% url 'accounts:manage_forms' session.id %}" class="btn btn-info btnmedium">Manage Forms</a>
+</div>
 
 {% if results or results2 %}
   {% if results2 %}
@@ -34,6 +54,8 @@
       {% endfor %}
     </div>
   {% endif %}
+
+  
 
   {% if results %}
   <h3 class="my-3 text-center" style="font-weight: bolder;">CLOSED FORMS</h3>

@@ -355,7 +355,7 @@ def loginU(request):
                 elif grp_name == "Students":
                     return redirect("accounts:student_dashboard")
                 elif grp_name == "Teachers":
-                    return redirect("accounts:teacher_dashboard")
+                    return redirect("accounts:teacher_all_sessions")
                 elif grp_name == "Coordinators":
                     return redirect("accounts:coordinator_dashboard")
                 elif grp_name == "Super Coordinators":
@@ -656,6 +656,42 @@ def getSessionTeachersTemplate(request):
     response["Content-Disposition"] = "attachment; filename=sessionTeacherTemplate.xlsx"
     return response
 
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
+def getSessionStudentsTemplate(request):
+    output = io.BytesIO()
+
+    wb = xlsxwriter.Workbook(output)
+    ws = wb.add_worksheet("Session Students Data")
+
+    columns = [
+        "Student Username",
+    ]
+
+    sampleStudentData = [
+        "sampleusername",
+    ]
+    row_num = 0
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num])  # at 0 row 0 column
+
+    row_num += 1
+    for col_num in range(len(sampleStudentData)):
+        ws.write(row_num, col_num, sampleStudentData[col_num])
+    wb.close()
+
+    # construct response
+    output.seek(0)
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = "attachment; filename=sessionStudentTemplate.xlsx"
+    return response
+
+
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
@@ -813,6 +849,7 @@ def addSessionStudents(request, id):
 
         studentData = StudentsInfo.objects.all()
         session = Session.objects.filter(id=id).first()
+        teacher= TeacherInCharge.objects.filter(user=request.user).first()
         students = StudentsInfo.objects.filter(session=session)
         organization = session.coordinator.organization
         user_does_not_exist = []
@@ -853,6 +890,7 @@ def addSessionStudents(request, id):
 
             if skipStudent == "False":
                 student.session = session
+                student.teacher=teacher
                 student.save()
 
         user_does_not_exist_str = "Incorrect Username: "
@@ -1076,7 +1114,7 @@ def bulkRegister(request):
                 ).first()
                 teacher = TeacherInCharge.objects.filter(user=request.user).first()
                 # creating student
-                dob = datetime.datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S").strftime(
+                dob = datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S").strftime(
                     "%Y-%m-%d"
                 )
                 student = StudentsInfo(
@@ -1352,11 +1390,12 @@ def student_dashboard(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
-def teacher_dashboard(request):
+def viewSessionForms(request,id):
     teacher = TeacherInCharge.objects.get(user=request.user)
-    total_students = teacher.studentsinfo_set.all()
+    teachersession = Session.objects.filter(id=id).first()
+    total_students = StudentsInfo.objects.filter(session=teachersession,teacher=teacher)
     results = []
-    closed_sessions = FormDetails.objects.filter(teacher=teacher, open=False)
+    closed_sessions = FormDetails.objects.filter(teacher=teacher, session=teachersession, open=False)
 
     for session in closed_sessions:
         temp_list = [session.form, session.start_timestamp, session.end_timestamp]
@@ -1395,8 +1434,7 @@ def teacher_dashboard(request):
         temp_list.append(len(total_students))
         temp_list.append(session.id)
         results.append(temp_list)
-
-    open_sessions = FormDetails.objects.filter(teacher=teacher, open=True)
+    open_sessions = FormDetails.objects.filter(teacher=teacher,session=teachersession, open=True)
     results2 = []
     for session in open_sessions:
         temp_list = [session.form, session.start_timestamp]
@@ -1430,8 +1468,8 @@ def teacher_dashboard(request):
 
     return render(
         request,
-        "teacher/teacher_dashboard.html",
-        {"results": results, "results2": results2, "page_type": "teacher_dashboard"},
+        "teacher/view_session_forms.html",
+        {"results": results, "results2": results2, "page_type": "view_session_forms", "session": teachersession},
     )
 
 
@@ -1587,7 +1625,8 @@ def teacherAllSessions(request):
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 def viewSessionStudents(request, id):
     session = Session.objects.filter(id=id).first()
-    students = StudentsInfo.objects.filter(session=session)
+    teacher= TeacherInCharge.objects.filter(user=request.user).first()
+    students = StudentsInfo.objects.filter(session=session,teacher=teacher)
     for student in students:
         student.name = encryptionHelper.decrypt(student.name)
         student.rollno = encryptionHelper.decrypt(student.rollno)
@@ -1637,7 +1676,7 @@ def creatingOrUpdatingDrafts(temp, user, formName):
                 else:
                     setattr(draftForm, name, getattr(draftForm, name) or None)
 
-            draftForm.submission_timestamp = datetime.datetime.now()
+            draftForm.submission_timestamp = datetime.now()
             draftForm.save()
             return True
     else:
@@ -1669,7 +1708,7 @@ def draft(request):
                 "moduleOne", StudentsInfo.objects.get(user=user).teacher
             )
             form.pre = 1 if formType == "PreTest" else 0
-            form.submission_timestamp = datetime.datetime.now()
+            form.submission_timestamp = datetime.now()
             form.save()
     # 2nd and 3rd Page
     elif module == "moduleOne-2" or module == "moduleOne-3":
@@ -1769,7 +1808,7 @@ def moduleOne(request, user=None):
                     "moduleOne", StudentsInfo.objects.get(user=user).teacher
                 )
                 form.pre = 1 if formType == "PreTest" else 0
-                form.submission_timestamp = datetime.datetime.now()
+                form.submission_timestamp = datetime.now()
                 form.save()
 
             if flag:
@@ -1952,7 +1991,7 @@ def moduleOne3(request, user=None):
                         setattr(draftForm, name, temp[name])
 
                 draftForm.draft = False
-                draftForm.submission_timestamp = datetime.datetime.now()
+                draftForm.submission_timestamp = datetime.now()
                 draftForm.save()
                 if flag:
                     return redirect("accounts:student_dashboard")
@@ -2028,18 +2067,18 @@ def previous(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
-def manageForms(request):
+def manageForms(request,id):
     if request.method == "GET":
         activity = {}
         moduleOne = {}
         moduleTwo = {}
         moduleThree = {}
         teacher = TeacherInCharge.objects.get(user=request.user)
-
+        session=Session.objects.filter(id=id).first()
         form = Form.objects.get(name="moduleOne")
-        if FormDetails.objects.filter(form=form, teacher=teacher).exists():
+        if FormDetails.objects.filter(form=form, teacher=teacher,session=session).exists():
             form = (
-                FormDetails.objects.filter(form=form, teacher=teacher, open=True)
+                FormDetails.objects.filter(form=form, teacher=teacher,session=session,open=True)
                 .order_by("-start_timestamp")
                 .first()
             )
@@ -2052,14 +2091,16 @@ def manageForms(request):
                     moduleOne["post"] = True
                     moduleOne["pre"] = False
 
-        form2 = Form.objects.get(name="activity")
-        if FormDetails.objects.filter(form=form2, teacher=teacher).exists():
+        activity_form = Form.objects.get(name="activity")
+        if FormDetails.objects.filter(form=activity_form, teacher=teacher,session=session).exists():
             form2 = (
-                FormDetails.objects.filter(form=form2, teacher=teacher, open=True)
+                FormDetails.objects.filter(form=activity_form, teacher=teacher, session=session, open=True)
                 .order_by("-start_timestamp")
                 .first()
             )
+            print(form2)
             if form2:
+                print("pre")
                 if form2.pre:
                     activity["pre"] = True
                     activity["post"] = False
@@ -2090,30 +2131,32 @@ def manageForms(request):
 
             form = Form.objects.get(name="moduleOne")
             teacher = TeacherInCharge.objects.get(user=request.user)
-
+            session=Session.objects.filter(id=id).first()
             if module_one_pre == "on":
                 if not FormDetails.objects.filter(
-                    form=form, teacher=teacher, pre=True, open=True
+                    form=form, teacher=teacher,session=session, pre=True, open=True
                 ).exists():
                     update = FormDetails(
                         form=form,
                         teacher=teacher,
+                        session=session,
                         pre=True,
                         open=True,
-                        start_timestamp=datetime.datetime.now(),
+                        start_timestamp=datetime.now(),
                     )
                     update.save()
             else:
                 if FormDetails.objects.filter(
-                    form=form, teacher=teacher, pre=True, open=True
+                    form=form, teacher=teacher,session=session, pre=True, open=True
                 ).exists():
                     update = FormDetails.objects.filter(
-                        form=form, teacher=teacher, pre=True, open=True
+                        form=form, teacher=teacher,session=session, pre=True, open=True
                     ).first()
                     update.open = False
-                    update.end_timestamp = datetime.datetime.now()
-                    teacher = TeacherInCharge.objects.get(user=request.user)
-                    total_students = teacher.studentsinfo_set.all()
+                    update.end_timestamp = datetime.now()
+                    session = Session.objects.filter(id=id).first()
+                    teacher= TeacherInCharge.objects.filter(user=request.user).first()
+                    total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
                     for student in total_students:
                         if ModuleOne.objects.filter(
                             student=student,
@@ -2134,27 +2177,29 @@ def manageForms(request):
 
             if module_one_post == "on":
                 if not FormDetails.objects.filter(
-                    form=form, teacher=teacher, pre=False, open=True
+                    form=form, teacher=teacher, session=session, pre=False, open=True
                 ).exists():
                     update = FormDetails(
                         form=form,
                         teacher=teacher,
+                        session=session,
                         pre=False,
                         open=True,
-                        start_timestamp=datetime.datetime.now(),
+                        start_timestamp=datetime.now(),
                     )
                     update.save()
             else:
                 if FormDetails.objects.filter(
-                    form=form, teacher=teacher, pre=False, open=True
+                    form=form, teacher=teacher, session=session, pre=False, open=True
                 ).exists():
                     update = FormDetails.objects.filter(
-                        form=form, teacher=teacher, pre=False, open=True
+                        form=form, teacher=teacher, session=session,pre=False, open=True
                     ).first()
                     update.open = False
-                    update.end_timestamp = datetime.datetime.now()
+                    update.end_timestamp = datetime.now()
                     teacher = TeacherInCharge.objects.get(user=request.user)
-                    total_students = teacher.studentsinfo_set.all()
+                    session = Session.objects.filter(id=id).first()
+                    total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
                     for student in total_students:
                         if ModuleOne.objects.filter(
                             student=student,
@@ -2182,30 +2227,34 @@ def manageForms(request):
 
             form = Form.objects.get(name="activity")
             teacher = TeacherInCharge.objects.get(user=request.user)
+            session = Session.objects.filter(id=id).first()
+            total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
 
             if activity_pre == "on":
                 if not FormDetails.objects.filter(
-                    form=form, teacher=teacher, pre=True, open=True
+                    form=form, teacher=teacher,session=session, pre=True, open=True
                 ).exists():
                     update = FormDetails(
                         form=form,
                         teacher=teacher,
+                        session=session,
                         pre=True,
                         open=True,
-                        start_timestamp=datetime.datetime.now(),
+                        start_timestamp=datetime.now(),
                     )
                     update.save()
             else:
                 if FormDetails.objects.filter(
-                    form=form, teacher=teacher, pre=True, open=True
+                    form=form, teacher=teacher, session=session,pre=True, open=True
                 ).exists():
                     update = FormDetails.objects.filter(
-                        form=form, teacher=teacher, pre=True, open=True
+                        form=form, teacher=teacher,session=session, pre=True, open=True
                     ).first()
                     update.open = False
-                    update.end_timestamp = datetime.datetime.now()
+                    update.end_timestamp = datetime.now()
                     teacher = TeacherInCharge.objects.get(user=request.user)
-                    total_students = teacher.studentsinfo_set.all()
+                    session = Session.objects.filter(id=id).first()
+                    total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
                     for student in total_students:
                         if Activity.objects.filter(
                             student=student,
@@ -2226,27 +2275,29 @@ def manageForms(request):
 
             if activity_post == "on":
                 if not FormDetails.objects.filter(
-                    form=form, teacher=teacher, pre=False, open=True
+                    form=form, teacher=teacher,session=session, pre=False, open=True
                 ).exists():
                     update = FormDetails(
                         form=form,
                         teacher=teacher,
+                        session=session,
                         pre=False,
                         open=True,
-                        start_timestamp=datetime.datetime.now(),
+                        start_timestamp=datetime.now(),
                     )
                     update.save()
             else:
                 if FormDetails.objects.filter(
-                    form=form, teacher=teacher, pre=False, open=True
+                    form=form, teacher=teacher, session=session, pre=False, open=True
                 ).exists():
                     update = FormDetails.objects.filter(
-                        form=form, teacher=teacher, pre=False, open=True
+                        form=form, teacher=teacher, session=session, pre=False, open=True
                     ).first()
                     update.open = False
-                    update.end_timestamp = datetime.datetime.now()
+                    update.end_timestamp = datetime.now()
                     teacher = TeacherInCharge.objects.get(user=request.user)
-                    total_students = teacher.studentsinfo_set.all()
+                    session = Session.objects.filter(id=id).first()
+                    total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
                     for student in total_students:
                         if Activity.objects.filter(
                             student=student,
@@ -2270,7 +2321,7 @@ def manageForms(request):
         module_three_pre = request.POST.get("module_three_pre", False)
         module_three_post = request.POST.get("module_three_post", False)
 
-        return redirect("accounts:manage_forms")
+        return redirect("accounts:manage_forms",id)
 
 
 @login_required(login_url="accounts:loginlink")
@@ -2571,7 +2622,7 @@ def activity(request, user=None):
                         setattr(draftForm, name, temp[name])
 
                 draftForm.draft = False
-                draftForm.submission_timestamp = datetime.datetime.now()
+                draftForm.submission_timestamp = datetime.now()
                 draftForm.save()
             if flag:
                 return redirect("accounts:student_dashboard")
@@ -2609,7 +2660,7 @@ def activityDraft(request):
         form.draft = True
         formType = getFormType("activity", StudentsInfo.objects.get(user=user).teacher)
         form.pre = 1 if formType == "PreTest" else 0
-        form.submission_timestamp = datetime.datetime.now()
+        form.submission_timestamp = datetime.now()
         if form.waist == "":
             form.waist = 0
         if form.weight == "":
@@ -2645,7 +2696,7 @@ def creatingOrUpdatingDraftsActivity(temp, user, formName):
                 else:
                     setattr(draftForm, name, getattr(draftForm, name) or None)
 
-            draftForm.submission_timestamp = datetime.datetime.now()
+            draftForm.submission_timestamp = datetime.now()
             if draftForm.waist == "":
                 draftForm.waist = 0
             if draftForm.weight == "":

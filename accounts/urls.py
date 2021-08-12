@@ -20,7 +20,7 @@ urlpatterns = [
     path("downloadData/", views.downloadData, name="download_data"),
     path("parent_dashboard/", views.parent_dashboard, name="parent_dashboard"),
     path("student_dashboard/", views.student_dashboard, name="student_dashboard"),
-    path("teacher_dashboard/", views.teacher_dashboard, name="teacher_dashboard"),
+    path("view_session_forms/<int:id>/", views.viewSessionForms, name="view_session_forms"),
     path(
         "coordinator_dashboard/",
         views.coordinator_dashboard,
@@ -61,6 +61,11 @@ urlpatterns = [
         "get_session_teachers_template/",
         views.getSessionTeachersTemplate,
         name="get_session_teachers_template",
+    ),
+    path(
+        "get_session_students_template/",
+        views.getSessionStudentsTemplate,
+        name="get_session_students_template",
     ),
     path(
         "view_coordinators/<int:id>/", views.viewCoordinators, name="view_coordinators"
@@ -113,7 +118,7 @@ urlpatterns = [
         name="parentActivity",
     ),
     path("previous/", views.previous, name="previous"),
-    path("manage-forms/", views.manageForms, name="manage_forms"),
+    path("manage-forms/<int:id>/", views.manageForms, name="manage_forms"),
     url(
         "already_filled/",
         TemplateView.as_view(template_name="other/already_filled.html"),
