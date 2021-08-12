@@ -4,17 +4,10 @@
 
 {% block title %}
 <title>Bulk Registration</title>
-<script>
-    $(document).ready(function () {
+{% endblock %}
 
-        window.setTimeout(function () {
-            $(".alert").fadeTo(1000, 0).slideUp(1000, function () {
-                $(this).remove();
-            });
-        }, 5000);
-
-    });
-</script>
+{% block links %}
+<script src="{% static 'accounts/js/message_hider.js' %}"></script>
 {% endblock %}
 
 {% block userinfo %}
@@ -22,52 +15,52 @@
 {% endblock %}
 
 {% block content %}
-<div class="col-md-8 offset-md-2">
-    <div class="card shadow border rounded bulkCard">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-primary" role="alert">
-            {{message}}
-        </div>
-        {% endfor %}
-        {% endif %}
-        <div class="row">
-            <div class="col-md-12">
-                <div class="consent-card">
-                    <h2>Bulk Registration</h2>
-                    <br>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <form action="{% url 'accounts:get_template'%}">
-                                <input type="submit" class="btn btn-info btnmedium filebtn" value="Download Template">
-                            </form>
-                        </div>
-                        <div class="col-md-6">
-                            <form action="{% url 'accounts:download_data'%}">
-                                <input type="submit" class="btn btn-secondary greybutton btnmedium filebtn" value="Download Student Data">
-                            </form>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:5%">
-                        <div>
-                            <form action="" method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <input type="file" title="Upload excel file" name="excel_file"
-                                    style="border: 1px solid black; padding: 5px;" required="required"
-                                    accept=".xlsx" class="filebtn">
-                                <input type="submit" class="btn btn-primary btnmedium filebtn" value="Upload">
-                            </form>
-                            <br><br>
-                            <p class="text-danger fw-bold">NOTE:</p>
-                            <p class="fst-italic">Remove the sample row before editing the template file</p>
-                            <p class="fst-italic"><span class="text-danger">DO NOT</span> change the column
-                                order.</p>
-                            <p class="fst-italic">Fill both the Sheets in the template file provided above.</p>
-                        </div>
+<div class="card shadow rounded bulkCard">
+    <h2 class="mb-4">Bulk Registration</h2>
+    <div class="col-md-12 mb-4 p-0">
+        <h6><b>Step 1:</b> Download Template</h6>
+        <form action="{% url 'accounts:get_template'%}">
+            <button type="submit" class="btn btn-warning btnmedium"><i class="fa fa-download mr-1" aria-hidden="true"></i> Template</button>
+        </form>
+    </div>
+    <div class="col-md-12 mb-4 p-0">
+        <h6><b>Step 2:</b> Upload Filled Excel File</h6>
+        <p class="m-0"><b>INSTRUCTIONS:-</b></p>
+        <ul>
+            <li>Remove the sample row data before editing the template file.</li>
+            <li>Do not change the column order.</li>
+            <li>Fill both the sheets in the template file provided above.</li>
+            <li>Email id and phone number are not mandatory fields. (We highly recommend to provide email id since it will be used for password reset)</li>
+            <li>Make sure to add correct "parentId" in student's "parentId" column.</li>
+            <li>For students of age 18 and above the "parentId" column can be kept empty.</li>
+        </ul>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="my-2">
+                        <input type="file" class="form-control" title="Upload Filled Excel File" name="excel_file" required accept=".xlsx">
+                        <small class="form-text text-muted">Only .xlsx file format is accepted.</small>
                     </div>
                 </div>
             </div>
+            <button type="submit" class="btn btn-info btnmedium"><i class="fa fa-upload mr-1" aria-hidden="true"></i> Upload</button>
+        </form>
+        <div id="message">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mb-0 mt-2 alert alert-primary" role="alert">
+                        {{message}}
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
+    </div>
+    <div class="col-md-12 p-0">
+        <h6><b>Step 3:</b> Download Student Data</h6>
+        <form action="{% url 'accounts:download_data'%}">
+            <button type="submit" class="btn btn-primary btnmedium"><i class="fa fa-download mr-1" aria-hidden="true"></i> Student Data</button>
+        </form>
     </div>
 </div>
 {% endblock %}

@@ -82,7 +82,9 @@ body {
 }
 
 .bulkCard {
-    margin: 5rem;
+    margin: auto;
+    width: 80%;
+    padding: 1.4rem;
 }
 
 .page-container {
@@ -396,18 +398,14 @@ body {
     .top h5 {
         font-size: 0.9rem;
     }
-    .filebtn {
-        width: 100%;
-        margin-bottom: 0.5rem;
-    }
-    .bulkCard {
-        margin: 0 auto;
-    }
     #parentCard>div:last-child {
         margin-bottom: 0!important;
     }
     .dashCard>div:last-child {
         margin-bottom: 0!important;
+    }
+    .bulkCard {
+        width: 94%;
     }
 }
 
