@@ -1101,80 +1101,50 @@ def bulkRegister(request):
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 def getTemplate(request):
     output = io.BytesIO()
-
     wb = xlsxwriter.Workbook(output)
     ws = wb.add_worksheet("Parents Data")
     ws2 = wb.add_worksheet("Students Data")
 
     columns = [
-        "Parent Email",
+        "parentId",
         "Parent Name",
+        "Email id",
+        "Phone Number",
         "Gender",
-        "Age",
-        "Address",
+        "Date of Birth",
         "Pincode",
-        "No of family members",
-        "Children Count",
         "City",
         "State",
-        "Education",
-        "Occupation",
+        "Address",
         "Religion",
         "Type of family",
+        "No of family members",
+        "Children Count",
+        "Education",
+        "Occupation",
     ]
     columns2 = [
         "Student Name",
+        "Email id",
+        "Phone Number",
+        "Gender",
+        "Date of Birth",
+        "Pincode",
+        "City",
+        "State",
         "Address",
         "Registration No",
-        "Gender",
-        "DOB",
-        "Organization",
-        "Parents email",
+        "parentId",
     ]
-
-    sampleParentData = [
-        "john@gmail.com",
-        "John Doe",
-        "Male",
-        "29",
-        "Mumbai",
-        "400001",
-        "5",
-        "2",
-        "Mumbai",
-        "Maharashtra",
-        "BTech",
-        "Engineer",
-        "Hindu",
-        "Nuclear",
-    ]
-
-    sampleStudentData = [
-        "Jane Doe",
-        "Mumbai",
-        "1234",
-        "Female",
-        date.today().strftime("%d-%m-%Y"),
-        "K.J Somaiya College of Engineering",
-        "john@gmail.com",
-    ]
-    row_num = 0
-
     for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num])  # at 0 row 0 column
-
+        ws.write(0, col_num, columns[col_num])
     for col_num in range(len(columns2)):
-        ws2.write(row_num, col_num, columns2[col_num])  # at 0 row 0 column
+        ws2.write(0, col_num, columns2[col_num])
+    for row_num in range(1, 1000):
+        ws.write(row_num, 0, row_num)
 
-    row_num += 1
-    for col_num in range(len(sampleParentData)):
-        ws.write(row_num, col_num, sampleParentData[col_num])
-
-    for col_num in range(len(sampleStudentData)):
-        ws2.write(row_num, col_num, sampleStudentData[col_num])
     wb.close()
 
-    # construct response
     output.seek(0)
     response = HttpResponse(
         output.read(),

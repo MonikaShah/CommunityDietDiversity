@@ -27,12 +27,63 @@
         <h6><b>Step 2:</b> Upload Filled Excel File</h6>
         <p class="m-0"><b>INSTRUCTIONS:-</b></p>
         <ul>
-            <li>Remove the sample row data before editing the template file.</li>
             <li>Do not change the column order.</li>
             <li>Fill both the sheets in the template file provided above.</li>
-            <li>Email id and phone number are not mandatory fields. (We highly recommend to provide email id since it will be used for password reset)</li>
+            <li>Data provided after an empty row will not be considered.</li>
+            <li>Email id and phone number are not mandatory fields. (We highly recommend to provide email id since it will be used for password reset.)</li>
             <li>Make sure to add correct "parentId" in student's "parentId" column.</li>
             <li>For students of age 18 and above the "parentId" column can be kept empty.</li>
+            <li>Format for Date of birth will be MM/DD/YYYY.</li>
+            <li>Only a 10 digit mobile number needs to be provided.</li>
+            <li>State and City are case sensitive, For example: Dadra & Nagar Haveli.</li>
+            <li>Use only the option given bellow for their respective columns. (The options are case sensitive, we recommend to copy paste them.)
+                <ul>
+                    <li>Gender:-
+                        <ul>
+                            <li>Male</li>
+                            <li>Female</li>
+                            <li>Other</li>
+                        </ul>
+                    </li>
+                    <li>Religion:-
+                        <ul>
+                            <li>Hinduism</li>
+                            <li>Islam</li>
+                            <li>Christianity</li>
+                            <li>Sikhism</li>
+                            <li>Jainism</li>
+                            <li>Buddhism</li>
+                        </ul>
+                    </li>
+                    <li>Type of family:-
+                        <ul>
+                            <li>Nuclear</li>
+                            <li>Joint</li>
+                            <li>Extended</li>
+                        </ul>
+                    </li>
+                    <li>Education:-
+                        <ul>
+                            <li>Professional degree (Post graduate)</li>
+                            <li>Graduate (Bachelors)</li>
+                            <li>Higher Secondary certificate (12th Std)</li>
+                            <li>Secondary school certificate (SSC - 10th Std)</li>
+                            <li>Middle school (5th to 10th std)</li>
+                            <li>Primary school (1st to 4th std)</li>
+                            <li>Illiterate (No education)</li>
+                        </ul>
+                    </li>
+                    <li>Occupation:-
+                        <ul>
+                            <li>Professional</li>
+                            <li>Business person</li>
+                            <li>Service industry</li>
+                            <li>Homemaker</li>
+                            <li>Retired</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
         </ul>
         <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
