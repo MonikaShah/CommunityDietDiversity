@@ -1,10 +1,5 @@
 let opacity = 0
 let intervalID = 0
-window.onload = fadeout
-const fadeout = () => {
-    setTimeout(temp, 20000)
-    setTimeout(display, 22000)
-}
 const temp = () => {
     setInterval(hide, 200)
 }
@@ -25,3 +20,8 @@ const display = () => {
     let message = document.getElementById("message")
     message.style.display = "none"
 }
+const fadeout = () => {
+    setTimeout(temp, 20000)
+    setTimeout(display, 22000)
+}
+window.onload = fadeout

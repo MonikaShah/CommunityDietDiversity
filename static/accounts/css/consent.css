@@ -357,10 +357,6 @@ body {
     border-radius: 0.5rem!important;
 }
 
-.page-fit {
-    min-height: 92vh;
-}
-
 @media only screen and (max-width:768px) {
     .parent-consent-card {
         width: 100%;
@@ -435,8 +431,5 @@ body {
     .btnmedium {
         padding: 4px;
         font-size: 13px;
-    }
-    .page-fit {
-        min-height: 86vh;
     }
 }
