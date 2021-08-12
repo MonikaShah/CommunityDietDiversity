@@ -13,10 +13,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import PermissionDenied
 from .decorators import *
 from .models import *
 from .forms import *
+from .bulkRegValidator import *
 from shared.encryption import EncryptionHelper
 
 encryptionHelper = EncryptionHelper()
@@ -948,56 +948,303 @@ def bulkRegister(request):
             {"page_type": "bulk_register"},
         )
     else:
-        excel_file = request.FILES["excel_file"]
+        try:
+            excel_file = request.FILES["excel_file"]
+            if excel_file.name[-4:] == "xlsx":
+                wb = openpyxl.load_workbook(excel_file)
+                parentSheet = wb["Parents Data"]
+                studentSheet = wb["Students Data"]
+            else:
+                return render(
+                    request,
+                    "teacher/bulkregistration.html",
+                    {
+                        "page_type": "bulk_register",
+                        "my_messages": {
+                            "error": "Incorrect file type, only .xlsx files are allowed!"
+                        },
+                    },
+                )
+        except:
+            return render(
+                request,
+                "teacher/bulkregistration.html",
+                {
+                    "page_type": "bulk_register",
+                    "my_messages": {"error": "Sorry something went wrong!"},
+                },
+            )
 
-        # you may put validations here to check extension or file size
-        wb = openpyxl.load_workbook(excel_file)
-
-        # getting a particular sheet by name out of many sheets
-        parentSheet = wb["Parents Data"]
-        studentSheet = wb["Students Data"]
-
-        parent_data = list()
-        # iterating over the rows and
-        # getting value from each cell in row
-        for row in parentSheet.iter_rows():
-            row_data = list()
+        breaking = error = False
+        error_message = ""
+        parent_data = []
+        for row_no, row in enumerate(parentSheet.iter_rows()):
+            row_data = []
+            if breaking == True:
+                break
             for cell in row:
                 if cell.row == 1:
                     continue
                 if cell.column_letter == "A":
-                    row_data.append(encryptionHelper.encrypt(str(cell.value)))
+                    if cell.value == None:
+                        breaking = True
+                        break
+                    elif cell.value != row_no:
+                        breaking = error = True
+                        error_message = (
+                            "There something wrong in the parentId column in parent data sheet at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        row_data.append(str(cell.value))
                 elif cell.column_letter == "B":
-                    row_data.append(encryptionHelper.encrypt(str(cell.value)))
-                    row_data.append(
-                        str(cell.value.lower().replace(" ", ""))
-                        + str(random.randint(11, 99))
-                    )
+                    if cell.value == None:
+                        breaking = True
+                        break
+                    if not valid_name(cell.value):
+                        breaking = error = True
+                        error_message = "Invalid parent name at row number " + str(
+                            row_no + 1
+                        )
+                        break
+                    else:
+                        row_data.append(str(cell.value))
                 elif cell.column_letter == "C":
+                    if cell.value != None and not valid_email(cell.value):
+                        breaking = error = True
+                        error_message = "Invalid parent email at row number " + str(
+                            row_no + 1
+                        )
+                        break
                     row_data.append(str(cell.value))
                 elif cell.column_letter == "D":
+                    if cell.value != None and not valid_mobile_no(cell.value):
+                        breaking = error = True
+                        error_message = (
+                            "Invalid parent mobile number at row number "
+                            + str(row_no + 1)
+                        )
+                        break
                     row_data.append(str(cell.value))
                 elif cell.column_letter == "E":
-                    row_data.append(str(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = "Parent's gender missing at row number " + str(
+                            row_no + 1
+                        )
+                        break
+                    else:
+                        if check_gender(str(cell.value)):
+                            row_data.append(str(cell.value))
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid gender input for parents data at row number  "
+                                + str(row_no + 1)
+                                + ", please read the instructions"
+                            )
+                            break
                 elif cell.column_letter == "F":
-                    row_data.append(int(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Parent's date of birth missing at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        if re.match("^[0-9]{2}/[0-9]{2}/[0-9]{4}$", cell.value):
+                            row_data.append(int(cell.value))
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's date of birth at row number "
+                                + str(row_no + 1)
+                            )
+                            break
                 elif cell.column_letter == "G":
-                    row_data.append(int(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = "Parent's pincode missing at row number " + str(
+                            row_no + 1
+                        )
+                        break
+                    else:
+                        if not valid_pincode(cell.value):
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's pincode at row number "
+                                + str(row_no + 1)
+                            )
+                            break
+                        else:
+                            row_data.append(int(cell.value))
                 elif cell.column_letter == "H":
-                    row_data.append(int(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = "Parent's state missing at row number " + str(
+                            row_no + 1
+                        )
+                        break
+                    else:
+                        temp = check_state_city(True, 0, str(cell.value))
+                        if temp[0]:
+                            row_data.append(str(cell.value))
+                            row_data.append(temp[1])
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's state at row number "
+                                + str(row_no + 1)
+                            )
+                            break
                 elif cell.column_letter == "I":
-                    row_data.append(str(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = "Parent's city missing at row number " + str(
+                            row_no + 1
+                        )
+                        break
+                    else:
+                        if check_state_city(False, row_data[-1], str(cell.value)):
+                            row_data.pop()
+                            row_data.append(str(cell.value))
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's city at row number " + str(row_no + 1)
+                            )
+                            break
                 elif cell.column_letter == "J":
-                    row_data.append(str(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = "Parent's address missing at row number " + str(
+                            row_no + 1
+                        )
+                        break
+                    else:
+                        row_data.append(str(cell.value))
                 elif cell.column_letter == "K":
-                    row_data.append(str(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Parent's religion missing at row number " + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        if check_religion(str(cell.value)):
+                            row_data.append(str(cell.value))
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's religion at row number "
+                                + str(row_no + 1)
+                            )
+                            break
                 elif cell.column_letter == "L":
-                    row_data.append(str(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Parent's type of family missing at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        if check_type_of_fam(str(cell.value)):
+                            row_data.append(str(cell.value))
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's type of family at row number "
+                                + str(row_no + 1)
+                            )
+                            break
                 elif cell.column_letter == "M":
-                    row_data.append(str(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Parent's no of family members missing at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        try:
+                            int(cell.value)
+                        except:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's no of family members at row number "
+                                + str(row_no + 1)
+                            )
+                            break
+                        row_data.append(str(cell.value))
                 elif cell.column_letter == "N":
-                    row_data.append(str(cell.value))
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Parent's children count missing at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        try:
+                            int(cell.value)
+                        except:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's children count at row number "
+                                + str(row_no + 1)
+                            )
+                            break
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "O":
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Parent's education missing at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        if check_education(str(cell.value)):
+                            row_data.append(str(cell.value))
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's education at row number "
+                                + str(row_no + 1)
+                            )
+                            break
+                elif cell.column_letter == "P":
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Parent's occupation missing at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        if check_occupation(str(cell.value)):
+                            row_data.append(str(cell.value))
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid parent's occupation at row number "
+                                + str(row_no + 1)
+                            )
+                            break
             parent_data.append(row_data)
+
+        if error == True:
+            return render(
+                request,
+                "teacher/bulkregistration.html",
+                {
+                    "page_type": "bulk_register",
+                    "my_messages": {"error": error_message},
+                },
+            )
 
         student_data = list()
         # iterating over the rows and
@@ -1151,8 +1398,8 @@ def getTemplate(request):
         "Gender",
         "Date of Birth",
         "Pincode",
-        "City",
         "State",
+        "City",
         "Address",
         "Religion",
         "Type of family",
@@ -1168,8 +1415,8 @@ def getTemplate(request):
         "Gender",
         "Date of Birth",
         "Pincode",
-        "City",
         "State",
+        "City",
         "Address",
         "Registration No",
         "parentId",

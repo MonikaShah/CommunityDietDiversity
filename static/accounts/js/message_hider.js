@@ -24,4 +24,4 @@ const fadeout = () => {
     setTimeout(temp, 20000)
     setTimeout(display, 22000)
 }
-fadeout()
+window.onload = fadeout
