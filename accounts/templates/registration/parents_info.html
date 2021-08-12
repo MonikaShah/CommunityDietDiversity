@@ -52,7 +52,15 @@
                 </div>
             </div>
             <div class="col-md-12">
-                {{ form.name|as_crispy_field }}
+                <div id="div_id_name" class="form-group">
+                    <label for="id_name" class=" requiredField">
+                        Name<span class="asteriskField">*</span>
+                    </label>
+                    <div>
+                        <input type="text" name="name" maxlength="50" class="textinput textInput form-control" required id="id_name">
+                        <small class="form-text text-muted">Numbers and special characters are not allowed except apostrophe.</small>
+                    </div>
+                </div>
             </div>
             <div class="col-md-12">
                 <div class="row">
@@ -60,7 +68,15 @@
                         {{ form.dob|as_crispy_field }}
                     </div>
                     <div class="col-md-6">
-                        {{ form.mobile_no|as_crispy_field }}
+                        <div id="div_id_mobile_no" class="form-group">
+                            <label for="id_mobile_no">
+                                Mobile Number
+                            </label>
+                            <div>
+                                <input type="number" name="mobile_no" class="numberinput form-control" id="id_mobile_no">
+                                <small class="form-text text-muted">Enter 10 digit mobile number.</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -96,7 +96,7 @@ class ParentsInfoForm(ModelForm):
     email = forms.EmailField(required=False)
     name = forms.CharField(max_length=50)
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField(label="Mobile Number", required=False)
+    mobile_no = forms.IntegerField(required=False)
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     address = forms.CharField(max_length=100, widget=forms.Textarea())
@@ -142,7 +142,7 @@ class StudentsInfoForm(ModelForm):
     email = forms.EmailField(required=False)
     name = forms.CharField(max_length=50)
     dob = forms.DateField(widget=DatePickerInput(), label="Date Of Birth")
-    mobile_no = forms.IntegerField(label="Mobile Number", required=False)
+    mobile_no = forms.IntegerField(required=False)
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     pincode = forms.IntegerField()
@@ -182,7 +182,7 @@ class TeachersInfoForm(ModelForm):
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-    mobile_no = forms.IntegerField(label="Mobile Number", required=False)
+    mobile_no = forms.IntegerField(required=False)
 
     class Meta:
         model = TeacherInCharge
@@ -211,7 +211,7 @@ class SuperCoordinatorsInfoForm(ModelForm):
     email = forms.EmailField()
     name = forms.CharField(max_length=50)
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField(label="Mobile Number")
+    mobile_no = forms.IntegerField()
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
@@ -242,7 +242,7 @@ class CoordinatorsInfoForm(ModelForm):
     email = forms.EmailField(required=False)
     name = forms.CharField(max_length=50)
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField(label="Mobile Number", required=False)
+    mobile_no = forms.IntegerField(required=False)
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
