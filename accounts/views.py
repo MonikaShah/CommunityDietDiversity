@@ -22,6 +22,17 @@ from shared.encryption import EncryptionHelper
 encryptionHelper = EncryptionHelper()
 
 
+def valid_date(date):
+    date_year = int(date[6:])
+    date_month = int(date[:2])
+    date_date = int(date[3:5])
+    try:
+        datetime(date_year, date_month, date_date)
+        return True
+    except:
+        return False
+
+
 def is_adult_func(dob):
     today = str(date.today())
     student_dob_year = int(dob[6:])
@@ -1080,9 +1091,21 @@ def bulkRegister(request):
         try:
             excel_file = request.FILES["excel_file"]
             if excel_file.name[-4:] == "xlsx":
-                wb = openpyxl.load_workbook(excel_file)
-                parentSheet = wb["Parents Data"]
-                studentSheet = wb["Students Data"]
+                try:
+                    wb = openpyxl.load_workbook(excel_file)
+                    parentSheet = wb["Parents Data"]
+                    studentSheet = wb["Students Data"]
+                except:
+                    return render(
+                        request,
+                        "teacher/bulkregistration.html",
+                        {
+                            "page_type": "bulk_register",
+                            "my_messages": {
+                                "error": "Incorrect file uploaded, please use the template provided above."
+                            },
+                        },
+                    )
             else:
                 return render(
                     request,
@@ -1183,8 +1206,19 @@ def bulkRegister(request):
                         )
                         break
                     else:
-                        if re.match("^[0-9]{2}/[0-9]{2}/[0-9]{4}$", cell.value):
-                            row_data.append(int(cell.value))
+                        if re.match(
+                            "^[0-9]{2}/[0-9]{2}/[0-9]{4}$", str(cell.value)
+                        ) and valid_date(str(cell.value)):
+                            if is_adult_func(str(cell.value)) == "True":
+                                row_data.append(str(cell.value))
+                            else:
+                                breaking = error = True
+                                error_message = (
+                                    "Parent at row number "
+                                    + str(row_no + 1)
+                                    + " is not an adult"
+                                )
+                            break
                         else:
                             breaking = error = True
                             error_message = (
@@ -1375,11 +1409,11 @@ def bulkRegister(request):
                 },
             )
 
-        student_data = list()
-        # iterating over the rows and
-        # getting value from each cell in row
-        for row in studentSheet.iter_rows():
-            row_data = list()
+        breaking = error = False
+        error_message = ""
+        student_data = []
+        for row_no, row in enumerate(studentSheet.iter_rows()):
+            row_data = []
             for cell in row:
                 if cell.row == 1:
                     continue
