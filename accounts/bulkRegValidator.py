@@ -2993,7 +2993,7 @@ def check_state_city(state_check, state_id, name):
             for index, value in enumerate(state):
                 if value == name:
                     return (True, index)
-        return False
+        return (False, 0)
     else:
         if name in city[state_id]:
             return True

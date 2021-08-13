@@ -118,15 +118,31 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="sts">State*</label>
-                            <select onchange="print_city('state', this.selectedIndex);" id="sts" name="state"
-                            class="form-control" required></select>
+                            {% if valid_state %}
+                                <select onchange="print_city('state', this.selectedIndex);" id="sts" name="state"
+                                class="select form-control" required></select>
+                            {% else %}
+                                <select onchange="print_city('state', this.selectedIndex);" id="sts" name="state"
+                                class="select form-control is-invalid" required></select>
+                                <p class="invalid-feedback">
+                                    <strong>Invalid input.</strong>
+                                </p>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="state">City*</label>
-                            <select id="state" class="form-control" required name="city"></select>
-                            <script language="javascript">print_state("sts");</script>
+                            {% if valid_city %}
+                                <select id="state" class="select form-control" required name="city"></select>
+                                <script language="javascript">print_state("sts");</script>
+                            {% else %}
+                                <select id="state" class="select form-control is-invalid" required name="city"></select>
+                                <script language="javascript">print_state("sts");</script>
+                                <p class="invalid-feedback">
+                                    <strong>Invalid input.</strong>
+                                </p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

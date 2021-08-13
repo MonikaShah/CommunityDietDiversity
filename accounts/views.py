@@ -135,13 +135,42 @@ def parents_info(request):
         return render(
             request,
             "registration/parents_info.html",
-            {"form": form, "user_creation_form": user_creation_form},
+            {
+                "form": form,
+                "user_creation_form": user_creation_form,
+                "valid_state": True,
+                "valid_city": True,
+            },
         )
     else:
         form = ParentsInfoForm(request.POST)
         user_creation_form = UserCreationForm(request.POST)
 
         if form.is_valid() and user_creation_form.is_valid():
+            temp = check_state_city(True, 0, str(request.POST["state"]))
+            if temp[0]:
+                if not check_state_city(False, temp[1], str(request.POST["city"])):
+                    return render(
+                        request,
+                        "registration/parents_info.html",
+                        {
+                            "form": form,
+                            "user_creation_form": user_creation_form,
+                            "valid_state": True,
+                            "valid_city": False,
+                        },
+                    )
+            else:
+                return render(
+                    request,
+                    "registration/parents_info.html",
+                    {
+                        "form": form,
+                        "user_creation_form": user_creation_form,
+                        "valid_state": False,
+                        "valid_city": True,
+                    },
+                )
             request.session["data"] = request.POST
             request.session["parents_info_visited"] = True
             return redirect("accounts:students_info")
@@ -149,7 +178,12 @@ def parents_info(request):
             return render(
                 request,
                 "registration/parents_info.html",
-                {"form": form, "user_creation_form": user_creation_form},
+                {
+                    "form": form,
+                    "user_creation_form": user_creation_form,
+                    "valid_state": True,
+                    "valid_city": True,
+                },
             )
 
 
@@ -179,6 +213,8 @@ def students_info(request, is_adult=False):
                 "user_creation_form": user_creation_form,
                 "is_adult": is_adult,
                 "student_dob": student_dob,
+                "valid_state": True,
+                "valid_city": True,
             },
         )
     else:
@@ -189,6 +225,34 @@ def students_info(request, is_adult=False):
             parentform = ParentsInfoForm(previousPOST)
             parentuserform = UserCreationForm(previousPOST)
             if form.is_valid() and studentuserform.is_valid():
+                temp = check_state_city(True, 0, str(request.POST["state"]))
+                if temp[0]:
+                    if not check_state_city(False, temp[1], str(request.POST["city"])):
+                        return render(
+                            request,
+                            "registration/students_info.html",
+                            {
+                                "form": form,
+                                "user_creation_form": studentuserform,
+                                "is_adult": is_adult,
+                                "student_dob": student_dob,
+                                "valid_state": True,
+                                "valid_city": False,
+                            },
+                        )
+                else:
+                    return render(
+                        request,
+                        "registration/students_info.html",
+                        {
+                            "form": form,
+                            "user_creation_form": studentuserform,
+                            "is_adult": is_adult,
+                            "student_dob": student_dob,
+                            "valid_state": False,
+                            "valid_city": True,
+                        },
+                    )
                 parentUser = parentuserform.save(commit=False)
                 parentUser.save()
                 parent_group = Group.objects.get(name="Parents")
@@ -273,12 +337,42 @@ def students_info(request, is_adult=False):
                         "user_creation_form": studentuserform,
                         "is_adult": is_adult,
                         "student_dob": student_dob,
+                        "valid_state": True,
+                        "valid_city": True,
                     },
                 )
         else:
             form = StudentsInfoForm(request.POST)
             studentuserform = UserCreationForm(request.POST)
             if form.is_valid() and studentuserform.is_valid():
+                temp = check_state_city(True, 0, str(request.POST["state"]))
+                if temp[0]:
+                    if not check_state_city(False, temp[1], str(request.POST["city"])):
+                        return render(
+                            request,
+                            "registration/students_info.html",
+                            {
+                                "form": form,
+                                "user_creation_form": studentuserform,
+                                "is_adult": is_adult,
+                                "student_dob": student_dob,
+                                "valid_state": True,
+                                "valid_city": False,
+                            },
+                        )
+                else:
+                    return render(
+                        request,
+                        "registration/students_info.html",
+                        {
+                            "form": form,
+                            "user_creation_form": studentuserform,
+                            "is_adult": is_adult,
+                            "student_dob": student_dob,
+                            "valid_state": False,
+                            "valid_city": True,
+                        },
+                    )
                 studentuser = studentuserform.save(commit=False)
                 studentuser.save()
                 student_group = Group.objects.get(name="Students")
@@ -329,6 +423,8 @@ def students_info(request, is_adult=False):
                         "user_creation_form": studentuserform,
                         "is_adult": is_adult,
                         "student_dob": student_dob,
+                        "valid_state": True,
+                        "valid_city": True,
                     },
                 )
 
@@ -437,12 +533,41 @@ def addStudentForm(request):
         return render(
             request,
             "parent/add_student.html",
-            {"form": form, "user_creation_form": user_creation_form},
+            {
+                "form": form,
+                "user_creation_form": user_creation_form,
+                "valid_state": True,
+                "valid_city": True,
+            },
         )
     else:
         form = StudentsInfoForm(request.POST)
         studentuserform = UserCreationForm(request.POST)
         if form.is_valid() and studentuserform.is_valid():
+            temp = check_state_city(True, 0, str(request.POST["state"]))
+            if temp[0]:
+                if not check_state_city(False, temp[1], str(request.POST["city"])):
+                    return render(
+                        request,
+                        "parent/add_student.html",
+                        {
+                            "form": form,
+                            "user_creation_form": studentuserform,
+                            "valid_state": True,
+                            "valid_city": False,
+                        },
+                    )
+            else:
+                return render(
+                    request,
+                    "parent/add_student.html",
+                    {
+                        "form": form,
+                        "user_creation_form": studentuserform,
+                        "valid_state": False,
+                        "valid_city": True,
+                    },
+                )
             studentuser = studentuserform.save(commit=False)
             studentuser.save()
             student_group = Group.objects.get(name="Students")
@@ -474,7 +599,12 @@ def addStudentForm(request):
             return render(
                 request,
                 "parent/add_student.html",
-                {"form": form, "user_creation_form": studentuserform},
+                {
+                    "form": form,
+                    "user_creation_form": studentuserform,
+                    "valid_state": True,
+                    "valid_city": True,
+                },
             )
 
 
@@ -656,6 +786,7 @@ def getSessionTeachersTemplate(request):
     response["Content-Disposition"] = "attachment; filename=sessionTeacherTemplate.xlsx"
     return response
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 def getSessionStudentsTemplate(request):
@@ -689,8 +820,6 @@ def getSessionStudentsTemplate(request):
     )
     response["Content-Disposition"] = "attachment; filename=sessionStudentTemplate.xlsx"
     return response
-
-
 
 
 @login_required(login_url="accounts:loginlink")
@@ -849,7 +978,7 @@ def addSessionStudents(request, id):
 
         studentData = StudentsInfo.objects.all()
         session = Session.objects.filter(id=id).first()
-        teacher= TeacherInCharge.objects.filter(user=request.user).first()
+        teacher = TeacherInCharge.objects.filter(user=request.user).first()
         students = StudentsInfo.objects.filter(session=session)
         organization = session.coordinator.organization
         user_does_not_exist = []
@@ -890,7 +1019,7 @@ def addSessionStudents(request, id):
 
             if skipStudent == "False":
                 student.session = session
-                student.teacher=teacher
+                student.teacher = teacher
                 student.save()
 
         user_does_not_exist_str = "Incorrect Username: "
@@ -1637,12 +1766,16 @@ def student_dashboard(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
-def viewSessionForms(request,id):
+def viewSessionForms(request, id):
     teacher = TeacherInCharge.objects.get(user=request.user)
     teachersession = Session.objects.filter(id=id).first()
-    total_students = StudentsInfo.objects.filter(session=teachersession,teacher=teacher)
+    total_students = StudentsInfo.objects.filter(
+        session=teachersession, teacher=teacher
+    )
     results = []
-    closed_sessions = FormDetails.objects.filter(teacher=teacher, session=teachersession, open=False)
+    closed_sessions = FormDetails.objects.filter(
+        teacher=teacher, session=teachersession, open=False
+    )
 
     for session in closed_sessions:
         temp_list = [session.form, session.start_timestamp, session.end_timestamp]
@@ -1681,7 +1814,9 @@ def viewSessionForms(request,id):
         temp_list.append(len(total_students))
         temp_list.append(session.id)
         results.append(temp_list)
-    open_sessions = FormDetails.objects.filter(teacher=teacher,session=teachersession, open=True)
+    open_sessions = FormDetails.objects.filter(
+        teacher=teacher, session=teachersession, open=True
+    )
     results2 = []
     for session in open_sessions:
         temp_list = [session.form, session.start_timestamp]
@@ -1716,7 +1851,12 @@ def viewSessionForms(request,id):
     return render(
         request,
         "teacher/view_session_forms.html",
-        {"results": results, "results2": results2, "page_type": "view_session_forms", "session": teachersession},
+        {
+            "results": results,
+            "results2": results2,
+            "page_type": "view_session_forms",
+            "session": teachersession,
+        },
     )
 
 
@@ -1872,8 +2012,8 @@ def teacherAllSessions(request):
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 def viewSessionStudents(request, id):
     session = Session.objects.filter(id=id).first()
-    teacher= TeacherInCharge.objects.filter(user=request.user).first()
-    students = StudentsInfo.objects.filter(session=session,teacher=teacher)
+    teacher = TeacherInCharge.objects.filter(user=request.user).first()
+    students = StudentsInfo.objects.filter(session=session, teacher=teacher)
     for student in students:
         student.name = encryptionHelper.decrypt(student.name)
         student.rollno = encryptionHelper.decrypt(student.rollno)
@@ -2314,18 +2454,22 @@ def previous(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
-def manageForms(request,id):
+def manageForms(request, id):
     if request.method == "GET":
         activity = {}
         moduleOne = {}
         moduleTwo = {}
         moduleThree = {}
         teacher = TeacherInCharge.objects.get(user=request.user)
-        session=Session.objects.filter(id=id).first()
+        session = Session.objects.filter(id=id).first()
         form = Form.objects.get(name="moduleOne")
-        if FormDetails.objects.filter(form=form, teacher=teacher,session=session).exists():
+        if FormDetails.objects.filter(
+            form=form, teacher=teacher, session=session
+        ).exists():
             form = (
-                FormDetails.objects.filter(form=form, teacher=teacher,session=session,open=True)
+                FormDetails.objects.filter(
+                    form=form, teacher=teacher, session=session, open=True
+                )
                 .order_by("-start_timestamp")
                 .first()
             )
@@ -2339,9 +2483,13 @@ def manageForms(request,id):
                     moduleOne["pre"] = False
 
         activity_form = Form.objects.get(name="activity")
-        if FormDetails.objects.filter(form=activity_form, teacher=teacher,session=session).exists():
+        if FormDetails.objects.filter(
+            form=activity_form, teacher=teacher, session=session
+        ).exists():
             form2 = (
-                FormDetails.objects.filter(form=activity_form, teacher=teacher, session=session, open=True)
+                FormDetails.objects.filter(
+                    form=activity_form, teacher=teacher, session=session, open=True
+                )
                 .order_by("-start_timestamp")
                 .first()
             )
@@ -2378,10 +2526,10 @@ def manageForms(request,id):
 
             form = Form.objects.get(name="moduleOne")
             teacher = TeacherInCharge.objects.get(user=request.user)
-            session=Session.objects.filter(id=id).first()
+            session = Session.objects.filter(id=id).first()
             if module_one_pre == "on":
                 if not FormDetails.objects.filter(
-                    form=form, teacher=teacher,session=session, pre=True, open=True
+                    form=form, teacher=teacher, session=session, pre=True, open=True
                 ).exists():
                     update = FormDetails(
                         form=form,
@@ -2394,16 +2542,18 @@ def manageForms(request,id):
                     update.save()
             else:
                 if FormDetails.objects.filter(
-                    form=form, teacher=teacher,session=session, pre=True, open=True
+                    form=form, teacher=teacher, session=session, pre=True, open=True
                 ).exists():
                     update = FormDetails.objects.filter(
-                        form=form, teacher=teacher,session=session, pre=True, open=True
+                        form=form, teacher=teacher, session=session, pre=True, open=True
                     ).first()
                     update.open = False
                     update.end_timestamp = datetime.now()
                     session = Session.objects.filter(id=id).first()
-                    teacher= TeacherInCharge.objects.filter(user=request.user).first()
-                    total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
+                    teacher = TeacherInCharge.objects.filter(user=request.user).first()
+                    total_students = StudentsInfo.objects.filter(
+                        session=session, teacher=teacher
+                    )
                     for student in total_students:
                         if ModuleOne.objects.filter(
                             student=student,
@@ -2440,13 +2590,19 @@ def manageForms(request,id):
                     form=form, teacher=teacher, session=session, pre=False, open=True
                 ).exists():
                     update = FormDetails.objects.filter(
-                        form=form, teacher=teacher, session=session,pre=False, open=True
+                        form=form,
+                        teacher=teacher,
+                        session=session,
+                        pre=False,
+                        open=True,
                     ).first()
                     update.open = False
                     update.end_timestamp = datetime.now()
                     teacher = TeacherInCharge.objects.get(user=request.user)
                     session = Session.objects.filter(id=id).first()
-                    total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
+                    total_students = StudentsInfo.objects.filter(
+                        session=session, teacher=teacher
+                    )
                     for student in total_students:
                         if ModuleOne.objects.filter(
                             student=student,
@@ -2475,11 +2631,13 @@ def manageForms(request,id):
             form = Form.objects.get(name="activity")
             teacher = TeacherInCharge.objects.get(user=request.user)
             session = Session.objects.filter(id=id).first()
-            total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
+            total_students = StudentsInfo.objects.filter(
+                session=session, teacher=teacher
+            )
 
             if activity_pre == "on":
                 if not FormDetails.objects.filter(
-                    form=form, teacher=teacher,session=session, pre=True, open=True
+                    form=form, teacher=teacher, session=session, pre=True, open=True
                 ).exists():
                     update = FormDetails(
                         form=form,
@@ -2492,16 +2650,18 @@ def manageForms(request,id):
                     update.save()
             else:
                 if FormDetails.objects.filter(
-                    form=form, teacher=teacher, session=session,pre=True, open=True
+                    form=form, teacher=teacher, session=session, pre=True, open=True
                 ).exists():
                     update = FormDetails.objects.filter(
-                        form=form, teacher=teacher,session=session, pre=True, open=True
+                        form=form, teacher=teacher, session=session, pre=True, open=True
                     ).first()
                     update.open = False
                     update.end_timestamp = datetime.now()
                     teacher = TeacherInCharge.objects.get(user=request.user)
                     session = Session.objects.filter(id=id).first()
-                    total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
+                    total_students = StudentsInfo.objects.filter(
+                        session=session, teacher=teacher
+                    )
                     for student in total_students:
                         if Activity.objects.filter(
                             student=student,
@@ -2522,7 +2682,7 @@ def manageForms(request,id):
 
             if activity_post == "on":
                 if not FormDetails.objects.filter(
-                    form=form, teacher=teacher,session=session, pre=False, open=True
+                    form=form, teacher=teacher, session=session, pre=False, open=True
                 ).exists():
                     update = FormDetails(
                         form=form,
@@ -2538,13 +2698,19 @@ def manageForms(request,id):
                     form=form, teacher=teacher, session=session, pre=False, open=True
                 ).exists():
                     update = FormDetails.objects.filter(
-                        form=form, teacher=teacher, session=session, pre=False, open=True
+                        form=form,
+                        teacher=teacher,
+                        session=session,
+                        pre=False,
+                        open=True,
                     ).first()
                     update.open = False
                     update.end_timestamp = datetime.now()
                     teacher = TeacherInCharge.objects.get(user=request.user)
                     session = Session.objects.filter(id=id).first()
-                    total_students = StudentsInfo.objects.filter(session=session,teacher=teacher)
+                    total_students = StudentsInfo.objects.filter(
+                        session=session, teacher=teacher
+                    )
                     for student in total_students:
                         if Activity.objects.filter(
                             student=student,
@@ -2568,7 +2734,7 @@ def manageForms(request,id):
         module_three_pre = request.POST.get("module_three_pre", False)
         module_three_post = request.POST.get("module_three_post", False)
 
-        return redirect("accounts:manage_forms",id)
+        return redirect("accounts:manage_forms", id)
 
 
 @login_required(login_url="accounts:loginlink")
