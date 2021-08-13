@@ -21,6 +21,8 @@ const display = () => {
     message.style.display = "none"
 }
 const fadeout = () => {
+    let height = window.innerHeight - 60
+    document.getElementById("content").style.minHeight = height.toString() + "px"
     setTimeout(temp, 20000)
     setTimeout(display, 22000)
 }

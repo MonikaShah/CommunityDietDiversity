@@ -1,5 +1,5 @@
 const footer_adjust = () => {
     let height = window.innerHeight - 60
-    document.getElementById("content").style.minHeight = height.toString()+"px"
+    document.getElementById("content").style.minHeight = height.toString() + "px"
 }
-footer_adjust()
+window.onload = footer_adjust
