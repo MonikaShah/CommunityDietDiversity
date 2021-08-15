@@ -713,11 +713,37 @@ def addOrganizationForm(request):
         return render(
             request,
             "supercoordinator/add_organization.html",
-            {"form": form},
+            {
+                "form": form,
+                "valid_state": True,
+                "valid_city": True,
+            },
         )
     else:
         form = OrganizationsInfoForm(request.POST)
         if form.is_valid():
+            temp = check_state_city(True, 0, str(request.POST["state"]))
+            if temp[0]:
+                if not check_state_city(False, temp[1], str(request.POST["city"])):
+                    return render(
+                        request,
+                        "supercoordinator/add_organization.html",
+                        {
+                            "form": form,
+                            "valid_state": True,
+                            "valid_city": False,
+                        },
+                    )
+            else:
+                return render(
+                    request,
+                    "supercoordinator/add_organization.html",
+                    {
+                        "form": form,
+                        "valid_state": False,
+                        "valid_city": True,
+                    },
+                )
             organization = form.save(commit=False)
             organization.state = State.objects.get(
                 state__icontains=request.POST["state"].strip()
