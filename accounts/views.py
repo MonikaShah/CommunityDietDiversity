@@ -1576,11 +1576,15 @@ def bulkRegister(request):
 def getTemplate(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
+    align = wb.add_format()
+    align.set_align("center")
+    bold = wb.add_format({"bold": True})
     ws = wb.add_worksheet("Parents Data")
     ws2 = wb.add_worksheet("Students Data")
 
     columns = [
         "parentId",
+        "Parent Username",
         "Parent Name",
         "Email id",
         "Phone Number",
@@ -1611,11 +1615,12 @@ def getTemplate(request):
         "parentId",
     ]
     for col_num in range(len(columns)):
-        ws.write(0, col_num, columns[col_num])
+        ws.write(0, col_num, columns[col_num], bold)
     for col_num in range(len(columns2)):
-        ws2.write(0, col_num, columns2[col_num])
+        ws2.write(0, col_num, columns2[col_num], bold)
     for row_num in range(1, 1000):
         ws.write(row_num, 0, row_num)
+        ws.write(row_num, 1, "-", align)
 
     wb.close()
 
@@ -1624,7 +1629,9 @@ def getTemplate(request):
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    response["Content-Disposition"] = "attachment; filename=template.xlsx"
+    response[
+        "Content-Disposition"
+    ] = "attachment; filename=bulkRegistrationTemplate.xlsx"
     return response
 
 
