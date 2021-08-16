@@ -8,6 +8,11 @@
 
 {% block links %}
 <script src="{% static 'accounts/js/message_hider.js' %}"></script>
+{% if my_messages %}
+<script>
+    location.href = "#message"
+</script>
+{% endif %}
 {% endblock %}
 
 {% block userinfo %}
@@ -27,8 +32,9 @@
         <h6><b>Step 2:</b> Upload Filled Excel File</h6>
         <p class="m-0"><b>INSTRUCTIONS:-</b></p>
         <ul>
-            <li>Remove the sample row data before editing the template file.</li>
+            <li>Do not edit the column heading row.</li>
             <li>Do not change the column order.</li>
+            <li>Data provided after an empty row will not be considered.</li>
         </ul>
         <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -43,12 +49,10 @@
             <button type="submit" class="btn btn-info btnmedium"><i class="fa fa-upload mr-1" aria-hidden="true"></i> Upload</button>
         </form>
         <div id="message">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="mb-0 mt-2 alert alert-primary" role="alert">
-                        {{message}}
-                    </div>
-                {% endfor %}
+            {% if my_messages %}
+                <div class="mb-0 mt-2 alert alert-danger" role="alert">
+                    {{ my_messages.error }}
+                </div>
             {% endif %}
         </div>
     </div>

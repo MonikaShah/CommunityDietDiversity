@@ -791,71 +791,54 @@ def addSessionForm(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def viewSessionTeachers(request, id, my_messages=None):
+    session = Session.objects.filter(id=id).first()
+    objects = Teacher_Session.objects.filter(session=session)
+    teachers = []
+    for object in objects:
+        object.teacher.name = encryptionHelper.decrypt(object.teacher.name)
+        teachers.append(object.teacher)
+    if my_messages != None:
+        return render(
+            request,
+            "coordinator/view_session_teachers.html",
+            {
+                "teachers": teachers,
+                "session": session,
+                "my_messages": my_messages,
+                "page_type": "view_session_teachers",
+            },
+        )
+    else:
+        return render(
+            request,
+            "coordinator/view_session_teachers.html",
+            {
+                "teachers": teachers,
+                "session": session,
+                "page_type": "view_session_teachers",
+            },
+        )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def getSessionTeachersTemplate(request):
     output = io.BytesIO()
-
     wb = xlsxwriter.Workbook(output)
     ws = wb.add_worksheet("Session Teachers Data")
-
     columns = [
         "Teacher Username",
     ]
-
-    sampleTeacherData = [
-        "sampleusername",
-    ]
-    row_num = 0
-
     for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num])  # at 0 row 0 column
-
-    row_num += 1
-    for col_num in range(len(sampleTeacherData)):
-        ws.write(row_num, col_num, sampleTeacherData[col_num])
+        ws.write(0, col_num, columns[col_num])
     wb.close()
-
-    # construct response
     output.seek(0)
     response = HttpResponse(
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
     response["Content-Disposition"] = "attachment; filename=sessionTeacherTemplate.xlsx"
-    return response
-
-
-@login_required(login_url="accounts:loginlink")
-@user_passes_test(is_teacher, login_url="accounts:forbidden")
-def getSessionStudentsTemplate(request):
-    output = io.BytesIO()
-
-    wb = xlsxwriter.Workbook(output)
-    ws = wb.add_worksheet("Session Students Data")
-
-    columns = [
-        "Student Username",
-    ]
-
-    sampleStudentData = [
-        "sampleusername",
-    ]
-    row_num = 0
-
-    for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num])  # at 0 row 0 column
-
-    row_num += 1
-    for col_num in range(len(sampleStudentData)):
-        ws.write(row_num, col_num, sampleStudentData[col_num])
-    wb.close()
-
-    # construct response
-    output.seek(0)
-    response = HttpResponse(
-        output.read(),
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
-    response["Content-Disposition"] = "attachment; filename=sessionStudentTemplate.xlsx"
     return response
 
 
@@ -869,120 +852,191 @@ def addSessionTeachers(request, id):
             {"page_type": "add_session_teachers"},
         )
     else:
-        excel_file = request.FILES["excel_file"]
-
-        # you may put validations here to check extension or file size
-        wb = openpyxl.load_workbook(excel_file)
-
-        # getting a particular sheet by name out of many sheets
-        teacherSheet = wb["Session Teachers Data"]
-
-        teacher_data = list()
-        # iterating over the rows and
-        # getting value from each cell in row
-        for row in teacherSheet.iter_rows():
-            for cell in row:
-                if cell.row == 1:
-                    continue
-                if cell.column_letter == "A":
-                    teacher_data.append(str(cell.value))
-
-        teacherData = TeacherInCharge.objects.all()
-        session = Session.objects.filter(id=id).first()
-        objects = Teacher_Session.objects.filter(session=session)
-        organization = session.coordinator.organization
-        teachers = []
-        user_does_not_exist = []
-        teacher_already_registered = []
-        incorrect_organization = []
-        for object in objects:
-            object.teacher.name = encryptionHelper.decrypt(object.teacher.name)
-            teachers.append(object.teacher)
-
-        for index, t in enumerate(teacher_data):
-
-            skipTeacher = "None"
-
-            for teacher in teacherData:
-                if teacher.user.username == t:
-                    skipTeacher = "False"
-                    break
-
-            if skipTeacher == "False":
-                for teacher in teachers:
-                    if teacher.user.username == t:
-                        skipTeacher = "True"
-                        break
-
-                if skipTeacher == "True":
-                    teacher_already_registered.append(t)
-                    continue
-
-                if skipTeacher == "False":
-                    for teacher in teachers:
-                        if teacher.organization != organization:
-                            skipTeacher = "True"
-                            break
-
-                    if skipTeacher == "True":
-                        incorrect_organization.append(t)
-
-            if skipTeacher == "None":
-                user_does_not_exist.append(t)
-                skipTeacher = "True"
-
-            if skipTeacher == "False":
-                teacher_session = Teacher_Session()
-                teacher_session.session = session
-                teacherUser = User.objects.filter(username=t).first()
-                teacher_session.teacher = TeacherInCharge.objects.filter(
-                    user=teacherUser
-                ).first()
-                teacher_session.save()
-
-        user_does_not_exist_str = "Incorrect Username: "
-        teacher_already_registered_str = "Teacher already exists in this session: "
-        incorrect_organization_str = (
-            "Organization of teacher does not match with your organization: "
-        )
-
-        for index, i in enumerate(user_does_not_exist):
-            if index == len(user_does_not_exist) - 1:
-                user_does_not_exist_str += str(i)
+        try:
+            excel_file = request.FILES["excel_file"]
+            if excel_file.name[-4:] == "xlsx":
+                try:
+                    wb = openpyxl.load_workbook(excel_file)
+                    teacherSheet = wb["Session Teachers Data"]
+                except:
+                    return render(
+                        request,
+                        "coordinator/add_session_teachers.html",
+                        {
+                            "page_type": "add_session_teachers",
+                            "my_messages": {
+                                "error": "Incorrect file uploaded, please use the template provided above."
+                            },
+                        },
+                    )
             else:
-                user_does_not_exist_str += str(i) + ", "
-
-        for index, i in enumerate(teacher_already_registered):
-            if index == len(teacher_already_registered) - 1:
-                teacher_already_registered_str += str(i)
-            else:
-                teacher_already_registered_str += str(i) + ", "
-
-        for index, i in enumerate(incorrect_organization):
-            if index == len(incorrect_organization) - 1:
-                incorrect_organization_str += str(i)
-            else:
-                incorrect_organization_str += str(i) + ", "
-
-        if user_does_not_exist_str != "Incorrect Username: ":
-            messages.error(request, user_does_not_exist_str)
-        if teacher_already_registered_str != "Teacher already exists in this session: ":
-            messages.error(request, teacher_already_registered_str)
-        if (
-            incorrect_organization_str
-            != "Organization of teacher does not match with your organization: "
-        ):
-            messages.error(request, incorrect_organization_str)
-        if (
-            len(user_does_not_exist) == 0
-            and len(teacher_already_registered) == 0
-            and len(incorrect_organization) == 0
-        ):
-            messages.success(
-                request, "All Teachers added to this session successfully!"
+                return render(
+                    request,
+                    "coordinator/add_session_teachers.html",
+                    {
+                        "page_type": "add_session_teachers",
+                        "my_messages": {
+                            "error": "Incorrect file type, only .xlsx files are allowed!"
+                        },
+                    },
+                )
+        except:
+            return render(
+                request,
+                "coordinator/add_session_teachers.html",
+                {
+                    "page_type": "add_session_teachers",
+                    "my_messages": {"error": "Sorry something went wrong!"},
+                },
             )
 
-        return redirect("accounts:view_session_teachers", id)
+        organization = (
+            CoordinatorInCharge.objects.filter(user=request.user).first().organization
+        )
+        breaking = error = False
+        error_message = ""
+        teacher_data = []
+        for row_no, row in enumerate(teacherSheet.iter_rows()):
+            if breaking == True:
+                break
+            if row_no == 0:
+                continue
+            for cell in row:
+                if cell.column_letter == "A":
+                    if cell.value == None:
+                        breaking = True
+                        break
+                    else:
+                        if User.objects.filter(username=cell.value).exists():
+                            user = User.objects.filter(username=cell.value).first()
+                            if user.groups.filter(name="Teachers").exists():
+                                teacher_user = TeacherInCharge.objects.filter(
+                                    user=user
+                                ).first()
+                                if teacher_user.organization == organization:
+                                    teacher_data.append(teacher_user)
+                                else:
+                                    breaking = error = True
+                                    error_message = (
+                                        "Teacher at row number "
+                                        + str(row_no + 1)
+                                        + " does not belong to your organization"
+                                    )
+                                    break
+                            else:
+                                breaking = error = True
+                                error_message = (
+                                    "User at row number "
+                                    + str(row_no + 1)
+                                    + " is not a teacher"
+                                )
+                                break
+                        else:
+                            breaking = error = True
+                            error_message = "Invalid username at row number " + str(
+                                row_no + 1
+                            )
+                            break
+
+        if error == True:
+            return render(
+                request,
+                "coordinator/add_session_teachers.html",
+                {
+                    "page_type": "add_session_teachers",
+                    "my_messages": {"error": error_message},
+                },
+            )
+
+        session = Session.objects.filter(id=id).first()
+        teacher_session = Teacher_Session.objects.filter(session=session)
+        teacher_session_teacher_objects = []
+        for i in teacher_session:
+            teacher_session_teacher_objects.append(i.teacher)
+        teacher_added = 0
+        teacher_exists = 0
+        for teacher_user in teacher_data:
+            if teacher_user in teacher_session_teacher_objects:
+                teacher_exists += 1
+            else:
+                new_teacher_session = Teacher_Session()
+                new_teacher_session.session = session
+                new_teacher_session.teacher = teacher_user
+                new_teacher_session.save()
+                teacher_added += 1
+
+        if teacher_added == 0:
+            my_messages = {
+                "success": "Registration successful. Already registered: "
+                + str(teacher_exists)
+            }
+        elif teacher_exists == 0:
+            my_messages = {
+                "success": "Registration successful. Newly registered: "
+                + str(teacher_added)
+            }
+        else:
+            my_messages = {
+                "success": "Registration successful. Already registered: "
+                + str(teacher_exists)
+                + ", Newly registered: "
+                + str(teacher_added)
+            }
+
+        return viewSessionTeachers(request, id, my_messages)
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
+def viewSessionStudents(request, id, my_messages=None):
+    session = Session.objects.filter(id=id).first()
+    teacher = TeacherInCharge.objects.filter(user=request.user).first()
+    students = StudentsInfo.objects.filter(session=session, teacher=teacher)
+    for student in students:
+        student.name = encryptionHelper.decrypt(student.name)
+        student.rollno = encryptionHelper.decrypt(student.rollno)
+    if my_messages != None:
+        return render(
+            request,
+            "teacher/view_session_students.html",
+            {
+                "students": students,
+                "session": session,
+                "my_messages": my_messages,
+                "page_type": "view_session_students",
+            },
+        )
+    else:
+        return render(
+            request,
+            "teacher/view_session_students.html",
+            {
+                "students": students,
+                "session": session,
+                "page_type": "view_session_students",
+            },
+        )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
+def getSessionStudentsTemplate(request):
+    output = io.BytesIO()
+    wb = xlsxwriter.Workbook(output)
+    ws = wb.add_worksheet("Session Students Data")
+    columns = [
+        "Student Username",
+    ]
+    for col_num in range(len(columns)):
+        ws.write(0, col_num, columns[col_num])
+    wb.close()
+    output.seek(0)
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = "attachment; filename=sessionStudentTemplate.xlsx"
+    return response
 
 
 @login_required(login_url="accounts:loginlink")
@@ -995,113 +1049,196 @@ def addSessionStudents(request, id):
             {"page_type": "add_session_students"},
         )
     else:
-        excel_file = request.FILES["excel_file"]
-
-        # you may put validations here to check extension or file size
-        wb = openpyxl.load_workbook(excel_file)
-
-        # getting a particular sheet by name out of many sheets
-        studentSheet = wb["Session Students Data"]
-
-        student_data = list()
-        # iterating over the rows and
-        # getting value from each cell in row
-        for row in studentSheet.iter_rows():
-            for cell in row:
-                if cell.row == 1:
-                    continue
-                if cell.column_letter == "A":
-                    student_data.append(str(cell.value))
-
-        studentData = StudentsInfo.objects.all()
-        session = Session.objects.filter(id=id).first()
-        teacher = TeacherInCharge.objects.filter(user=request.user).first()
-        students = StudentsInfo.objects.filter(session=session)
-        organization = session.coordinator.organization
-        user_does_not_exist = []
-        student_already_registered = []
-        incorrect_organization = []
-
-        for index, t in enumerate(student_data):
-
-            skipStudent = "None"
-
-            for student in studentData:
-                if student.user.username == t:
-                    skipStudent = "False"
-                    break
-
-            if skipStudent == "False":
-                for student in students:
-                    if student.user.username == t:
-                        skipStudent = "True"
-                        break
-
-                if skipStudent == "True":
-                    student_already_registered.append(t)
-                    continue
-
-                if skipStudent == "False":
-                    for student in students:
-                        if student.organization != organization:
-                            skipStudent = "True"
-                            break
-
-                    if skipStudent == "True":
-                        incorrect_organization.append(t)
-
-            if skipStudent == "None":
-                user_does_not_exist.append(t)
-                skipStudent = "True"
-
-            if skipStudent == "False":
-                student.session = session
-                student.teacher = teacher
-                student.save()
-
-        user_does_not_exist_str = "Incorrect Username: "
-        student_already_registered_str = "Student already exists in this session: "
-        incorrect_organization_str = (
-            "Organization of student does not match with your organization: "
-        )
-
-        for index, i in enumerate(user_does_not_exist):
-            if index == len(user_does_not_exist) - 1:
-                user_does_not_exist_str += str(i)
+        try:
+            excel_file = request.FILES["excel_file"]
+            if excel_file.name[-4:] == "xlsx":
+                try:
+                    wb = openpyxl.load_workbook(excel_file)
+                    studentSheet = wb["Session Students Data"]
+                except:
+                    return render(
+                        request,
+                        "teacher/add_session_students.html",
+                        {
+                            "page_type": "add_session_students",
+                            "my_messages": {
+                                "error": "Incorrect file uploaded, please use the template provided above."
+                            },
+                        },
+                    )
             else:
-                user_does_not_exist_str += str(i) + ", "
-
-        for index, i in enumerate(student_already_registered):
-            if index == len(student_already_registered) - 1:
-                student_already_registered_str += str(i)
-            else:
-                student_already_registered_str += str(i) + ", "
-
-        for index, i in enumerate(incorrect_organization):
-            if index == len(incorrect_organization) - 1:
-                incorrect_organization_str += str(i)
-            else:
-                incorrect_organization_str += str(i) + ", "
-
-        if user_does_not_exist_str != "Incorrect Username: ":
-            messages.error(request, user_does_not_exist_str)
-        if student_already_registered_str != "Student already exists in this session: ":
-            messages.error(request, student_already_registered_str)
-        if (
-            incorrect_organization_str
-            != "Organization of student does not match with your organization: "
-        ):
-            messages.error(request, incorrect_organization_str)
-        if (
-            len(user_does_not_exist) == 0
-            and len(student_already_registered) == 0
-            and len(incorrect_organization) == 0
-        ):
-            messages.success(
-                request, "All Students added to this session successfully!"
+                return render(
+                    request,
+                    "teacher/add_session_students.html",
+                    {
+                        "page_type": "add_session_students",
+                        "my_messages": {
+                            "error": "Incorrect file type, only .xlsx files are allowed!"
+                        },
+                    },
+                )
+        except:
+            return render(
+                request,
+                "teacher/add_session_students.html",
+                {
+                    "page_type": "add_session_students",
+                    "my_messages": {"error": "Sorry something went wrong!"},
+                },
             )
 
-        return redirect("accounts:view_session_students", id)
+        organization = (
+            TeacherInCharge.objects.filter(user=request.user).first().organization
+        )
+        breaking = error = False
+        error_message = ""
+        student_data = []
+        for row_no, row in enumerate(studentSheet.iter_rows()):
+            if breaking == True:
+                break
+            if row_no == 0:
+                continue
+            for cell in row:
+                if cell.column_letter == "A":
+                    if cell.value == None:
+                        breaking = True
+                        break
+                    else:
+                        if User.objects.filter(username=cell.value).exists():
+                            user = User.objects.filter(username=cell.value).first()
+                            if user.groups.filter(name="Students").exists():
+                                student_user = StudentsInfo.objects.filter(
+                                    user=user
+                                ).first()
+                                if student_user.organization == organization:
+                                    student_data.append(student_user)
+                                else:
+                                    breaking = error = True
+                                    error_message = (
+                                        "Student at row number "
+                                        + str(row_no + 1)
+                                        + " does not belong to your organization"
+                                    )
+                                    break
+                            else:
+                                breaking = error = True
+                                error_message = (
+                                    "User at row number "
+                                    + str(row_no + 1)
+                                    + " is not a student"
+                                )
+                                break
+                        else:
+                            breaking = error = True
+                            error_message = "Invalid username at row number " + str(
+                                row_no + 1
+                            )
+                            break
+
+        if error == True:
+            return render(
+                request,
+                "teacher/add_session_students.html",
+                {
+                    "page_type": "add_session_students",
+                    "my_messages": {"error": error_message},
+                },
+            )
+
+        session = Session.objects.filter(id=id).first()
+        student_added = 0
+        student_exists = 0
+        for student_user in student_data:
+            if student_user.session == session:
+                student_exists += 1
+            else:
+                student_user.session = session
+                student_user.save()
+                student_added += 1
+
+        if student_added == 0:
+            my_messages = {
+                "success": "Registration successful. Already registered: "
+                + str(student_exists)
+            }
+        elif student_exists == 0:
+            my_messages = {
+                "success": "Registration successful. Newly registered: "
+                + str(student_added)
+            }
+        else:
+            my_messages = {
+                "success": "Registration successful. Already registered: "
+                + str(student_exists)
+                + ", Newly registered: "
+                + str(student_added)
+            }
+
+        return viewSessionStudents(request, id, my_messages)
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
+def getTemplate(request):
+    output = io.BytesIO()
+    wb = xlsxwriter.Workbook(output)
+    align = wb.add_format()
+    align.set_align("center")
+    bold = wb.add_format({"bold": True})
+    ws = wb.add_worksheet("Parents Data")
+    ws2 = wb.add_worksheet("Students Data")
+
+    columns = [
+        "parentId",
+        "Parent Username",
+        "Parent Name",
+        "Email id",
+        "Phone Number",
+        "Gender",
+        "Date of Birth",
+        "Pincode",
+        "State",
+        "City",
+        "Address",
+        "Religion",
+        "Type of family",
+        "No of family members",
+        "Children Count",
+        "Education",
+        "Occupation",
+    ]
+    columns2 = [
+        "Student Name",
+        "Email id",
+        "Phone Number",
+        "Gender",
+        "Date of Birth",
+        "Pincode",
+        "State",
+        "City",
+        "Address",
+        "Roll Number",
+        "parentId",
+    ]
+    for col_num in range(len(columns)):
+        ws.write(0, col_num, columns[col_num], bold)
+    for col_num in range(len(columns2)):
+        ws2.write(0, col_num, columns2[col_num], bold)
+    for row_num in range(1, 1000):
+        ws.write(row_num, 0, row_num)
+        ws.write(row_num, 1, "-", align)
+
+    wb.close()
+
+    output.seek(0)
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response[
+        "Content-Disposition"
+    ] = "attachment; filename=bulkRegistrationTemplate.xlsx"
+    return response
 
 
 @login_required(login_url="accounts:loginlink")
@@ -1764,70 +1901,6 @@ def bulkRegister(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
-def getTemplate(request):
-    output = io.BytesIO()
-    wb = xlsxwriter.Workbook(output)
-    align = wb.add_format()
-    align.set_align("center")
-    bold = wb.add_format({"bold": True})
-    ws = wb.add_worksheet("Parents Data")
-    ws2 = wb.add_worksheet("Students Data")
-
-    columns = [
-        "parentId",
-        "Parent Username",
-        "Parent Name",
-        "Email id",
-        "Phone Number",
-        "Gender",
-        "Date of Birth",
-        "Pincode",
-        "State",
-        "City",
-        "Address",
-        "Religion",
-        "Type of family",
-        "No of family members",
-        "Children Count",
-        "Education",
-        "Occupation",
-    ]
-    columns2 = [
-        "Student Name",
-        "Email id",
-        "Phone Number",
-        "Gender",
-        "Date of Birth",
-        "Pincode",
-        "State",
-        "City",
-        "Address",
-        "Roll Number",
-        "parentId",
-    ]
-    for col_num in range(len(columns)):
-        ws.write(0, col_num, columns[col_num], bold)
-    for col_num in range(len(columns2)):
-        ws2.write(0, col_num, columns2[col_num], bold)
-    for row_num in range(1, 1000):
-        ws.write(row_num, 0, row_num)
-        ws.write(row_num, 1, "-", align)
-
-    wb.close()
-
-    output.seek(0)
-    response = HttpResponse(
-        output.read(),
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
-    response[
-        "Content-Disposition"
-    ] = "attachment; filename=bulkRegistrationTemplate.xlsx"
-    return response
-
-
-@login_required(login_url="accounts:loginlink")
-@user_passes_test(is_teacher, login_url="accounts:forbidden")
 def downloadData(request):
 
     output = io.BytesIO()
@@ -2214,27 +2287,6 @@ def allSessions(request):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_coordinator, login_url="accounts:forbidden")
-def viewSessionTeachers(request, id):
-    session = Session.objects.filter(id=id).first()
-    objects = Teacher_Session.objects.filter(session=session)
-    teachers = []
-    for object in objects:
-        object.teacher.name = encryptionHelper.decrypt(object.teacher.name)
-        teachers.append(object.teacher)
-
-    return render(
-        request,
-        "coordinator/view_session_teachers.html",
-        {
-            "teachers": teachers,
-            "session": session,
-            "page_type": "view_session_teachers",
-        },
-    )
-
-
-@login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 def teacherAllSessions(request):
     teacher = TeacherInCharge.objects.filter(user=request.user).first()
@@ -2262,27 +2314,6 @@ def teacherAllSessions(request):
             "open": open,
             "close": close,
             "page_type": "teacher_all_sessions",
-        },
-    )
-
-
-@login_required(login_url="accounts:loginlink")
-@user_passes_test(is_teacher, login_url="accounts:forbidden")
-def viewSessionStudents(request, id):
-    session = Session.objects.filter(id=id).first()
-    teacher = TeacherInCharge.objects.filter(user=request.user).first()
-    students = StudentsInfo.objects.filter(session=session, teacher=teacher)
-    for student in students:
-        student.name = encryptionHelper.decrypt(student.name)
-        student.rollno = encryptionHelper.decrypt(student.rollno)
-
-    return render(
-        request,
-        "teacher/view_session_students.html",
-        {
-            "students": students,
-            "session": session,
-            "page_type": "view_session_students",
         },
     )
 
