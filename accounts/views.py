@@ -775,7 +775,6 @@ def addSessionForm(request):
         form = SessionsInfoForm(request.POST)
         if form.is_valid():
             session = form.save(commit=False)
-            session.start_date = datetime.now()
             session.coordinator = CoordinatorInCharge.objects.filter(
                 user=request.user
             ).first()
