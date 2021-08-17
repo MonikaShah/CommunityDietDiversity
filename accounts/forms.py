@@ -270,7 +270,10 @@ class CoordinatorsInfoForm(ModelForm):
 
 
 class SessionsInfoForm(ModelForm):
-    start_date = forms.DateTimeField(widget=forms.DateTimeInput(format='%Y-%m-%dT%H:%M'), label="Start date")
+    start_date = forms.DateTimeField(
+        widget=forms.DateTimeInput(format="%Y-%m-%dT%H:%M"), label="Start date"
+    )
+
     class Meta:
         model = Session
         fields = ["name"]
@@ -724,11 +727,11 @@ class ModuleOneForm3(forms.ModelForm):
 
 
 class SuperCoordPasswordReset(forms.Form):
-    username = forms.CharField(max_length=150, label="Coordinator's Username")
+    username = forms.CharField(max_length=150, label="")
 
 
 class CoordPasswordReset(forms.Form):
-    username = forms.CharField(max_length=150, label="Username")
+    username = forms.CharField(max_length=150, label="")
 
 
 class forgot_password_form(forms.ModelForm):

@@ -4,6 +4,11 @@
 
 {%block links %}
 <script src="{% static 'accounts/js/message_hider.js' %}"></script>
+{% if my_messages %}
+<script>
+    location.href = "#message"
+</script>
+{% endif %}
 <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
 {% endblock %}
 
