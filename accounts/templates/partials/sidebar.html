@@ -26,7 +26,7 @@
             <li class="nav-item">
             {% endif %}
                 <a class="my-nav-link nav-link" href="{% url 'accounts:supercoordinator_dashboard' %}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-fw fa-sitemap"></i>
                     <span>Organizations</span>
                 </a>
             </li>
@@ -36,8 +36,18 @@
             <li class="nav-item">
             {% endif %}
                 <a class="my-nav-link nav-link" href="{% url 'accounts:all_coordinators' %}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-fw fa-users"></i>
                     <span>Coordinators</span>
+                </a>
+            </li>
+            {% if page_type == "reset_password" %}
+            <li class="nav-item active">
+            {% else %}
+            <li class="nav-item">
+            {% endif %}
+                <a class="my-nav-link nav-link" href="{% url 'accounts:supercoordinator_reset_password' %}">
+                    <i class="fas fa-fw fa-lock-open"></i>
+                    <span>Reset Password</span>
                 </a>
             </li>
 
@@ -48,7 +58,7 @@
             <li class="nav-item">
             {% endif %}
                 <a class="my-nav-link nav-link" href="{% url 'accounts:coordinator_dashboard' %}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-fw fa-users"></i>
                     <span>Teachers</span>
                 </a>
             </li>
@@ -58,8 +68,18 @@
             <li class="nav-item">
             {% endif %}
                 <a class="my-nav-link nav-link" href="{% url 'accounts:all_sessions' %}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-fw fa-calendar-week"></i>
                     <span>Sessions</span>
+                </a>
+            </li>
+            {% if page_type == "reset_password" %}
+            <li class="nav-item active">
+            {% else %}
+            <li class="nav-item">
+            {% endif %}
+                <a class="my-nav-link nav-link" href="{% url 'accounts:coordinator_reset_password' %}">
+                    <i class="fas fa-fw fa-lock-open"></i>
+                    <span>Reset Password</span>
                 </a>
             </li>
 
@@ -70,7 +90,7 @@
             <li class="nav-item">
             {% endif %}
                 <a class="my-nav-link nav-link" href="{% url 'accounts:teacher_all_sessions' %}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-fw fa-calendar-week"></i>
                     <span>Sessions</span>
                 </a>
             </li>
@@ -80,7 +100,7 @@
             <li class="nav-item">
             {% endif %}
                 <a class="my-nav-link nav-link" href="{% url 'accounts:bulk_register'%}">
-                    <i class="fas fa-fw fa-users"></i>
+                    <i class="fas fa-fw fa-user-plus"></i>
                     <span>Bulk Register</span>
                 </a>
             </li>
