@@ -84,8 +84,8 @@ class ParentsInfo(models.Model):
     type_of_family = models.ForeignKey(FamilyType, on_delete=models.CASCADE)
     religion = models.ForeignKey(ReligiousBelief, on_delete=models.CASCADE)
     children_count = models.BinaryField()
-    first_password = models.CharField(max_length=20, default="helloworld14")
-    password_changed = models.BooleanField(default=False)
+    first_password = models.CharField(max_length=225, default="")
+    password_changed = models.BooleanField(default=True)
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
@@ -114,6 +114,8 @@ class CoordinatorInCharge(models.Model):
     mobile_no = models.BinaryField(null=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     super_coordinator = models.ForeignKey(SuperCoordinator, on_delete=models.CASCADE)
+    first_password = models.CharField(max_length=225, default="")
+    password_changed = models.BooleanField(default=True)
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
@@ -129,6 +131,8 @@ class TeacherInCharge(models.Model):
     mobile_no = models.BinaryField(null=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     coordinator = models.ForeignKey(CoordinatorInCharge, on_delete=models.CASCADE)
+    first_password = models.CharField(max_length=225, default="")
+    password_changed = models.BooleanField(default=True)
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
@@ -166,8 +170,8 @@ class StudentsInfo(models.Model):
     pincode = models.BinaryField()
     address = models.BinaryField()
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE, null=True)
-    first_password = models.CharField(max_length=20, default="helloworld14")
-    password_changed = models.BooleanField(default=False)
+    first_password = models.CharField(max_length=225, default="")
+    password_changed = models.BooleanField(default=True)
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE, null=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
 

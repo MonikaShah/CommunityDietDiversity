@@ -22,6 +22,10 @@ from shared.encryption import EncryptionHelper
 encryptionHelper = EncryptionHelper()
 
 
+def random_password_generator():
+    return "".join(random.choices(string.ascii_lowercase + string.digits, k=8))
+
+
 def valid_date(date):
     date_year = int(date[6:])
     date_month = int(date[:2])
@@ -291,8 +295,6 @@ def students_info(request, is_adult=False):
                 parent.children_count = encryptionHelper.encrypt(
                     previousPOST["children_count"]
                 )
-                parent.first_password = ""
-                parent.password_changed = True
                 parent.save()
 
                 studentuser = studentuserform.save(commit=False)
@@ -319,8 +321,6 @@ def students_info(request, is_adult=False):
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
                 student.address = encryptionHelper.encrypt(request.POST["address"])
                 student.parent = parent
-                student.first_password = ""
-                student.password_changed = True
                 student.save()
 
                 user = authenticate(
@@ -407,8 +407,6 @@ def students_info(request, is_adult=False):
                 )
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
                 student.address = encryptionHelper.encrypt(request.POST["address"])
-                student.first_password = ""
-                student.password_changed = True
                 student.save()
 
                 user = authenticate(
@@ -907,8 +905,8 @@ def addSessionTeachers(request, id):
                         break
                     else:
                         if User.objects.filter(username=cell.value).exists():
-                            user = User.objects.filter(username=cell.value).first()
-                            if user.groups.filter(name="Teachers").exists():
+                            user = User.objects.filter(username=cell.value)
+                            if is_teacher(user):
                                 teacher_user = TeacherInCharge.objects.filter(
                                     user=user
                                 ).first()
@@ -1104,8 +1102,8 @@ def addSessionStudents(request, id):
                         break
                     else:
                         if User.objects.filter(username=cell.value).exists():
-                            user = User.objects.filter(username=cell.value).first()
-                            if user.groups.filter(name="Students").exists():
+                            user = User.objects.filter(username=cell.value)
+                            if is_student(user):
                                 student_user = StudentsInfo.objects.filter(
                                     user=user
                                 ).first()
@@ -2359,7 +2357,7 @@ def creatingOrUpdatingDrafts(temp, user, formName):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
+@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
 def draft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
         module = request.META.get("HTTP_REFERER").split("/")[-1]
@@ -2404,7 +2402,7 @@ def getFormType(moduleType, teacher):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
+@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
 @isActive("moduleOne", "student")
 def moduleOne(request, user=None):
     if request.method == "GET":
@@ -2506,7 +2504,7 @@ def moduleOne(request, user=None):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
+@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
 @isActive("moduleOne", "student")
 def moduleOne2(request, user=None):
     if request.method == "GET":
@@ -2586,7 +2584,7 @@ def moduleOne2(request, user=None):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
+@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
 @isActive("moduleOne", "student")
 def moduleOne3(request, user=None):
     if request.method == "GET":
@@ -2723,7 +2721,7 @@ def parentModuleOne3(request, id):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
+@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
 def previous(request):
     link = request.META.get("HTTP_REFERER").split("/")
     if "parent_dashboard" in link:
@@ -3143,23 +3141,169 @@ def getFormDetails(request, id):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
 def supercoordinator_reset_password(request):
-    form = SuperCoordPasswordReset()
-    return render(
-        request,
-        "supercoordinator/supercoordinator_reset_password.html",
-        {"form": form, "page_type": "reset_password"},
-    )
+    if request.method == "GET":
+        form = SuperCoordPasswordReset()
+        return render(
+            request,
+            "supercoordinator/supercoordinator_reset_password.html",
+            {"form": form, "page_type": "reset_password"},
+        )
+    else:
+        form = SuperCoordPasswordReset(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            if User.objects.filter(username=username).exists():
+                user = User.objects.get(username=username)
+                if is_coordinator(user):
+                    password = random_password_generator()
+                    user_coord = CoordinatorInCharge.objects.get(user=user)
+                    user_coord.first_password = password
+                    user_coord.password_changed = False
+                    user_coord.save()
+                    user.set_password(password)
+                    user.save()
+                    return render(
+                        request,
+                        "supercoordinator/supercoordinator_reset_password.html",
+                        {
+                            "form": form,
+                            "page_type": "reset_password",
+                            "my_messages": {
+                                "success": "Password reset successfull. Download login credentions from below."
+                            },
+                        },
+                    )
+                else:
+                    return render(
+                        request,
+                        "supercoordinator/supercoordinator_reset_password.html",
+                        {
+                            "form": form,
+                            "page_type": "reset_password",
+                            "my_messages": {
+                                "error": "Provided user is not a Coordinator."
+                            },
+                        },
+                    )
+            else:
+                return render(
+                    request,
+                    "supercoordinator/supercoordinator_reset_password.html",
+                    {
+                        "form": form,
+                        "page_type": "reset_password",
+                        "my_messages": {"error": "Invalid username."},
+                    },
+                )
+        else:
+            return render(
+                request,
+                "supercoordinator/supercoordinator_reset_password.html",
+                {"form": form, "page_type": "reset_password"},
+            )
 
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def coordinator_reset_password(request):
-    form = CoordPasswordReset()
-    return render(
-        request,
-        "coordinator/coordinator_reset_password.html",
-        {"form": form, "page_type": "reset_password"},
-    )
+    if request.method == "GET":
+        form = CoordPasswordReset()
+        return render(
+            request,
+            "coordinator/coordinator_reset_password.html",
+            {"form": form, "page_type": "reset_password"},
+        )
+    else:
+        form = CoordPasswordReset(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            if User.objects.filter(username=username).exists():
+                user = User.objects.get(username=username)
+                if is_teacher(user):
+                    password = random_password_generator()
+                    user_teacher = TeacherInCharge.objects.get(user=user)
+                    user_teacher.first_password = password
+                    user_teacher.password_changed = False
+                    user_teacher.save()
+                    user.set_password(password)
+                    user.save()
+                    return render(
+                        request,
+                        "coordinator/coordinator_reset_password.html",
+                        {
+                            "form": form,
+                            "page_type": "reset_password",
+                            "my_messages": {
+                                "success": "Password reset successfull. Download login credentions from below."
+                            },
+                        },
+                    )
+                elif is_parent(user):
+                    password = random_password_generator()
+                    user_parent = ParentsInfo.objects.get(user=user)
+                    user_parent.first_password = password
+                    user_parent.password_changed = False
+                    user_parent.save()
+                    user.set_password(password)
+                    user.save()
+                    return render(
+                        request,
+                        "coordinator/coordinator_reset_password.html",
+                        {
+                            "form": form,
+                            "page_type": "reset_password",
+                            "my_messages": {
+                                "success": "Password reset successfull. Download login credentions from below."
+                            },
+                        },
+                    )
+                elif is_student(user):
+                    password = random_password_generator()
+                    user_student = StudentsInfo.objects.get(user=user)
+                    user_student.first_password = password
+                    user_student.password_changed = False
+                    user_student.save()
+                    user.set_password(password)
+                    user.save()
+                    return render(
+                        request,
+                        "coordinator/coordinator_reset_password.html",
+                        {
+                            "form": form,
+                            "page_type": "reset_password",
+                            "my_messages": {
+                                "success": "Password reset successfull. Download login credentions from below."
+                            },
+                        },
+                    )
+                else:
+                    return render(
+                        request,
+                        "coordinator/coordinator_reset_password.html",
+                        {
+                            "form": form,
+                            "page_type": "reset_password",
+                            "my_messages": {
+                                "error": "Provided user is not a teacher/parent/student."
+                            },
+                        },
+                    )
+            else:
+                return render(
+                    request,
+                    "coordinator/coordinator_reset_password.html",
+                    {
+                        "form": form,
+                        "page_type": "reset_password",
+                        "my_messages": {"error": "Invalid username."},
+                    },
+                )
+        else:
+            return render(
+                request,
+                "coordinator/coordinator_reset_password.html",
+                {"form": form, "page_type": "reset_password"},
+            )
 
 
 @registration_data_cleanup
@@ -3223,16 +3367,26 @@ def change_password(request):
                     else:
                         user.set_password(new_password)
                         user.save()
-                        if user.groups.filter(name="Students").exists():
-                            student = StudentsInfo.objects.get(user=user)
-                            student.password_changes = True
-                            student.first_password = ""
-                            student.save()
-                        else:
+                        if is_coordinator(user):
+                            coord = CoordinatorInCharge.objects.get(user=user)
+                            coord.password_changes = True
+                            coord.first_password = ""
+                            coord.save()
+                        elif is_teacher(user):
+                            teacher = TeacherInCharge.objects.get(user=user)
+                            teacher.password_changes = True
+                            teacher.first_password = ""
+                            teacher.save()
+                        elif is_parent(user):
                             parent = ParentsInfo.objects.get(user=user)
                             parent.password_changes = True
                             parent.first_password = ""
                             parent.save()
+                        elif is_student(user):
+                            student = StudentsInfo.objects.get(user=user)
+                            student.password_changes = True
+                            student.first_password = ""
+                            student.save()
                         logout(request)
                         return redirect("accounts:password_changed")
                 except ValidationError as e:
@@ -3250,7 +3404,7 @@ def password_changed(request):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
+@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
 @isActive("activity", "student")
 def activity(request, user=None):
     if request.method == "GET":
@@ -3346,7 +3500,7 @@ def activity(request, user=None):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent_or_student, login_url="accounts:forbidden")
+@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
 def activityDraft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
         module = request.META.get("HTTP_REFERER").split("/")[-1]

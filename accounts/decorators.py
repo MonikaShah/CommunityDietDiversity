@@ -20,17 +20,13 @@ def is_parent(user):
 def is_coordinator(user):
     return user.groups.filter(name="Coordinators").exists()
 
+
 def is_supercoordinator(user):
     return user.groups.filter(name="Super Coordinators").exists()
 
+
 def is_admin(user):
     return user.is_superuser
-
-def is_parent_or_student(user):
-    return (
-        user.groups.filter(name="Parents").exists()
-        or user.groups.filter(name="Students").exists()
-    )
 
 
 def is_teacher(user):
