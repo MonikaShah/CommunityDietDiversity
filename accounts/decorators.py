@@ -110,3 +110,27 @@ def registration_data_cleanup(func):
         return func(request, *args, **kwargs)
 
     return logic
+
+
+def password_change_required(func):
+    def logic(request, *args, **kwargs):
+        user = request.user
+        if is_coordinator(user):
+            coord = CoordinatorInCharge.objects.get(user=user)
+            if not coord.password_changed:
+                return redirect("accounts:change_password")
+        elif is_teacher(user):
+            teacher = TeacherInCharge.objects.get(user=user)
+            if not teacher.password_changed:
+                return redirect("accounts:change_password")
+        elif is_parent(user):
+            parent = ParentsInfo.objects.get(user=user)
+            if not parent.password_changed:
+                return redirect("accounts:change_password")
+        elif is_student(user):
+            student = StudentsInfo.objects.get(user=user)
+            if not student.password_changed:
+                return redirect("accounts:change_password")
+        return func(request, *args, **kwargs)
+
+    return logic

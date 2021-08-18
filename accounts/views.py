@@ -481,6 +481,7 @@ def logoutU(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@password_change_required
 def parent_dashboard(request):
     students = (
         ParentsInfo.objects.filter(user=request.user).first().studentsinfo_set.all()
@@ -535,6 +536,7 @@ def addSuperCoordinatorForm(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@password_change_required
 def addStudentForm(request):
     if request.method == "GET":
         form = StudentsInfoForm()
@@ -619,6 +621,7 @@ def addStudentForm(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def addTeacherForm(request):
     if request.method == "GET":
         form = TeachersInfoForm()
@@ -761,6 +764,7 @@ def addOrganizationForm(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def addSessionForm(request):
     if request.method == "GET":
         form = SessionsInfoForm()
@@ -788,6 +792,7 @@ def addSessionForm(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def viewSessionTeachers(request, id, my_messages=None):
     session = Session.objects.filter(id=id).first()
     objects = Teacher_Session.objects.filter(session=session)
@@ -820,6 +825,7 @@ def viewSessionTeachers(request, id, my_messages=None):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def getSessionTeachersTemplate(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
@@ -841,6 +847,7 @@ def getSessionTeachersTemplate(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def addSessionTeachers(request, id):
     if request.method == "GET":
         return render(
@@ -985,6 +992,7 @@ def addSessionTeachers(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def viewSessionStudents(request, id, my_messages=None):
     session = Session.objects.filter(id=id).first()
     teacher = TeacherInCharge.objects.filter(user=request.user).first()
@@ -1017,6 +1025,7 @@ def viewSessionStudents(request, id, my_messages=None):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def getSessionStudentsTemplate(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
@@ -1038,6 +1047,7 @@ def getSessionStudentsTemplate(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def addSessionStudents(request, id):
     if request.method == "GET":
         return render(
@@ -1176,6 +1186,7 @@ def addSessionStudents(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def getTemplate(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
@@ -1240,6 +1251,7 @@ def getTemplate(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def bulkRegister(request):
     if request.method == "GET":
         return render(
@@ -1898,6 +1910,7 @@ def bulkRegister(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def downloadData(request):
 
     output = io.BytesIO()
@@ -2084,6 +2097,7 @@ def downloadData(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_student, login_url="accounts:forbidden")
+@password_change_required
 def student_dashboard(request):
     return render(
         request,
@@ -2094,6 +2108,7 @@ def student_dashboard(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def viewSessionForms(request, id):
     teacher = TeacherInCharge.objects.get(user=request.user)
     teachersession = Session.objects.filter(id=id).first()
@@ -2190,6 +2205,7 @@ def viewSessionForms(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def coordinator_dashboard(request):
     teachers = (
         CoordinatorInCharge.objects.filter(user=request.user)
@@ -2255,6 +2271,7 @@ def allCoordinators(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def allSessions(request):
     sessions = (
         CoordinatorInCharge.objects.filter(user=request.user).first().session_set.all()
@@ -2285,6 +2302,7 @@ def allSessions(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def teacherAllSessions(request):
     teacher = TeacherInCharge.objects.filter(user=request.user).first()
     objects = Teacher_Session.objects.filter(teacher=teacher)
@@ -2358,6 +2376,7 @@ def creatingOrUpdatingDrafts(temp, user, formName):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@password_change_required
 def draft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
         module = request.META.get("HTTP_REFERER").split("/")[-1]
@@ -2403,6 +2422,7 @@ def getFormType(moduleType, teacher):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@password_change_required
 @isActive("moduleOne", "student")
 def moduleOne(request, user=None):
     if request.method == "GET":
@@ -2505,6 +2525,7 @@ def moduleOne(request, user=None):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@password_change_required
 @isActive("moduleOne", "student")
 def moduleOne2(request, user=None):
     if request.method == "GET":
@@ -2585,6 +2606,7 @@ def moduleOne2(request, user=None):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@password_change_required
 @isActive("moduleOne", "student")
 def moduleOne3(request, user=None):
     if request.method == "GET":
@@ -2691,6 +2713,7 @@ def forbidden(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@password_change_required
 def showStudent(request, id):
     student = StudentsInfo.objects.get(pk=id)
     return render(request, "parent/student_modules.html", {"student": student})
@@ -2698,6 +2721,7 @@ def showStudent(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@password_change_required
 @isActive("moduleOne", "parent")
 def parentModuleOne(request, id):
     user = StudentsInfo.objects.get(pk=id).user
@@ -2706,6 +2730,7 @@ def parentModuleOne(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@password_change_required
 @isActive("moduleOne", "parent")
 def parentModuleOne2(request, id):
     user = StudentsInfo.objects.get(pk=id).user
@@ -2714,6 +2739,7 @@ def parentModuleOne2(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@password_change_required
 @isActive("moduleOne", "parent")
 def parentModuleOne3(request, id):
     user = StudentsInfo.objects.get(pk=id).user
@@ -2722,6 +2748,7 @@ def parentModuleOne3(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@password_change_required
 def previous(request):
     link = request.META.get("HTTP_REFERER").split("/")
     if "parent_dashboard" in link:
@@ -2740,6 +2767,7 @@ def previous(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def manageForms(request, id):
     if request.method == "GET":
         activity = {}
@@ -3025,6 +3053,7 @@ def manageForms(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
 def getFormDetails(request, id):
     form = FormDetails.objects.get(pk=id)
     teacher = form.teacher
@@ -3232,6 +3261,7 @@ def supercoordinator_reset_password_download(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def coordinator_reset_password(request):
     if request.method == "GET":
         form = CoordPasswordReset()
@@ -3335,6 +3365,7 @@ def coordinator_reset_password(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def coordinator_reset_password_teacher_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
@@ -3364,6 +3395,7 @@ def coordinator_reset_password_teacher_download(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def coordinator_reset_password_parent_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
@@ -3393,6 +3425,7 @@ def coordinator_reset_password_parent_download(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
 def coordinator_reset_password_student_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
@@ -3461,6 +3494,10 @@ def forgot_password(request):
 
 
 @login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    is_supercoordinator or is_coordinator or is_teacher or is_parent or is_student,
+    login_url="accounts:forbidden",
+)
 def change_password(request):
     if request.method == "GET":
         form = change_password_form()
@@ -3519,6 +3556,7 @@ def password_changed(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@password_change_required
 @isActive("activity", "student")
 def activity(request, user=None):
     if request.method == "GET":
@@ -3615,6 +3653,7 @@ def activity(request, user=None):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@password_change_required
 def activityDraft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
         module = request.META.get("HTTP_REFERER").split("/")[-1]
@@ -3686,6 +3725,7 @@ def creatingOrUpdatingDraftsActivity(temp, user, formName):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@password_change_required
 @isActive("activity", "parent")
 def parentActivity(request, id):
     user = StudentsInfo.objects.get(pk=id).user
