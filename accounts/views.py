@@ -2375,7 +2375,9 @@ def creatingOrUpdatingDrafts(temp, user, formName):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@user_passes_test(
+    lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
+)
 @password_change_required
 def draft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
@@ -2421,7 +2423,9 @@ def getFormType(moduleType, teacher):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@user_passes_test(
+    lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
+)
 @password_change_required
 @isActive("moduleOne", "student")
 def moduleOne(request, user=None):
@@ -2524,7 +2528,9 @@ def moduleOne(request, user=None):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@user_passes_test(
+    lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
+)
 @password_change_required
 @isActive("moduleOne", "student")
 def moduleOne2(request, user=None):
@@ -2605,7 +2611,9 @@ def moduleOne2(request, user=None):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@user_passes_test(
+    lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
+)
 @password_change_required
 @isActive("moduleOne", "student")
 def moduleOne3(request, user=None):
@@ -2747,7 +2755,9 @@ def parentModuleOne3(request, id):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@user_passes_test(
+    lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
+)
 @password_change_required
 def previous(request):
     link = request.META.get("HTTP_REFERER").split("/")
@@ -3535,7 +3545,11 @@ def forgot_password(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
-    is_supercoordinator or is_coordinator or is_teacher or is_parent or is_student,
+    lambda user: is_supercoordinator(user)
+    or is_coordinator(user)
+    or is_teacher(user)
+    or is_parent(user)
+    or is_student(user),
     login_url="accounts:forbidden",
 )
 def change_password(request):
@@ -3595,7 +3609,9 @@ def password_changed(request):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@user_passes_test(
+    lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
+)
 @password_change_required
 @isActive("activity", "student")
 def activity(request, user=None):
@@ -3692,7 +3708,9 @@ def activity(request, user=None):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_parent or is_student, login_url="accounts:forbidden")
+@user_passes_test(
+    lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
+)
 @password_change_required
 def activityDraft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
