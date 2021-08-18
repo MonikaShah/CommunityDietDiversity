@@ -20,7 +20,11 @@ urlpatterns = [
     path("downloadData/", views.downloadData, name="download_data"),
     path("parent_dashboard/", views.parent_dashboard, name="parent_dashboard"),
     path("student_dashboard/", views.student_dashboard, name="student_dashboard"),
-    path("view_session_forms/<int:id>/", views.viewSessionForms, name="view_session_forms"),
+    path(
+        "view_session_forms/<int:id>/",
+        views.viewSessionForms,
+        name="view_session_forms",
+    ),
     path(
         "coordinator_dashboard/",
         views.coordinator_dashboard,
@@ -136,8 +140,28 @@ urlpatterns = [
         name="supercoordinator_reset_password",
     ),
     path(
+        "supercoordinator_reset_password_download/",
+        views.supercoordinator_reset_password_download,
+        name="supercoordinator_reset_password_download",
+    ),
+    path(
         "coordinator_reset_password/",
         views.coordinator_reset_password,
         name="coordinator_reset_password",
+    ),
+    path(
+        "coordinator_reset_password_teacher_download/",
+        views.coordinator_reset_password_teacher_download,
+        name="coordinator_reset_password_teacher_download",
+    ),
+    path(
+        "coordinator_reset_password_parent_download/",
+        views.coordinator_reset_password_parent_download,
+        name="coordinator_reset_password_parent_download",
+    ),
+    path(
+        "coordinator_reset_password_student_download/",
+        views.coordinator_reset_password_student_download,
+        name="coordinator_reset_password_student_download",
     ),
 ]

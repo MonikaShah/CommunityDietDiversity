@@ -3204,6 +3204,33 @@ def supercoordinator_reset_password(request):
 
 
 @login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+def supercoordinator_reset_password_download(request):
+    output = io.BytesIO()
+    wb = xlsxwriter.Workbook(output)
+    bold = wb.add_format({"bold": True})
+    credentials = wb.add_worksheet("Credentials")
+    columns = [
+        "Username",
+        "Password",
+    ]
+    for col_num in range(len(columns)):
+        credentials.write(0, col_num, columns[col_num], bold)
+    coord = CoordinatorInCharge.objects.filter(password_changed=False)
+    for row_no, x in enumerate(coord):
+        credentials.write(row_no + 1, 0, x.user.username)
+        credentials.write(row_no + 1, 1, x.first_password)
+    wb.close()
+    output.seek(0)
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = "attachment; filename=Login Credentials.xlsx"
+    return response
+
+
+@login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 def coordinator_reset_password(request):
     if request.method == "GET":
@@ -3306,6 +3333,93 @@ def coordinator_reset_password(request):
             )
 
 
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def coordinator_reset_password_teacher_download(request):
+    output = io.BytesIO()
+    wb = xlsxwriter.Workbook(output)
+    bold = wb.add_format({"bold": True})
+    credentials = wb.add_worksheet("Credentials")
+    columns = [
+        "Username",
+        "Password",
+    ]
+    for col_num in range(len(columns)):
+        credentials.write(0, col_num, columns[col_num], bold)
+    teacher = TeacherInCharge.objects.filter(password_changed=False)
+    for row_no, x in enumerate(teacher):
+        credentials.write(row_no + 1, 0, x.user.username)
+        credentials.write(row_no + 1, 1, x.first_password)
+    wb.close()
+    output.seek(0)
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response[
+        "Content-Disposition"
+    ] = "attachment; filename=Teacher Login Credentials.xlsx"
+    return response
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def coordinator_reset_password_parent_download(request):
+    output = io.BytesIO()
+    wb = xlsxwriter.Workbook(output)
+    bold = wb.add_format({"bold": True})
+    credentials = wb.add_worksheet("Credentials")
+    columns = [
+        "Username",
+        "Password",
+    ]
+    for col_num in range(len(columns)):
+        credentials.write(0, col_num, columns[col_num], bold)
+    parent = ParentsInfo.objects.filter(password_changed=False)
+    for row_no, x in enumerate(parent):
+        credentials.write(row_no + 1, 0, x.user.username)
+        credentials.write(row_no + 1, 1, x.first_password)
+    wb.close()
+    output.seek(0)
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response[
+        "Content-Disposition"
+    ] = "attachment; filename=Parent Login Credentials.xlsx"
+    return response
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+def coordinator_reset_password_student_download(request):
+    output = io.BytesIO()
+    wb = xlsxwriter.Workbook(output)
+    bold = wb.add_format({"bold": True})
+    credentials = wb.add_worksheet("Credentials")
+    columns = [
+        "Username",
+        "Password",
+    ]
+    for col_num in range(len(columns)):
+        credentials.write(0, col_num, columns[col_num], bold)
+    student = StudentsInfo.objects.filter(password_changed=False)
+    for row_no, x in enumerate(student):
+        credentials.write(row_no + 1, 0, x.user.username)
+        credentials.write(row_no + 1, 1, x.first_password)
+    wb.close()
+    output.seek(0)
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response[
+        "Content-Disposition"
+    ] = "attachment; filename=Student Login Credentials.xlsx"
+    return response
+
+
 @registration_data_cleanup
 @redirect_to_dashboard
 def forgot_password(request):
@@ -3369,22 +3483,22 @@ def change_password(request):
                         user.save()
                         if is_coordinator(user):
                             coord = CoordinatorInCharge.objects.get(user=user)
-                            coord.password_changes = True
+                            coord.password_changed = True
                             coord.first_password = ""
                             coord.save()
                         elif is_teacher(user):
                             teacher = TeacherInCharge.objects.get(user=user)
-                            teacher.password_changes = True
+                            teacher.password_changed = True
                             teacher.first_password = ""
                             teacher.save()
                         elif is_parent(user):
                             parent = ParentsInfo.objects.get(user=user)
-                            parent.password_changes = True
+                            parent.password_changed = True
                             parent.first_password = ""
                             parent.save()
                         elif is_student(user):
                             student = StudentsInfo.objects.get(user=user)
-                            student.password_changes = True
+                            student.password_changed = True
                             student.first_password = ""
                             student.save()
                         logout(request)
