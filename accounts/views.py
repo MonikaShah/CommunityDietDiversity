@@ -3282,7 +3282,7 @@ def coordinator_reset_password(request):
         )
     else:
         form = CoordPasswordReset(request.POST)
-        organization = CoordinatorInCharge.object.get(user=request.user).organization
+        organization = CoordinatorInCharge.objects.get(user=request.user).organization
         if form.is_valid():
             username = form.cleaned_data["username"]
             if User.objects.filter(username=username).exists():
