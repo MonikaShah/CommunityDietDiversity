@@ -3272,67 +3272,107 @@ def coordinator_reset_password(request):
         )
     else:
         form = CoordPasswordReset(request.POST)
+        organization = CoordinatorInCharge.object.get(user=request.user).organization
         if form.is_valid():
             username = form.cleaned_data["username"]
             if User.objects.filter(username=username).exists():
                 user = User.objects.get(username=username)
                 if is_teacher(user):
-                    password = random_password_generator()
                     user_teacher = TeacherInCharge.objects.get(user=user)
-                    user_teacher.first_password = password
-                    user_teacher.password_changed = False
-                    user_teacher.save()
-                    user.set_password(password)
-                    user.save()
-                    return render(
-                        request,
-                        "coordinator/coordinator_reset_password.html",
-                        {
-                            "form": form,
-                            "page_type": "reset_password",
-                            "my_messages": {
-                                "success": "Password reset successfull. Download login credentions from below."
+                    if user_teacher.organization == organization:
+                        password = random_password_generator()
+                        user_teacher.first_password = password
+                        user_teacher.password_changed = False
+                        user_teacher.save()
+                        user.set_password(password)
+                        user.save()
+                        return render(
+                            request,
+                            "coordinator/coordinator_reset_password.html",
+                            {
+                                "form": form,
+                                "page_type": "reset_password",
+                                "my_messages": {
+                                    "success": "Password reset successfull. Download login credentions from below."
+                                },
                             },
-                        },
-                    )
+                        )
+                    else:
+                        return render(
+                            request,
+                            "coordinator/coordinator_reset_password.html",
+                            {
+                                "form": form,
+                                "page_type": "reset_password",
+                                "my_messages": {
+                                    "error": "Teacher does not belong to your organization."
+                                },
+                            },
+                        )
                 elif is_parent(user):
-                    password = random_password_generator()
                     user_parent = ParentsInfo.objects.get(user=user)
-                    user_parent.first_password = password
-                    user_parent.password_changed = False
-                    user_parent.save()
-                    user.set_password(password)
-                    user.save()
-                    return render(
-                        request,
-                        "coordinator/coordinator_reset_password.html",
-                        {
-                            "form": form,
-                            "page_type": "reset_password",
-                            "my_messages": {
-                                "success": "Password reset successfull. Download login credentions from below."
+                    if user_parent.organization == organization:
+                        password = random_password_generator()
+                        user_parent.first_password = password
+                        user_parent.password_changed = False
+                        user_parent.save()
+                        user.set_password(password)
+                        user.save()
+                        return render(
+                            request,
+                            "coordinator/coordinator_reset_password.html",
+                            {
+                                "form": form,
+                                "page_type": "reset_password",
+                                "my_messages": {
+                                    "success": "Password reset successfull. Download login credentions from below."
+                                },
                             },
-                        },
-                    )
+                        )
+                    else:
+                        return render(
+                            request,
+                            "coordinator/coordinator_reset_password.html",
+                            {
+                                "form": form,
+                                "page_type": "reset_password",
+                                "my_messages": {
+                                    "error": "Parent does not belong to your organization."
+                                },
+                            },
+                        )
                 elif is_student(user):
-                    password = random_password_generator()
                     user_student = StudentsInfo.objects.get(user=user)
-                    user_student.first_password = password
-                    user_student.password_changed = False
-                    user_student.save()
-                    user.set_password(password)
-                    user.save()
-                    return render(
-                        request,
-                        "coordinator/coordinator_reset_password.html",
-                        {
-                            "form": form,
-                            "page_type": "reset_password",
-                            "my_messages": {
-                                "success": "Password reset successfull. Download login credentions from below."
+                    if user_student.organization == organization:
+                        password = random_password_generator()
+                        user_student.first_password = password
+                        user_student.password_changed = False
+                        user_student.save()
+                        user.set_password(password)
+                        user.save()
+                        return render(
+                            request,
+                            "coordinator/coordinator_reset_password.html",
+                            {
+                                "form": form,
+                                "page_type": "reset_password",
+                                "my_messages": {
+                                    "success": "Password reset successfull. Download login credentions from below."
+                                },
                             },
-                        },
-                    )
+                        )
+                    else:
+                        return render(
+                            request,
+                            "coordinator/coordinator_reset_password.html",
+                            {
+                                "form": form,
+                                "page_type": "reset_password",
+                                "my_messages": {
+                                    "error": "Student does not belong to your organization."
+                                },
+                            },
+                        )
                 else:
                     return render(
                         request,
