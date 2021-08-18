@@ -146,7 +146,7 @@ class Session(models.Model):
     coordinator = models.ForeignKey(CoordinatorInCharge, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return str(self.start_date)
 
 
 class Teacher_Session(models.Model):

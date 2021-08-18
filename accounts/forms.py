@@ -270,13 +270,9 @@ class CoordinatorsInfoForm(ModelForm):
 
 
 class SessionsInfoForm(ModelForm):
-    start_date = forms.DateTimeField(
-        widget=forms.DateTimeInput(format="%Y-%m-%dT%H:%M"), label="Start date"
-    )
-
     class Meta:
         model = Session
-        fields = ["name"]
+        fields = ["name", "start_date"]
 
 
 class OrganizationsInfoForm(ModelForm):

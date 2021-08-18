@@ -18,6 +18,7 @@ from .models import *
 from .forms import *
 from .bulkRegValidator import *
 from shared.encryption import EncryptionHelper
+from django.utils import timezone
 
 encryptionHelper = EncryptionHelper()
 
@@ -911,8 +912,9 @@ def addSessionTeachers(request, id):
                         breaking = True
                         break
                     else:
+                        print(cell.value)
                         if User.objects.filter(username=cell.value).exists():
-                            user = User.objects.filter(username=cell.value)
+                            user = User.objects.filter(username=cell.value).first()
                             if is_teacher(user):
                                 teacher_user = TeacherInCharge.objects.filter(
                                     user=user
@@ -2309,6 +2311,9 @@ def teacherAllSessions(request):
     sessions = []
     for object in objects:
         sessions.append(object.session)
+    for session in sessions:
+        if session.start_date > timezone.now():
+            sessions.remove(session)
     open_sessions = []
     close_sessions = []
     open = False
