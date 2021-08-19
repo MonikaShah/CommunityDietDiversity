@@ -935,7 +935,6 @@ def addSessionTeachers(request, id):
                         breaking = True
                         break
                     else:
-                        print(cell.value)
                         if User.objects.filter(username=cell.value).exists():
                             user = User.objects.filter(username=cell.value).first()
                             if is_teacher(user):
@@ -2856,9 +2855,7 @@ def manageForms(request, id):
                 .order_by("-start_timestamp")
                 .first()
             )
-            print(form2)
             if form2:
-                print("pre")
                 if form2.pre:
                     activity["pre"] = True
                     activity["post"] = False
