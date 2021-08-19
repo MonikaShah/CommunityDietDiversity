@@ -54,8 +54,8 @@
     <div class="my-card card shadow border rounded">
         <div class="card-body">
             <center><b><h3 class="card-title mb-3">{{ student.name }}</h3></b></center>
-            <h6 class="card-text"><b>Roll No: </b> {{ student.rollno }}</h6>
-            <center><a class="btn btnmedium btn-danger" href="{% url 'accounts:remove_session_student' session.id student.id %}">Delete</a></center>
+            <h6 class="card-text mb-3"><b>Roll No: </b> {{ student.rollno }}</h6>
+            <center><a class="btn btnmedium btn-danger" href="{% url 'accounts:remove_session_student' session.id student.id %}">Remove</a></center>
         </div>
     </div>
     {% endfor %}
