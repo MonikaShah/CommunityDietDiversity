@@ -823,6 +823,29 @@ def viewSessionTeachers(request, id, my_messages=None):
             },
         )
 
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
+def removeSessionTeacher(request, session_id, teacher_id):
+    session = Session.objects.filter(id=session_id).first()
+    teacher = TeacherInCharge.objects.filter(id=teacher_id).first()
+    Teacher_Session.objects.filter(teacher=teacher).delete()
+    my_messages = {
+        "success": "Teacher removed from session successfully"
+    }
+    return viewSessionTeachers(request, session_id, my_messages)
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
+def removeSessionStudent(request, session_id, student_id):
+    student = StudentsInfo.objects.filter(id=student_id).first()
+    student.session = None
+    student.save()
+    my_messages = {
+        "success": "Student removed from session successfully"
+    }
+    return viewSessionStudents(request, session_id, my_messages)
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
@@ -1114,7 +1137,7 @@ def addSessionStudents(request, id):
                         break
                     else:
                         if User.objects.filter(username=cell.value).exists():
-                            user = User.objects.filter(username=cell.value)
+                            user = User.objects.filter(username=cell.value).first()
                             if is_student(user):
                                 student_user = StudentsInfo.objects.filter(
                                     user=user
@@ -2280,10 +2303,15 @@ def allSessions(request):
     )
     open_sessions = []
     close_sessions = []
+    upcoming_sessions = []
     open = False
     close = False
+    upcoming = False
     for session in sessions:
-        if session.end_date == None:
+        if session.start_date > timezone.now():
+            upcoming_sessions.append(session)
+            upcoming = True
+        elif session.end_date == None:
             open_sessions.append(session)
             open = True
         else:
@@ -2293,9 +2321,11 @@ def allSessions(request):
         request,
         "coordinator/all_sessions.html",
         {
-            "open_sessions": open_sessions,
+           "open_sessions": open_sessions,
+            "upcoming_sessions": upcoming_sessions,
             "close_sessions": close_sessions,
             "open": open,
+            "upcoming": upcoming,
             "close": close,
             "page_type": "all_sessions",
         },
@@ -2311,15 +2341,17 @@ def teacherAllSessions(request):
     sessions = []
     for object in objects:
         sessions.append(object.session)
-    for session in sessions:
-        if session.start_date > timezone.now():
-            sessions.remove(session)
+    upcoming_sessions = []    
     open_sessions = []
     close_sessions = []
     open = False
     close = False
+    upcoming = False
     for session in sessions:
-        if session.end_date == None:
+        if session.start_date > timezone.now():
+            upcoming_sessions.append(session)
+            upcoming = True
+        elif session.end_date == None:
             open_sessions.append(session)
             open = True
         else:
@@ -2330,8 +2362,10 @@ def teacherAllSessions(request):
         "teacher/teacher_all_sessions.html",
         {
             "open_sessions": open_sessions,
+            "upcoming_sessions": upcoming_sessions,
             "close_sessions": close_sessions,
             "open": open,
+            "upcoming": upcoming,
             "close": close,
             "page_type": "teacher_all_sessions",
         },

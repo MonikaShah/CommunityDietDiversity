@@ -55,6 +55,7 @@
         <div class="card-body">
             <center><b><h3 class="card-title mb-3">{{ teacher.name }}</h3></b></center>
             <h6 class="card-text"><b>Organization: </b> {{ teacher.organization }}</h6>
+            <a href="{% url 'accounts:remove_session_teacher' session.id teacher.id %}"><i class="fas fa-trash-alt" style="color: red;"></i></a>
         </div>
     </div>
     {% endfor %}
