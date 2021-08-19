@@ -272,6 +272,8 @@ def students_info(request, is_adult=False):
                 parentUser = parentuserform.save(commit=False)
                 parentUser.save()
                 parent_group = Group.objects.get(name="Parents")
+                if previousPOST["email"] != "":
+                    parentUser.email = previousPOST["email"]
                 parentUser.groups.add(parent_group)
                 parentUser.save()
 
@@ -301,6 +303,8 @@ def students_info(request, is_adult=False):
                 studentuser = studentuserform.save(commit=False)
                 studentuser.save()
                 student_group = Group.objects.get(name="Students")
+                if request.POST["email"] != "":
+                    studentuser.email = request.POST["email"]
                 studentuser.groups.add(student_group)
                 studentuser.save()
 
@@ -388,6 +392,8 @@ def students_info(request, is_adult=False):
                 studentuser = studentuserform.save(commit=False)
                 studentuser.save()
                 student_group = Group.objects.get(name="Students")
+                if request.POST["email"] != "":
+                    studentuser.email = request.POST["email"]
                 studentuser.groups.add(student_group)
                 studentuser.save()
 
@@ -514,6 +520,8 @@ def addSuperCoordinatorForm(request):
             supercoordinatoruser = supercoordinatoruserform.save(commit=False)
             supercoordinatoruser.save()
             supercoordinator_group = Group.objects.get(name="Super Coordinators")
+            if request.POST["email"] != "":
+                supercoordinatoruser.email = request.POST["email"]
             supercoordinatoruser.groups.add(supercoordinator_group)
             supercoordinatoruser.save()
             supercoordinator = form.save(commit=False)
@@ -583,6 +591,8 @@ def addStudentForm(request):
             studentuser = studentuserform.save(commit=False)
             studentuser.save()
             student_group = Group.objects.get(name="Students")
+            if request.POST["email"] != "":
+                studentuser.email = request.POST["email"]
             studentuser.groups.add(student_group)
             studentuser.save()
             student = form.save(commit=False)
@@ -639,6 +649,8 @@ def addTeacherForm(request):
             teacheruser = teacheruserform.save(commit=False)
             teacheruser.save()
             teacher_group = Group.objects.get(name="Teachers")
+            if request.POST["email"] != "":
+                teacheruser.email = request.POST["email"]
             teacheruser.groups.add(teacher_group)
             teacheruser.save()
             teacher = form.save(commit=False)
@@ -684,6 +696,8 @@ def addCoordinatorForm(request, id):
             coordinatoruser = coordinatoruserform.save(commit=False)
             coordinatoruser.save()
             coordinator_group = Group.objects.get(name="Coordinators")
+            if request.POST["email"] != "":
+                coordinatoruser.email = request.POST["email"]
             coordinatoruser.groups.add(coordinator_group)
             coordinatoruser.save()
             coordinator = form.save(commit=False)
@@ -3638,10 +3652,7 @@ def change_password(request):
 
 
 def password_changed(request):
-    if request.method == "GET":
-        return render(request, "password/password_changed.html", {})
-    else:
-        return redirect("accounts:loginlink")
+    return render(request, "password/password_changed.html", {})
 
 
 @login_required(login_url="accounts:loginlink")
