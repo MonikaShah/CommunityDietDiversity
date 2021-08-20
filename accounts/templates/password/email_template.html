@@ -1,0 +1,12 @@
+{% autoescape off %}
+<h3>
+    Hi {{user.get_username}},
+</h3>
+To initiate the password reset process for your account on {{ domain }}, click the link below:
+<br>
+<a href="{{protocol}}://{{domain}}{% url 'accounts:forgot_password_email' uidb64=uid token=token %}">Reset password</a>
+<br><br>
+Regards,
+<br>
+Community Diet Diversity Team.
+{% endautoescape %}

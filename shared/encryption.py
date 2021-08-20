@@ -1,4 +1,4 @@
-import environ
+from decouple import config
 from cryptography.fernet import Fernet
 
 
@@ -6,9 +6,7 @@ class EncryptionHelper:
     f = None
 
     def __init__(self):
-        env = environ.Env()
-        environ.Env.read_env()
-        key: bytes = bytes(env("KEY"), "ascii")
+        key: bytes = bytes(config("ACCOUNTS_ENCRYPTION_KEY"), "ascii")
         self.f = Fernet(key)
 
     def encrypt(self, data: bytes):

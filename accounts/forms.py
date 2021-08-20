@@ -93,10 +93,17 @@ class ConsentForm(forms.Form):
 
 
 class ParentsInfoForm(ModelForm):
-    email = forms.EmailField(required=False)
-    name = forms.CharField(max_length=50)
+    email = forms.EmailField(
+        required=False, help_text="Email ID is used for password reset."
+    )
+    name = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+    )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField(required=False)
+    mobile_no = forms.IntegerField(
+        required=False, help_text="Enter 10 digit mobile number."
+    )
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     address = forms.CharField(max_length=100, widget=forms.Textarea())
@@ -123,9 +130,7 @@ class ParentsInfoForm(ModelForm):
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError(
-                {"name": "No Numeric and Special characters are allowed."}
-            )
+            raise forms.ValidationError({"name": "Invalid Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         if (pincode == None) or (not valid_pincode(pincode)):
@@ -139,10 +144,17 @@ class ParentsInfoForm(ModelForm):
 
 class StudentsInfoForm(ModelForm):
     rollno = forms.IntegerField(label="Roll Number")
-    email = forms.EmailField(required=False)
-    name = forms.CharField(max_length=50)
+    email = forms.EmailField(
+        required=False, help_text="Email ID is used for password reset."
+    )
+    name = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+    )
     dob = forms.DateField(widget=DatePickerInput(), label="Date Of Birth")
-    mobile_no = forms.IntegerField(required=False)
+    mobile_no = forms.IntegerField(
+        required=False, help_text="Enter 10 digit mobile number."
+    )
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     pincode = forms.IntegerField()
@@ -166,9 +178,7 @@ class StudentsInfoForm(ModelForm):
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError(
-                {"name": "No Numeric and Special characters are allowed."}
-            )
+            raise forms.ValidationError({"name": "Invalid Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         if (pincode == None) or (not valid_pincode(pincode)):
@@ -177,12 +187,19 @@ class StudentsInfoForm(ModelForm):
 
 
 class TeachersInfoForm(ModelForm):
-    email = forms.EmailField(required=False)
-    name = forms.CharField(max_length=50)
+    email = forms.EmailField(
+        required=False, help_text="Email ID is used for password reset."
+    )
+    name = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+    )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-    mobile_no = forms.IntegerField(required=False)
+    mobile_no = forms.IntegerField(
+        required=False, help_text="Enter 10 digit mobile number."
+    )
 
     class Meta:
         model = TeacherInCharge
@@ -199,19 +216,20 @@ class TeachersInfoForm(ModelForm):
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError(
-                {"name": "No Numeric and Special characters are allowed."}
-            )
+            raise forms.ValidationError({"name": "Invalid Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
 
 
 class SuperCoordinatorsInfoForm(ModelForm):
-    email = forms.EmailField()
-    name = forms.CharField(max_length=50)
+    email = forms.EmailField(help_text="Email ID is used for password reset.")
+    name = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+    )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField()
+    mobile_no = forms.IntegerField(help_text="Enter 10 digit mobile number.")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
@@ -230,19 +248,24 @@ class SuperCoordinatorsInfoForm(ModelForm):
         if (email == "") or (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError(
-                {"name": "No Numeric and Special characters are allowed."}
-            )
+            raise forms.ValidationError({"name": "Invalid Name."})
         if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
 
 
 class CoordinatorsInfoForm(ModelForm):
-    email = forms.EmailField(required=False)
-    name = forms.CharField(max_length=50)
+    email = forms.EmailField(
+        required=False, help_text="Email ID is used for password reset."
+    )
+    name = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+    )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField(required=False)
+    mobile_no = forms.IntegerField(
+        required=False, help_text="Enter 10 digit mobile number."
+    )
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
 
@@ -261,9 +284,7 @@ class CoordinatorsInfoForm(ModelForm):
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError(
-                {"name": "No Numeric and Special characters are allowed."}
-            )
+            raise forms.ValidationError({"name": "Invalid Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
@@ -730,19 +751,30 @@ class CoordPasswordReset(forms.Form):
     username = forms.CharField(max_length=150, label="")
 
 
-class forgot_password_form(forms.ModelForm):
-    username = forms.CharField(max_length=150)
-    groups = forms.ModelChoiceField(queryset=Group.objects.all())
-    password = forms.CharField(widget=forms.PasswordInput(), label="New Password")
+class forgot_password_form(forms.Form):
+    username = forms.CharField(max_length=150, label="")
 
-    class Meta:
-        model = User
-        fields = ["groups", "password"]
+
+class forgot_password_email_form(forms.Form):
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(),
+        label="New Password",
+        help_text="<ul><li>Your password can’t be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can’t be a commonly used password.</li><li>Your password can’t be entirely numeric.</li></ul>",
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(),
+        label="New Password Confirmation",
+        help_text="Enter the same password as before, for verification.",
+    )
 
 
 class change_password_form(forms.ModelForm):
     old_password = forms.CharField(widget=forms.PasswordInput(), label="Old Password")
-    password = forms.CharField(widget=forms.PasswordInput(), label="New Password")
+    password = forms.CharField(
+        widget=forms.PasswordInput(),
+        label="New Password",
+        help_text="<ul><li>Your password can’t be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can’t be a commonly used password.</li><li>Your password can’t be entirely numeric.</li></ul>",
+    )
 
     class Meta:
         model = User

@@ -6,4 +6,3 @@
 
 # Ignoring environment files containg project key, db credentials and encryption key
 .env
-shared/.env

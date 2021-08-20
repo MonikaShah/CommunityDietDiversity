@@ -4,9 +4,23 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import Group
 
 
-def is_member(user, grp):
-    grp = Group.objects.get(pk=grp)
-    return user.groups.filter(name=grp).exists()
+def custom_user_filter(user):
+    if is_supercoordinator(user):
+        supercoord = SuperCoordinator.objects.get(user=user)
+        return (supercoord, "Super Coordinators")
+    elif is_coordinator(user):
+        coord = CoordinatorInCharge.objects.get(user=user)
+        return (coord, "Coordinators")
+    elif is_teacher(user):
+        teacher = TeacherInCharge.objects.get(user=user)
+        return (teacher, "Teachers")
+    elif is_parent(user):
+        parent = ParentsInfo.objects.get(user=user)
+        return (parent, "Parents")
+    elif is_student(user):
+        student = StudentsInfo.objects.get(user=user)
+        return (student, "Students")
+    return None
 
 
 def is_student(user):

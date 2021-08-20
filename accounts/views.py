@@ -7,16 +7,22 @@ import xlsxwriter
 from datetime import datetime, date
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.template.loader import get_template
 from .decorators import *
 from .models import *
 from .forms import *
 from .bulkRegValidator import *
+from .token import password_reset_token
 from shared.encryption import EncryptionHelper
 from django.utils import timezone
 
@@ -272,8 +278,6 @@ def students_info(request, is_adult=False):
                 parentUser = parentuserform.save(commit=False)
                 parentUser.save()
                 parent_group = Group.objects.get(name="Parents")
-                if previousPOST["email"] != "":
-                    parentUser.email = previousPOST["email"]
                 parentUser.groups.add(parent_group)
                 parentUser.save()
 
@@ -303,8 +307,6 @@ def students_info(request, is_adult=False):
                 studentuser = studentuserform.save(commit=False)
                 studentuser.save()
                 student_group = Group.objects.get(name="Students")
-                if request.POST["email"] != "":
-                    studentuser.email = request.POST["email"]
                 studentuser.groups.add(student_group)
                 studentuser.save()
 
@@ -392,8 +394,6 @@ def students_info(request, is_adult=False):
                 studentuser = studentuserform.save(commit=False)
                 studentuser.save()
                 student_group = Group.objects.get(name="Students")
-                if request.POST["email"] != "":
-                    studentuser.email = request.POST["email"]
                 studentuser.groups.add(student_group)
                 studentuser.save()
 
@@ -452,32 +452,63 @@ def loginU(request):
         form = CustomAuthenticationForm()
         return render(request, "registration/login.html", {"form": form})
     else:
+        form = CustomAuthenticationForm(request.POST)
         username = request.POST["username"]
         password = request.POST["password"]
         grp = request.POST["groups"]
-        user = authenticate(request, username=username, password=password)
-        request.session.set_expiry(86400)
-        grp_name = Group.objects.get(pk=grp).name
-        form = CustomAuthenticationForm(request.POST)
-        if user is not None:
-            if is_member(user, grp):
-                login(request, user)
-                if grp_name == "Parents":
-                    return redirect("accounts:parent_dashboard")
-                elif grp_name == "Students":
-                    return redirect("accounts:student_dashboard")
-                elif grp_name == "Teachers":
-                    return redirect("accounts:teacher_all_sessions")
-                elif grp_name == "Coordinators":
-                    return redirect("accounts:coordinator_dashboard")
-                elif grp_name == "Super Coordinators":
-                    return redirect("accounts:supercoordinator_dashboard")
+        if User.objects.filter(username=username).exists():
+            user = User.objects.get(username=username)
+            if user.check_password(password):
+                our_user = custom_user_filter(user)
+                if our_user == None:
+                    return render(
+                        request,
+                        "registration/login.html",
+                        {"form": form, "my_messages": {"error": "Access Denied."}},
+                    )
+                else:
+                    grp_name = our_user[1]
+                    grp = Group.objects.get(pk=grp).name
+                    if grp_name == grp:
+                        user_authenticated = authenticate(
+                            request, username=username, password=password
+                        )
+                        request.session.set_expiry(86400)
+                        login(request, user_authenticated)
+                        if grp_name == "Parents":
+                            return redirect("accounts:parent_dashboard")
+                        elif grp_name == "Students":
+                            return redirect("accounts:student_dashboard")
+                        elif grp_name == "Teachers":
+                            return redirect("accounts:teacher_all_sessions")
+                        elif grp_name == "Coordinators":
+                            return redirect("accounts:coordinator_dashboard")
+                        elif grp_name == "Super Coordinators":
+                            return redirect("accounts:supercoordinator_dashboard")
+                    else:
+                        return render(
+                            request,
+                            "registration/login.html",
+                            {
+                                "form": form,
+                                "my_messages": {"error": "Invalid Credentials."},
+                            },
+                        )
             else:
-                messages.error(request, "User does not belong to selected group")
-                return render(request, "registration/login.html", {"form": form})
+                return render(
+                    request,
+                    "registration/login.html",
+                    {
+                        "form": form,
+                        "my_messages": {"error": "Invalid Credentials."},
+                    },
+                )
         else:
-            messages.error(request, "Invalid credentials")
-            return render(request, "registration/login.html", {"form": form})
+            return render(
+                request,
+                "registration/login.html",
+                {"form": form, "my_messages": {"error": "Invalid Credentials."}},
+            )
 
 
 @login_required(login_url="accounts:loginlink")
@@ -520,8 +551,6 @@ def addSuperCoordinatorForm(request):
             supercoordinatoruser = supercoordinatoruserform.save(commit=False)
             supercoordinatoruser.save()
             supercoordinator_group = Group.objects.get(name="Super Coordinators")
-            if request.POST["email"] != "":
-                supercoordinatoruser.email = request.POST["email"]
             supercoordinatoruser.groups.add(supercoordinator_group)
             supercoordinatoruser.save()
             supercoordinator = form.save(commit=False)
@@ -591,8 +620,6 @@ def addStudentForm(request):
             studentuser = studentuserform.save(commit=False)
             studentuser.save()
             student_group = Group.objects.get(name="Students")
-            if request.POST["email"] != "":
-                studentuser.email = request.POST["email"]
             studentuser.groups.add(student_group)
             studentuser.save()
             student = form.save(commit=False)
@@ -649,8 +676,6 @@ def addTeacherForm(request):
             teacheruser = teacheruserform.save(commit=False)
             teacheruser.save()
             teacher_group = Group.objects.get(name="Teachers")
-            if request.POST["email"] != "":
-                teacheruser.email = request.POST["email"]
             teacheruser.groups.add(teacher_group)
             teacheruser.save()
             teacher = form.save(commit=False)
@@ -696,8 +721,6 @@ def addCoordinatorForm(request, id):
             coordinatoruser = coordinatoruserform.save(commit=False)
             coordinatoruser.save()
             coordinator_group = Group.objects.get(name="Coordinators")
-            if request.POST["email"] != "":
-                coordinatoruser.email = request.POST["email"]
             coordinatoruser.groups.add(coordinator_group)
             coordinatoruser.save()
             coordinator = form.save(commit=False)
@@ -837,16 +860,16 @@ def viewSessionTeachers(request, id, my_messages=None):
             },
         )
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 @password_change_required
 def removeSessionTeacher(request, session_id, teacher_id):
     teacher = TeacherInCharge.objects.filter(id=teacher_id).first()
     Teacher_Session.objects.filter(teacher=teacher).delete()
-    my_messages = {
-        "success": "Teacher removed from session successfully"
-    }
+    my_messages = {"success": "Teacher removed from session successfully"}
     return viewSessionTeachers(request, session_id, my_messages)
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
@@ -856,10 +879,9 @@ def removeSessionStudent(request, session_id, student_id):
     student.session = None
     Student_Session.objects.filter(student=student).delete()
     student.save()
-    my_messages = {
-        "success": "Student removed from session successfully"
-    }
-    return viewSessionStudents(request, session_id, 1, my_messages)
+    my_messages = {"success": "Student removed from session successfully"}
+    return viewSessionStudents(request, session_id, my_messages)
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
@@ -1033,7 +1055,7 @@ def addSessionTeachers(request, id):
 @password_change_required
 def viewSessionStudents(request, id, open_id, my_messages=None):
     session = Session.objects.filter(id=id).first()
-    objects = Student_Session.objects.filter(session = session)
+    objects = Student_Session.objects.filter(session=session)
     students = []
     for object in objects:
         students.append(object.student)
@@ -1202,7 +1224,9 @@ def addSessionStudents(request, id):
                 student_exists += 1
             else:
                 student_user.session = session
-                student_user.teacher = TeacherInCharge.objects.filter(user=request.user).first()
+                student_user.teacher = TeacherInCharge.objects.filter(
+                    user=request.user
+                ).first()
                 student_session = Student_Session()
                 student_session.session = session
                 student_session.student = student_user
@@ -1230,6 +1254,7 @@ def addSessionStudents(request, id):
 
         return viewSessionStudents(request, id, my_messages)
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 @password_change_required
@@ -1241,15 +1266,12 @@ def addSessionStudentsList(request, id):
         return render(
             request,
             "teacher/add_session_students_list.html",
-            {
-                "page_type": "add_session_students_list",
-                "students": students
-            },
+            {"page_type": "add_session_students_list", "students": students},
         )
     else:
-        students_id_list = request.POST.getlist('chk')
+        students_id_list = request.POST.getlist("chk")
         session = Session.objects.filter(id=id).first()
-        teacher = TeacherInCharge.objects.filter(user = request.user).first()
+        teacher = TeacherInCharge.objects.filter(user=request.user).first()
         for s_id in students_id_list:
             student = StudentsInfo.objects.filter(id=s_id).first()
             student.session = session
@@ -1261,6 +1283,7 @@ def addSessionStudentsList(request, id):
             student.save()
 
         return redirect("accounts:view_session_students", id, 1)
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
@@ -2374,7 +2397,7 @@ def allSessions(request):
         request,
         "coordinator/all_sessions.html",
         {
-           "open_sessions": open_sessions,
+            "open_sessions": open_sessions,
             "upcoming_sessions": upcoming_sessions,
             "close_sessions": close_sessions,
             "open": open,
@@ -2394,7 +2417,7 @@ def teacherAllSessions(request):
     sessions = []
     for object in objects:
         sessions.append(object.session)
-    upcoming_sessions = []    
+    upcoming_sessions = []
     open_sessions = []
     close_sessions = []
     open = False
@@ -3593,6 +3616,106 @@ def coordinator_reset_password_student_download(request):
     return response
 
 
+def forgot_password_questions(request):
+    return render(request, "password/forgot_password_questions.html", {})
+
+
+def forgot_password_email(request, uidb64, token):
+    if request.method == "GET":
+        form = forgot_password_email_form()
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except:
+            return render(
+                request,
+                "password/forgot_password_email.html",
+                {"form": form, "my_messages": {"error": "Invalid URL."}},
+            )
+        if not password_reset_token.check_token(user, token):
+            return render(
+                request,
+                "password/forgot_password_email.html",
+                {
+                    "form": form,
+                    "my_messages": {
+                        "error": "Either the link used is invalid or reset password timedout. Please request a new password reset."
+                    },
+                },
+            )
+        return render(request, "password/forgot_password_email.html", {"form": form})
+    else:
+        form = forgot_password_email_form(request.POST)
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except:
+            return render(
+                request,
+                "password/forgot_password_email.html",
+                {"form": form, "my_messages": {"error": "Invalid URL."}},
+            )
+        if password_reset_token.check_token(user, token):
+            if form.is_valid():
+                password1 = form.cleaned_data["password1"]
+                password2 = form.cleaned_data["password2"]
+                if not user.check_password(password1):
+                    if password1 == password2:
+                        user.set_password(password1)
+                        user.save()
+                        return redirect("accounts:password_changed")
+                    else:
+                        form.add_error("password2", "Both passwords didn't match!")
+                        return render(
+                            request,
+                            "password/forgot_password_email.html",
+                            {"form": form},
+                        )
+                else:
+                    form.add_error(
+                        "password1", "Password entered is same as the previous one!"
+                    )
+                    return render(
+                        request, "password/forgot_password_email.html", {"form": form}
+                    )
+            else:
+                return render(
+                    request, "password/forgot_password_email.html", {"form": form}
+                )
+        else:
+            return render(
+                request,
+                "password/forgot_password_email.html",
+                {
+                    "form": form,
+                    "my_messages": {
+                        "error": "Either the link used is invalid or expired. Please re-request password reset."
+                    },
+                },
+            )
+
+
+def reset_password_emailer(request, user, user_email):
+    site = get_current_site(request)
+    message = get_template("password/email_template.html",).render(
+        {
+            "user": user,
+            "protocol": "https",
+            "domain": site.domain,
+            "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+            "token": password_reset_token.make_token(user),
+        }
+    )
+    msg = EmailMessage(
+        "Reset Password",
+        message,
+        None,
+        [str(user_email)],
+    )
+    msg.content_subtype = "html"
+    msg.send(fail_silently=True)
+
+
 @registration_data_cleanup
 @redirect_to_dashboard
 def forgot_password(request):
@@ -3601,36 +3724,40 @@ def forgot_password(request):
         return render(request, "password/forgot_password.html", {"form": form})
     else:
         form = forgot_password_form(request.POST)
-        context = {"form": form}
         if form.is_valid():
             username = form.cleaned_data["username"]
-            group = form.cleaned_data["groups"]
-            password = form.cleaned_data["password"]
-            try:
+            if User.objects.filter(username=username).exists():
                 user = User.objects.get(username=username)
-                if user.groups.filter(name=group).exists():
-                    try:
-                        validate_password(password)
-                        if user.check_password(password):
-                            form.add_error(
-                                "password",
-                                "Password entered is same as the previous one!",
-                            )
-                        else:
-                            user.set_password(password)
-                            user.save()
-                            return redirect("accounts:password_changed")
-                    except ValidationError as e:
-                        form.add_error("password", e)
+                our_user = custom_user_filter(user)
+                if our_user == None:
+                    form.add_error(
+                        "username", "Sorry but the following user cannot be serviced."
+                    )
+                    return render(
+                        request, "password/forgot_password.html", {"form": form}
+                    )
                 else:
-                    context["error"] = "Invalid Credentials."
-            except User.DoesNotExist:
-                context["error"] = "Invalid Credentials."
-        return render(
-            request,
-            "password/forgot_password.html",
-            context,
-        )
+                    user_email = encryptionHelper.decrypt(our_user[0].email)
+                    if user_email == "":
+                        # Code for questions
+                        print()
+                    else:
+                        reset_password_emailer(request, user, user_email)
+                        return render(
+                            request,
+                            "password/forgot_password.html",
+                            {
+                                "form": form,
+                                "my_messages": {
+                                    "success": "Mail sent on the email ID provided during registration. Please click on the link sent via mail to change password. The link will expire in 10 minutes."
+                                },
+                            },
+                        )
+            else:
+                form.add_error("username", "Invalid Username.")
+                return render(request, "password/forgot_password.html", {"form": form})
+        else:
+            return render(request, "password/forgot_password.html", {"form": form})
 
 
 @login_required(login_url="accounts:loginlink")
@@ -3662,26 +3789,10 @@ def change_password(request):
                     else:
                         user.set_password(new_password)
                         user.save()
-                        if is_coordinator(user):
-                            coord = CoordinatorInCharge.objects.get(user=user)
-                            coord.password_changed = True
-                            coord.first_password = ""
-                            coord.save()
-                        elif is_teacher(user):
-                            teacher = TeacherInCharge.objects.get(user=user)
-                            teacher.password_changed = True
-                            teacher.first_password = ""
-                            teacher.save()
-                        elif is_parent(user):
-                            parent = ParentsInfo.objects.get(user=user)
-                            parent.password_changed = True
-                            parent.first_password = ""
-                            parent.save()
-                        elif is_student(user):
-                            student = StudentsInfo.objects.get(user=user)
-                            student.password_changed = True
-                            student.first_password = ""
-                            student.save()
+                        our_user = custom_user_filter(user)[0]
+                        our_user.password_changed = True
+                        our_user.first_password = ""
+                        our_user.save()
                         logout(request)
                         return redirect("accounts:password_changed")
                 except ValidationError as e:

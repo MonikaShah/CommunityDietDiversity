@@ -37,9 +37,21 @@ urlpatterns = [
     ),
     path("teacher_dashboard/<int:id>/", views.getFormDetails, name="get_form_details"),
     path("all_coordinators/", views.allCoordinators, name="all_coordinators"),
-    path("view_session_teachers/<int:id>/", views.viewSessionTeachers, name="view_session_teachers"),
-    path("remove_session_teacher/<int:session_id>/<int:teacher_id>/", views.removeSessionTeacher, name="remove_session_teacher"),
-    path("remove_session_student/<int:session_id>/<int:student_id>/", views.removeSessionStudent, name="remove_session_student"),
+    path(
+        "view_session_teachers/<int:id>/",
+        views.viewSessionTeachers,
+        name="view_session_teachers",
+    ),
+    path(
+        "remove_session_teacher/<int:session_id>/<int:teacher_id>/",
+        views.removeSessionTeacher,
+        name="remove_session_teacher",
+    ),
+    path(
+        "remove_session_student/<int:session_id>/<int:student_id>/",
+        views.removeSessionStudent,
+        name="remove_session_student",
+    ),
     path(
         "view_session_students/<int:id>/<int:open_id>/",
         views.viewSessionStudents,
@@ -135,6 +147,16 @@ urlpatterns = [
         TemplateView.as_view(template_name="other/form_closed.html"),
     ),
     path("forgot_password/", views.forgot_password, name="forgot_password"),
+    path(
+        "forgot_password/<uidb64>/<token>/",
+        views.forgot_password_email,
+        name="forgot_password_email",
+    ),
+    path(
+        "forgot_password/questions/",
+        views.forgot_password_questions,
+        name="forgot_password_questions",
+    ),
     path("change_password/", views.change_password, name="change_password"),
     path("password_changed/", views.password_changed, name="password_changed"),
     path(
