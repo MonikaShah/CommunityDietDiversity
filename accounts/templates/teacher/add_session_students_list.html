@@ -1,0 +1,61 @@
+{% extends 'partials/layout.html' %}
+
+{% load static %} {% load crispy_forms_tags%}
+
+{% block title %}
+<title>Add Students</title>
+{% endblock %}
+
+{% block links %}
+<script src="{% static 'accounts/js/message_hider.js' %}"></script>
+{% if my_messages %}
+<script>
+    location.href = "#message"
+</script>
+{% endif %}
+{% endblock %}
+
+{% block userinfo %}
+{% include 'partials/userinfo.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="card shadow rounded bulkCard">
+    <h2 class="mb-4">Add Students via List</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="button" onclick='selects()' value="Select All"/>  
+        <input type="button" onclick='deSelect()' value="Deselect All"/>
+        <table border="1">
+            <tr>
+                <th>Student</th>
+            </tr>
+            {% for student in students %}
+            <tr>
+                <td align="center"><input type="checkbox" name="chk" value={{student.id}}></td>
+                <td>{{student.name}}</td>
+            </tr>
+            {% endfor %}
+            </table>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<script type="text/javascript">  
+    function selects(){  
+        var ele=document.getElementsByName('chk');  
+        for(var i=0; i<ele.length; i++){  
+            if(ele[i].type=='checkbox')  
+                ele[i].checked=true;  
+        }  
+    }  
+    function deSelect(){  
+        var ele=document.getElementsByName('chk');  
+        for(var i=0; i<ele.length; i++){  
+            if(ele[i].type=='checkbox')  
+                ele[i].checked=false;  
+              
+        }  
+    }             
+</script>  
+{% endblock %}

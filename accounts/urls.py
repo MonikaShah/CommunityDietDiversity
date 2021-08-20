@@ -41,7 +41,7 @@ urlpatterns = [
     path("remove_session_teacher/<int:session_id>/<int:teacher_id>/", views.removeSessionTeacher, name="remove_session_teacher"),
     path("remove_session_student/<int:session_id>/<int:student_id>/", views.removeSessionStudent, name="remove_session_student"),
     path(
-        "view_session_students/<int:id>/",
+        "view_session_students/<int:id>/<int:open_id>/",
         views.viewSessionStudents,
         name="view_session_students",
     ),
@@ -58,6 +58,11 @@ urlpatterns = [
         "add_session_students/<int:id>/",
         views.addSessionStudents,
         name="add_session_students",
+    ),
+    path(
+        "add_session_students_list/<int:id>/",
+        views.addSessionStudentsList,
+        name="add_session_students_list",
     ),
     path(
         "get_session_teachers_template/",

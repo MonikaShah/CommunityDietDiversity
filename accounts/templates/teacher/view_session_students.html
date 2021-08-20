@@ -45,9 +45,12 @@
 </div>
 
 <center><h2>Students</h2></center>
-<div class="d-flex justify-content-end mb-4">
-    <a href="{% url 'accounts:add_session_students' session.id %}" class="btn btn-info btnmedium">Add Students</a>
-</div>
+{% if open_id == 1 %}
+    <div class="d-flex justify-content-end mb-4">
+        <a href="{% url 'accounts:add_session_students' session.id %}" class="btn btn-info btnmedium me-3">Add Students via Bulk</a>
+        <a href="{% url 'accounts:add_session_students_list' session.id %}" class="btn btn-info btnmedium">Add Students via List</a>
+    </div>
+{% endif %}
 
 <div class="item-container d-flex" id="parentCard">
 {% for student in students %}
@@ -55,7 +58,9 @@
         <div class="card-body">
             <center><b><h3 class="card-title mb-3">{{ student.name }}</h3></b></center>
             <h6 class="card-text mb-3"><b>Roll No: </b> {{ student.rollno }}</h6>
+            {% if open_id == 1 %}
             <center><a class="btn btnmedium btn-danger" href="{% url 'accounts:remove_session_student' session.id student.id %}">Remove</a></center>
+            {% endif %}
         </div>
     </div>
     {% endfor %}
