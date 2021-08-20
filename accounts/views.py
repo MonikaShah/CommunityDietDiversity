@@ -3697,17 +3697,18 @@ def forgot_password_email(request, uidb64, token):
 
 def reset_password_emailer(request, user, user_email):
     site = get_current_site(request)
+    token = password_reset_token.make_token(user)
     message = get_template("password/email_template.html",).render(
         {
             "user": user,
             "protocol": "https",
             "domain": site.domain,
             "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-            "token": password_reset_token.make_token(user),
+            "token": token,
         }
     )
     msg = EmailMessage(
-        "Reset Password",
+        "Reset Password, Ref Token:" + str(token),
         message,
         None,
         [str(user_email)],
