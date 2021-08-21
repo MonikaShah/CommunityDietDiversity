@@ -1,80 +1,12 @@
 from django.contrib.auth.models import Group, User
-from datetime import datetime, date
-from django.core.exceptions import ValidationError
-from django.db.models.fields import CharField
-from django.forms import ModelForm, fields
-from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from bootstrap_datepicker_plus import DatePickerInput
-from .models import *
-from django.core.validators import MaxLengthValidator, RegexValidator
 from crispy_forms.helper import FormHelper
-import re
-
-# Validation Functions
-
-
-def valid_adult(dob):
-    today = str(date.today())
-    student_dob_year = int(dob[:4])
-    student_dob_month = int(dob[5:7])
-    student_dob_date = int(dob[8:])
-    today_year = int(today[:4])
-    today_month = int(today[5:7])
-    today_date = int(today[8:])
-    is_valid = False
-    if (today_year - 18 > student_dob_year) or (
-        (today_year - 18 == student_dob_year)
-        and (
-            (today_month > student_dob_month)
-            or ((today_month == student_dob_month) and (today_date >= student_dob_date))
-        )
-    ):
-        is_valid = True
-    return is_valid
+from django import forms
+from .helper_functions import *
+from .models import *
 
 
-def valid_dob(dob):
-    today = str(date.today())
-    student_dob_year = int(dob[:4])
-    student_dob_month = int(dob[5:7])
-    student_dob_date = int(dob[8:])
-    today_year = int(today[:4])
-    today_month = int(today[5:7])
-    today_date = int(today[8:])
-    is_valid = False
-    if (today_year - 5 > student_dob_year) or (
-        (today_year - 5 == student_dob_year)
-        and (
-            (today_month > student_dob_month)
-            or ((today_month == student_dob_month) and (today_date >= student_dob_date))
-        )
-    ):
-        is_valid = True
-    return is_valid
-
-
-def valid_name(name):
-    name = str(name)
-    return re.match("^[a-zA-Z' ]*$", name)
-
-
-def valid_email(email):
-    email = str(email)
-    return re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
-
-
-def valid_mobile_no(mobile_no):
-    mobile_no = str(mobile_no)
-    return re.match("^\d{10}$", mobile_no)
-
-
-def valid_pincode(pincode):
-    pincode = str(pincode)
-    return re.match("^\d{6}$", pincode)
-
-
-# --------------------------------------------------------
 class RegistrationForm(forms.Form):
     dob = forms.DateField(widget=DatePickerInput(), label="")
 
@@ -92,7 +24,7 @@ class ConsentForm(forms.Form):
     consent = forms.BooleanField(label="I Agree")
 
 
-class ParentsInfoForm(ModelForm):
+class ParentsInfoForm(forms.ModelForm):
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
     )
@@ -142,7 +74,7 @@ class ParentsInfoForm(ModelForm):
         return cleaned_data
 
 
-class StudentsInfoForm(ModelForm):
+class StudentsInfoForm(forms.ModelForm):
     rollno = forms.IntegerField(label="Roll Number")
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
@@ -186,7 +118,7 @@ class StudentsInfoForm(ModelForm):
         return cleaned_data
 
 
-class TeachersInfoForm(ModelForm):
+class TeachersInfoForm(forms.ModelForm):
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
     )
@@ -222,7 +154,7 @@ class TeachersInfoForm(ModelForm):
         return cleaned_data
 
 
-class SuperCoordinatorsInfoForm(ModelForm):
+class SuperCoordinatorsInfoForm(forms.ModelForm):
     email = forms.EmailField(help_text="Email ID is used for password reset.")
     name = forms.CharField(
         max_length=50,
@@ -254,7 +186,7 @@ class SuperCoordinatorsInfoForm(ModelForm):
         return cleaned_data
 
 
-class CoordinatorsInfoForm(ModelForm):
+class CoordinatorsInfoForm(forms.ModelForm):
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
     )
@@ -290,13 +222,13 @@ class CoordinatorsInfoForm(ModelForm):
         return cleaned_data
 
 
-class SessionsInfoForm(ModelForm):
+class SessionsInfoForm(forms.ModelForm):
     class Meta:
         model = Session
         fields = ["name", "start_date"]
 
 
-class OrganizationsInfoForm(ModelForm):
+class OrganizationsInfoForm(forms.ModelForm):
     address = forms.CharField(widget=forms.Textarea())
 
     class Meta:

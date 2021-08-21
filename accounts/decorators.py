@@ -1,50 +1,7 @@
 from .models import *
 from django.shortcuts import redirect
 from django.contrib.auth import logout
-from django.contrib.auth.models import Group
-
-
-def custom_user_filter(user):
-    if is_supercoordinator(user):
-        supercoord = SuperCoordinator.objects.get(user=user)
-        return (supercoord, "Super Coordinators")
-    elif is_coordinator(user):
-        coord = CoordinatorInCharge.objects.get(user=user)
-        return (coord, "Coordinators")
-    elif is_teacher(user):
-        teacher = TeacherInCharge.objects.get(user=user)
-        return (teacher, "Teachers")
-    elif is_parent(user):
-        parent = ParentsInfo.objects.get(user=user)
-        return (parent, "Parents")
-    elif is_student(user):
-        student = StudentsInfo.objects.get(user=user)
-        return (student, "Students")
-    return None
-
-
-def is_student(user):
-    return user.groups.filter(name="Students").exists()
-
-
-def is_parent(user):
-    return user.groups.filter(name="Parents").exists()
-
-
-def is_coordinator(user):
-    return user.groups.filter(name="Coordinators").exists()
-
-
-def is_supercoordinator(user):
-    return user.groups.filter(name="Super Coordinators").exists()
-
-
-def is_admin(user):
-    return user.is_superuser
-
-
-def is_teacher(user):
-    return user.groups.filter(name="Teachers").exists()
+from .helper_functions import *
 
 
 def isActive(moduleType, userType):
@@ -60,7 +17,7 @@ def isActive(moduleType, userType):
                 ).exists():
                     return view_func(request, *args, **kwargs)
                 else:
-                    return redirect("../form_closed")
+                    return redirect("accounts:form_closed")
 
             elif "parent_dashboard" in request.build_absolute_uri().split("/"):
                 studentID = request.META.get("HTTP_REFERER").split("/")[-2]
@@ -75,7 +32,7 @@ def isActive(moduleType, userType):
                 ).exists():
                     return view_func(request, *args, **kwargs)
                 else:
-                    return redirect("../form_closed")
+                    return redirect("accounts:form_closed")
 
         return wrap
 

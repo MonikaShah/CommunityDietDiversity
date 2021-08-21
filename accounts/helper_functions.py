@@ -1,3 +1,166 @@
+from datetime import datetime, date
+from .models import *
+import string
+import random
+import re
+
+# username and password auto generators
+def random_password_generator():
+    return "".join(random.choices(string.ascii_lowercase + string.digits, k=8))
+
+
+# Module and activity form functions
+def getFormType(moduleType, teacher):
+    module = Form.objects.get(name=moduleType)
+    formType = FormDetails.objects.filter(
+        form=module, open=True, teacher=teacher
+    ).first()
+    if formType.pre:
+        return "PreTest"
+    else:
+        return "PostTest"
+
+
+# User functions
+def custom_user_filter(user):
+    if is_supercoordinator(user):
+        supercoord = SuperCoordinator.objects.get(user=user)
+        return (supercoord, "Super Coordinators")
+    elif is_coordinator(user):
+        coord = CoordinatorInCharge.objects.get(user=user)
+        return (coord, "Coordinators")
+    elif is_teacher(user):
+        teacher = TeacherInCharge.objects.get(user=user)
+        return (teacher, "Teachers")
+    elif is_parent(user):
+        parent = ParentsInfo.objects.get(user=user)
+        return (parent, "Parents")
+    elif is_student(user):
+        student = StudentsInfo.objects.get(user=user)
+        return (student, "Students")
+    return None
+
+
+def is_student(user):
+    return user.groups.filter(name="Students").exists()
+
+
+def is_parent(user):
+    return user.groups.filter(name="Parents").exists()
+
+
+def is_coordinator(user):
+    return user.groups.filter(name="Coordinators").exists()
+
+
+def is_supercoordinator(user):
+    return user.groups.filter(name="Super Coordinators").exists()
+
+
+def is_admin(user):
+    return user.is_superuser
+
+
+def is_teacher(user):
+    return user.groups.filter(name="Teachers").exists()
+
+
+# Validation functions
+
+# forms.py validations
+def valid_adult(dob):
+    today = str(date.today())
+    student_dob_year = int(dob[:4])
+    student_dob_month = int(dob[5:7])
+    student_dob_date = int(dob[8:])
+    today_year = int(today[:4])
+    today_month = int(today[5:7])
+    today_date = int(today[8:])
+    is_valid = False
+    if (today_year - 18 > student_dob_year) or (
+        (today_year - 18 == student_dob_year)
+        and (
+            (today_month > student_dob_month)
+            or ((today_month == student_dob_month) and (today_date >= student_dob_date))
+        )
+    ):
+        is_valid = True
+    return is_valid
+
+
+def valid_dob(dob):
+    today = str(date.today())
+    student_dob_year = int(dob[:4])
+    student_dob_month = int(dob[5:7])
+    student_dob_date = int(dob[8:])
+    today_year = int(today[:4])
+    today_month = int(today[5:7])
+    today_date = int(today[8:])
+    is_valid = False
+    if (today_year - 5 > student_dob_year) or (
+        (today_year - 5 == student_dob_year)
+        and (
+            (today_month > student_dob_month)
+            or ((today_month == student_dob_month) and (today_date >= student_dob_date))
+        )
+    ):
+        is_valid = True
+    return is_valid
+
+
+def valid_name(name):
+    name = str(name)
+    return re.match("^[a-zA-Z' ]*$", name)
+
+
+def valid_email(email):
+    email = str(email)
+    return re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
+
+
+def valid_mobile_no(mobile_no):
+    mobile_no = str(mobile_no)
+    return re.match("^\d{10}$", mobile_no)
+
+
+def valid_pincode(pincode):
+    pincode = str(pincode)
+    return re.match("^\d{6}$", pincode)
+
+
+# views validations
+def valid_date(date):
+    date_year = int(date[6:])
+    date_month = int(date[:2])
+    date_date = int(date[3:5])
+    try:
+        datetime(date_year, date_month, date_date)
+        return True
+    except:
+        return False
+
+
+def is_adult_func(dob):
+    today = str(date.today())
+    user_dob_year = int(dob[6:])
+    user_dob_month = int(dob[:2])
+    user_dob_date = int(dob[3:5])
+    today_year = int(today[:4])
+    today_month = int(today[5:7])
+    today_date = int(today[8:])
+    is_adult = False
+    if (today_year - 18 > user_dob_year) or (
+        (today_year - 18 == user_dob_year)
+        and (
+            (today_month > user_dob_month)
+            or ((today_month == user_dob_month) and (today_date >= user_dob_date))
+        )
+    ):
+        is_adult = True
+    return str(is_adult)
+
+
+# Bulk reg validations
 def check_state_city(state_check, state_id, name):
     state = [
         "Andaman & Nicobar",
