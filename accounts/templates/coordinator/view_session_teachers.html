@@ -45,9 +45,12 @@
 </div>
 
 <center><h2>Teachers</h2></center>
+{% if open_id == 1 %}
 <div class="d-flex justify-content-end mb-4">
-    <a href="{% url 'accounts:add_session_teachers' session.id %}" class="btn btn-info btnmedium">Add Teachers</a>
+    <a href="{% url 'accounts:add_session_teachers' session.id %}" class="btn btn-info btnmedium me-3">Add Teachers via Bulk</a>
+    <a href="{% url 'accounts:add_session_teachers_list' session.id %}" class="btn btn-info btnmedium">Add Teachers via List</a>
 </div>
+{% endif %}
 
 <div class="item-container d-flex" id="parentCard">
 {% for teacher in teachers %}
@@ -55,7 +58,9 @@
         <div class="card-body">
             <center><b><h3 class="card-title mb-3">{{ teacher.name }}</h3></b></center>
             <h6 class="card-text mb-3"><b>Organization: </b> {{ teacher.organization }}</h6>
+            {% if open_id == 1 %}
             <center><a class="btn btnmedium btn-danger" href="{% url 'accounts:remove_session_teacher' session.id teacher.id %}">Remove</a></center>
+            {% endif %}
         </div>
     </div>
     {% endfor %}

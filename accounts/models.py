@@ -152,6 +152,7 @@ class Session(models.Model):
 class Teacher_Session(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
+
 class StudentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rollno = models.BinaryField()
@@ -180,6 +181,8 @@ class StudentsInfo(models.Model):
 class Student_Session(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     student = models.ForeignKey(StudentsInfo, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
+    
 class Form(models.Model):
     name = models.CharField(max_length=255)
 

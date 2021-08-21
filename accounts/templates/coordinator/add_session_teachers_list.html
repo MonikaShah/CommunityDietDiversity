@@ -21,7 +21,7 @@
 
 {% block content %}
 <div class="card shadow rounded bulkCard">
-    <center><h2 class="mb-4">Add Students via List</h2></center>
+    <center><h2 class="mb-4">Add Teachers via List</h2></center>
     <form method="POST">
         {% csrf_token %}
         <div class="mb-3">
@@ -32,18 +32,18 @@
             <thead>
                 <tr>
                     <th scope="col"></th>
-                    <th scope="col">Student Name</th>
-                    <th scope="col">Roll No.</th>
+                    <th scope="col">Teacher Name</th>
+                    <th scope="col">Organization</th>
                     <th scope="col">Username</th>
                 </tr>
             </thead>
             <tbody>
-                {% for student in students %}
+                {% for teacher in teachers %}
                     <tr>
-                        <td align="center"><input type="checkbox" name="chk" value={{student.id}}></td>
-                        <td>{{student.name}}</td>
-                        <td>{{student.rollno}}</td>
-                        <td>{{student.user.username}}</td>
+                        <td align="center"><input type="checkbox" name="chk" value={{teacher.id}}></td>
+                        <td>{{teacher.name}}</td>
+                        <td>{{teacher.organization}}</td>
+                        <td>{{teacher.user.username}}</td>
                     </tr>
                 {% endfor %}
             </tbody>

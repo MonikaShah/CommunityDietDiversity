@@ -831,7 +831,7 @@ def addSessionForm(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 @password_change_required
-def viewSessionTeachers(request, id, my_messages=None):
+def viewSessionTeachers(request, id, open_id, my_messages=None):
     session = Session.objects.filter(id=id).first()
     objects = Teacher_Session.objects.filter(session=session)
     teachers = []
@@ -846,6 +846,7 @@ def viewSessionTeachers(request, id, my_messages=None):
                 "teachers": teachers,
                 "session": session,
                 "my_messages": my_messages,
+                "open_id": open_id,
                 "page_type": "view_session_teachers",
             },
         )
@@ -856,6 +857,7 @@ def viewSessionTeachers(request, id, my_messages=None):
             {
                 "teachers": teachers,
                 "session": session,
+                "open_id": open_id,
                 "page_type": "view_session_teachers",
             },
         )
@@ -868,7 +870,7 @@ def removeSessionTeacher(request, session_id, teacher_id):
     teacher = TeacherInCharge.objects.filter(id=teacher_id).first()
     Teacher_Session.objects.filter(teacher=teacher).delete()
     my_messages = {"success": "Teacher removed from session successfully"}
-    return viewSessionTeachers(request, session_id, my_messages)
+    return viewSessionTeachers(request, session_id, 1, my_messages)
 
 
 @login_required(login_url="accounts:loginlink")
@@ -877,10 +879,11 @@ def removeSessionTeacher(request, session_id, teacher_id):
 def removeSessionStudent(request, session_id, student_id):
     student = StudentsInfo.objects.filter(id=student_id).first()
     student.session = None
+    student.teacher = None
     Student_Session.objects.filter(student=student).delete()
     student.save()
     my_messages = {"success": "Student removed from session successfully"}
-    return viewSessionStudents(request, session_id, my_messages)
+    return viewSessionStudents(request, session_id, 1, my_messages)
 
 
 @login_required(login_url="accounts:loginlink")
@@ -1047,15 +1050,16 @@ def addSessionTeachers(request, id):
                 + str(teacher_added)
             }
 
-        return viewSessionTeachers(request, id, my_messages)
+        return viewSessionTeachers(request, id, 1, my_messages)
 
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 @password_change_required
 def viewSessionStudents(request, id, open_id, my_messages=None):
+    teacher = TeacherInCharge.objects.filter(user = request.user).first()
     session = Session.objects.filter(id=id).first()
-    objects = Student_Session.objects.filter(session=session)
+    objects = Student_Session.objects.filter(session = session, teacher = teacher)
     students = []
     for object in objects:
         students.append(object.student)
@@ -1223,6 +1227,7 @@ def addSessionStudents(request, id):
             if student_user.session == session:
                 student_exists += 1
             else:
+                teacher = TeacherInCharge.objects.filter(user = request.user).first()
                 student_user.session = session
                 student_user.teacher = TeacherInCharge.objects.filter(
                     user=request.user
@@ -1230,6 +1235,7 @@ def addSessionStudents(request, id):
                 student_session = Student_Session()
                 student_session.session = session
                 student_session.student = student_user
+                student_session.teacher = teacher
                 student_user.save()
                 student_session.save()
                 student_added += 1
@@ -1252,7 +1258,7 @@ def addSessionStudents(request, id):
                 + str(student_added)
             }
 
-        return viewSessionStudents(request, id, my_messages)
+        return viewSessionStudents(request, id, 1, my_messages)
 
 
 @login_required(login_url="accounts:loginlink")
@@ -1260,18 +1266,22 @@ def addSessionStudents(request, id):
 @password_change_required
 def addSessionStudentsList(request, id):
     if request.method == "GET":
-        students = StudentsInfo.objects.filter(session=None)
+        students = StudentsInfo.objects.filter(session=None, teacher=None)
         for student in students:
             student.name = encryptionHelper.decrypt(student.name)
+            student.rollno = encryptionHelper.decrypt(student.rollno)
         return render(
             request,
             "teacher/add_session_students_list.html",
-            {"page_type": "add_session_students_list", "students": students},
+            {
+                "page_type": "add_session_students_list",
+                "students": students,
+            },
         )
     else:
         students_id_list = request.POST.getlist("chk")
         session = Session.objects.filter(id=id).first()
-        teacher = TeacherInCharge.objects.filter(user=request.user).first()
+        teacher = TeacherInCharge.objects.filter(user = request.user).first()
         for s_id in students_id_list:
             student = StudentsInfo.objects.filter(id=s_id).first()
             student.session = session
@@ -1279,10 +1289,48 @@ def addSessionStudentsList(request, id):
             student_session = Student_Session()
             student_session.session = session
             student_session.student = student
+            student_session.teacher = teacher
             student_session.save()
             student.save()
 
         return redirect("accounts:view_session_students", id, 1)
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
+def addSessionTeachersList(request, id):
+    if request.method == "GET":
+        teachers_in_sessions = Teacher_Session.objects.all()
+        teachers_in_sessions_id = []
+        coordinator = CoordinatorInCharge.objects.filter(user = request.user).first()
+        organization = coordinator.organization
+        for teacher in teachers_in_sessions:
+            teachers_in_sessions_id.append(teacher.teacher.id)
+
+        teachers = TeacherInCharge.objects.filter(coordinator = coordinator, organization = organization).exclude(id__in = teachers_in_sessions_id)
+
+        for teacher in teachers:
+            teacher.name = encryptionHelper.decrypt(teacher.name)
+        return render(
+            request,
+            "coordinator/add_session_teachers_list.html",
+            {
+                "page_type": "add_session_teachers_list",
+                "teachers": teachers
+            },
+        )
+    else:
+        teachers_id_list = request.POST.getlist("chk")
+        session = Session.objects.filter(id=id).first()
+        for t_id in teachers_id_list:
+            teacher = TeacherInCharge.objects.filter(id=t_id).first()
+            teacher_session = Teacher_Session()
+            teacher_session.session = session
+            teacher_session.teacher = teacher
+            teacher_session.save()
+
+        return redirect("accounts:view_session_teachers", id, 1)
+
 
 
 @login_required(login_url="accounts:loginlink")
