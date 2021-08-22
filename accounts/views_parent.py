@@ -71,6 +71,20 @@ def addStudentForm(request):
                         "valid_city": True,
                     },
                 )
+            if is_adult_func(request.POST["dob"]) == "True":
+                form.add_error(
+                    "dob", "Students of age 18+ need to register by themselves."
+                )
+                return render(
+                    request,
+                    "parent/add_student.html",
+                    {
+                        "form": form,
+                        "user_creation_form": studentuserform,
+                        "valid_state": True,
+                        "valid_city": True,
+                    },
+                )
             studentuser = studentuserform.save(commit=False)
             studentuser.save()
             student_group = Group.objects.get(name="Students")
@@ -84,7 +98,7 @@ def addStudentForm(request):
             student.dob = encryptionHelper.encrypt(request.POST["dob"])
             student.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
             student.gender = encryptionHelper.encrypt(request.POST["gender"])
-            student.adult = encryptionHelper.encrypt(is_adult_func(request.POST["dob"]))
+            student.adult = encryptionHelper.encrypt(str("False"))
             student.state = State.objects.get(
                 state__icontains=request.POST["state"].strip()
             )
