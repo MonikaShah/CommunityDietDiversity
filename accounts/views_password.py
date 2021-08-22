@@ -31,7 +31,7 @@ def reset_password_emailer(request, user, user_email):
         }
     )
     msg = EmailMessage(
-        "Reset Password, Ref Token:" + str(token),
+        "Community Diet Diversity Reset Password, Ref Token:" + str(token),
         message,
         None,
         [str(user_email)],
