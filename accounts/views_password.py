@@ -8,6 +8,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
+from django.core.exceptions import ValidationError
 from .decorators import *
 from .models import *
 from .forms import *
