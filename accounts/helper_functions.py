@@ -5,6 +5,38 @@ import random
 import re
 
 # username and password auto generators
+def username_generator(name):
+    username_initial = ""
+    name_list = name.split(" ")
+    for i in name_list:
+        if re.match("^[a-zA-Z]*$", i):
+            username_initial += i.lower()
+    temp = User.objects.all()
+    users_list = []
+    for i in temp:
+        users_list.append(i.username)
+    count = 1
+    username_regex = "^" + username_initial + "[0-9]*$"
+    for i in users_list:
+        if re.match(username_regex, i):
+            count += 1
+    username = (
+        username_initial
+        + random.choices(string.digits, k=1)[0]
+        + str(count)
+        + random.choices(string.digits, k=1)[0]
+    )
+    while username in users_list:
+        count += 1
+        username = (
+            username_initial
+            + random.choices(string.digits, k=1)[0]
+            + str(count)
+            + random.choices(string.digits, k=1)[0]
+        )
+    return username
+
+
 def random_password_generator():
     return "".join(random.choices(string.ascii_lowercase + string.digits, k=8))
 
