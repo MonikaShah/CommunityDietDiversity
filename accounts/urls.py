@@ -123,6 +123,16 @@ urlpatterns = [
         name="view_session_teachers",
     ),
     path(
+        "switch_teacher/<int:id>/<int:teacher_id>/",
+        views_coordinator.switchTeacher,
+        name="switch_teacher",
+    ),
+    path(
+        "switch_teachers_list/<int:id>/<int:teacher_id>/",
+        views_coordinator.switchTeachersList,
+        name="switch_teachers_list",
+    ),
+    path(
         "get_session_teachers_template/",
         views_coordinator.getSessionTeachersTemplate,
         name="get_session_teachers_template",

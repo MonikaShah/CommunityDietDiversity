@@ -33,6 +33,48 @@ def coordinator_dashboard(request):
         {"teachers": teachers, "page_type": "coordinator_dashboard"},
     )
 
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
+def switchTeachersList(request,id,teacher_id):
+    if request.method == "GET":
+        session=Session.objects.filter(id=id).first()
+        objects_in_sessions = Teacher_Session.objects.filter(session=session)
+        teachers_in_sessions= []
+        teacher=TeacherInCharge.objects.filter(id=teacher_id).first()
+        coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
+        organization = coordinator.organization
+        for object1 in objects_in_sessions:
+            if object1.teacher!=teacher:
+                teachers_in_sessions.append(object1.teacher)
+
+
+        for teacher in teachers_in_sessions:
+            teacher.name = encryptionHelper.decrypt(teacher.name)
+        return render(
+            request,
+            "coordinator/switch_teachers_list.html",
+            {"page_type": "switch_teachers_list", "teachers": teachers_in_sessions},
+        )
+    else:
+        teachers_id_list = request.POST.getlist("chk")
+        session = Session.objects.filter(id=id).first()
+        for t_id in teachers_id_list:
+            teacher = TeacherInCharge.objects.filter(id=t_id).first()
+            teacher_session = Teacher_Session()
+            teacher_session.session = session
+            teacher_session.teacher = teacher
+            teacher_session.save()
+
+        return redirect("accounts:view_session_teachers", id, 1)
+
+    
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
+def switchTeacher(request,id,teacher_id):
+    
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
@@ -353,7 +395,8 @@ def addSessionTeachers(request, id):
 @password_change_required
 def addSessionTeachersList(request, id):
     if request.method == "GET":
-        teachers_in_sessions = Teacher_Session.objects.all()
+        session=Session.objects.filter(id=id).first()
+        teachers_in_sessions = Teacher_Session.objects.filter(session=session)
         teachers_in_sessions_id = []
         coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
         organization = coordinator.organization
