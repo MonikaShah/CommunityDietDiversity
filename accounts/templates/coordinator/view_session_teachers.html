@@ -56,14 +56,14 @@
 {% for teacher in teachers %}
     <div class="my-card card shadow border rounded">
         <div class="card-body">
-            <center><b><h3 class="card-title mb-3">{{ teacher.name }}</h3></b></center>
+            <center><b><h3 class="card-title mb-3">{{ teacher.name }}{{ teacher.id }}</h3></b></center>
             <h6 class="card-text mb-3"><b>Organization: </b> {{ teacher.organization }}</h6>
             {% if open_id == 1 %}
-            <center><a class="btn btnmedium btn-danger" href="" data-toggle="modal" data-target="#removeModal">Remove</a></center>
+            <center><a class="btn btnmedium btn-danger" href="{% url 'accounts:view_session_teachers' session.id 1 %}" data-toggle="modal" data-target={{"#"|add:teacher.id }}>Remove</a></center>
             {% endif %}
         </div>
     </div>
-    <div class="modal fade" style="position:absolute;left:40%" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" style="position:absolute; left:40%; width: 30%" id="{{ teacher.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -74,9 +74,9 @@
                     </button>
                 </div>
                 <div class="modal-body">If you select "Remove" all associated student data will be lost.<br>Select "Switch Teacher" below to replace the current teacher and preserve all students data.</div>
-                <div class="modal-footer">
+                <div class="modal-footer d-flex justify-content-around">
                     <button class="btn btn-secondary greybutton" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary btnmedium" href="{% url 'accounts:switch_teachers_list' session.id teacher.id%}">Switch Teacher</a>
+                    <a class="btn btn-primary btnmedium" href="{% url 'accounts:switch_teachers_list' session.id teacher.id %}">Switch Teacher {{teacher.id}}</a>
                     <a class="btn btn-danger btnmedium" href="{% url 'accounts:remove_session_teacher' session.id teacher.id %}">Remove</a>
                 </div>
             </div>

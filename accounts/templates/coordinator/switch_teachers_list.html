@@ -36,7 +36,7 @@
             <tbody>
                 {% for teacher in teachers %}
                     <tr>
-                        <td align="center"><input type="checkbox" name="chk" value={{teacher.id}}></td>
+                        <td align="center"><input type="radio" name="new_teacher" value={{teacher.id}}></td>
                         <td>{{teacher.name}}</td>
                         <td>{{teacher.organization}}</td>
                         <td>{{teacher.user.username}}</td>

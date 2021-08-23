@@ -57,24 +57,20 @@ def switchTeachersList(request,id,teacher_id):
             {"page_type": "switch_teachers_list", "teachers": teachers_in_sessions},
         )
     else:
-        teachers_id_list = request.POST.getlist("chk")
+        new_teacher_id = request.POST.get("new_teacher")
+        new_teacher=TeacherInCharge.objects.filter(id=new_teacher_id).first()
         session = Session.objects.filter(id=id).first()
-        for t_id in teachers_id_list:
-            teacher = TeacherInCharge.objects.filter(id=t_id).first()
-            teacher_session = Teacher_Session()
-            teacher_session.session = session
-            teacher_session.teacher = teacher
-            teacher_session.save()
+        teacher=TeacherInCharge.objects.filter(id=teacher_id).first()
+        teacher_session=Teacher_Session.objects.filter(session=session, teacher=teacher).delete()
+        students=StudentsInfo.objects.filter(session=session,teacher=teacher)
+        for student in students:
+            student.teacher=new_teacher
+            student_session=Student_Session.objects.filter(session=session,student=student,teacher=teacher).first()
+            student_session.teacher=new_teacher
+            student.save()
+            student_session.save()
 
         return redirect("accounts:view_session_teachers", id, 1)
-
-    
-
-@login_required(login_url="accounts:loginlink")
-@user_passes_test(is_coordinator, login_url="accounts:forbidden")
-@password_change_required
-def switchTeacher(request,id,teacher_id):
-    
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
