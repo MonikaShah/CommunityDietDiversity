@@ -228,7 +228,7 @@ def addSessionStudents(request, id):
         student_added = 0
         student_exists = 0
         for student_user in student_data:
-            if student_user.session == session:
+            if student_user.session !=None:
                 student_exists += 1
             else:
                 teacher = TeacherInCharge.objects.filter(user=request.user).first()
