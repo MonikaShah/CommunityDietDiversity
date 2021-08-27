@@ -427,8 +427,15 @@ def addSessionTeachersList(request, id):
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 @password_change_required
 def removeSessionTeacher(request, session_id, teacher_id):
+    session= Session.objects.filter(id=session_id).first()
     teacher = TeacherInCharge.objects.filter(id=teacher_id).first()
+    students= StudentsInfo.objects.filter(teacher=teacher, session=session)
+    for student in students:
+        student.teacher=None
+        student.session=None
+        student.save()
     Teacher_Session.objects.filter(teacher=teacher).delete()
+    student_session=Student_Session.objects.filter(session=session, teacher=teacher).delete()
     my_messages = {"success": "Teacher removed from session successfully"}
     return viewSessionTeachers(request, session_id, 1, my_messages)
 

@@ -64,7 +64,7 @@
             {% endif %}
         </div>
     </div>
-    <div class="modal fade" style="position:absolute; left:40%; width: 30%" id="{{"logoutModal"|addstr:teacher.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" style="position:absolute; left:40%; width: 40%" id="{{"logoutModal"|addstr:teacher.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -78,7 +78,7 @@
                 <div class="modal-footer d-flex justify-content-around">
                     <button class="btn btn-secondary greybutton" type="button" data-dismiss="modal">Cancel</button>
                     <a class="btn btn-primary btnmedium" href="{% url 'accounts:switch_teachers_list' session.id teacher.id %}">Switch Teacher</a>
-                    <a class="btn btn-danger btnmedium" href="{% url 'accounts:remove_session_teacher' session.id teacher.id %}">Remove</a>
+                    <a class="btn btn-danger btnmedium" href="{% url 'accounts:remove_session_teacher' session.id teacher.id %}">Ignore and Remove</a>
                 </div>
             </div>
         </div>
