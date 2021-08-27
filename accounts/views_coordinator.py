@@ -175,7 +175,6 @@ def addSessionForm(request):
                 user=request.user
             ).first()
             session.save()
-            print(session.start_date)
             return redirect("accounts:all_sessions")
         else:
             return render(
