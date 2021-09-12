@@ -50,23 +50,7 @@
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-6">
-                        <div id="div_d_dob" class="form-group">
-                            <label for="id_dob" class="requiredField"> Date of Birth<span class="asteriskField">*</span></label>
-                            <div>
-                                <div class="input-group date">
-                                    <input type="text" name="dob" class="form-control datepickerinput form-control"
-                                    required id="id_dob" readonly value='{{ student_dob }}'
-                                    dp_config='{"id": "dp_3", "picker_type": "DATE", "linked_to": null, "options": {"showClose": true, "showClear": true, "showTodayButton": true, "format": "MM/DD/YYYY"}}'
-                                    >
-                                    <div class="input-group-addon input-group-append" data-target="#datetimepicker1" data-toggle="datatimepickerv">
-                                        <div class="input-group-text">
-                                            <i class="glyphicon glyphicon-calendar">
-                                            </i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {{form.dob|as_crispy_field}}
                     </div>
                     <div class="col-md-6">
                         {{form.mobile_no|as_crispy_field}}

@@ -241,6 +241,8 @@ def students_info(request, is_adult=False):
     student_dob = request.session["dob"]
     if request.method == "GET":
         form = StudentsInfoForm()
+        form.fields["dob"].initial = student_dob
+        form.fields["dob"].disabled = True
         user_creation_form = UserCreationForm()
         return render(
             request,
@@ -249,7 +251,6 @@ def students_info(request, is_adult=False):
                 "form": form,
                 "user_creation_form": user_creation_form,
                 "is_adult": is_adult,
-                "student_dob": student_dob,
                 "valid_state": True,
                 "valid_city": True,
             },
@@ -258,6 +259,8 @@ def students_info(request, is_adult=False):
         if not is_adult:
             previousPOST = request.session["data"]
             form = StudentsInfoForm(request.POST)
+            form.fields["dob"].initial = student_dob
+            form.fields["dob"].disabled = True
             studentuserform = UserCreationForm(request.POST)
             parentform = ParentsInfoForm(previousPOST)
             parentuserform = UserCreationForm(previousPOST)
@@ -272,7 +275,6 @@ def students_info(request, is_adult=False):
                                 "form": form,
                                 "user_creation_form": studentuserform,
                                 "is_adult": is_adult,
-                                "student_dob": student_dob,
                                 "valid_state": True,
                                 "valid_city": False,
                             },
@@ -285,7 +287,6 @@ def students_info(request, is_adult=False):
                             "form": form,
                             "user_creation_form": studentuserform,
                             "is_adult": is_adult,
-                            "student_dob": student_dob,
                             "valid_state": False,
                             "valid_city": True,
                         },
@@ -369,13 +370,14 @@ def students_info(request, is_adult=False):
                         "form": form,
                         "user_creation_form": studentuserform,
                         "is_adult": is_adult,
-                        "student_dob": student_dob,
                         "valid_state": True,
                         "valid_city": True,
                     },
                 )
         else:
             form = StudentsInfoForm(request.POST)
+            form.fields["dob"].initial = student_dob
+            form.fields["dob"].disabled = True
             studentuserform = UserCreationForm(request.POST)
             if form.is_valid() and studentuserform.is_valid():
                 temp = check_state_city(True, 0, str(request.POST["state"]))
@@ -388,7 +390,6 @@ def students_info(request, is_adult=False):
                                 "form": form,
                                 "user_creation_form": studentuserform,
                                 "is_adult": is_adult,
-                                "student_dob": student_dob,
                                 "valid_state": True,
                                 "valid_city": False,
                             },
@@ -401,7 +402,6 @@ def students_info(request, is_adult=False):
                             "form": form,
                             "user_creation_form": studentuserform,
                             "is_adult": is_adult,
-                            "student_dob": student_dob,
                             "valid_state": False,
                             "valid_city": True,
                         },
@@ -453,7 +453,6 @@ def students_info(request, is_adult=False):
                         "form": form,
                         "user_creation_form": studentuserform,
                         "is_adult": is_adult,
-                        "student_dob": student_dob,
                         "valid_state": True,
                         "valid_city": True,
                     },
