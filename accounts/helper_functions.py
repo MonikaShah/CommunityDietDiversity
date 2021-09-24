@@ -147,7 +147,7 @@ def valid_name(name):
 
 def valid_email(email):
     email = str(email)
-    return re.match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
+    return re.match("^[a-zA-Z0-9_\.\+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-\.]+$", email)
 
 
 def valid_mobile_no(mobile_no):
