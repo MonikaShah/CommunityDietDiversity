@@ -284,6 +284,14 @@ body {
     padding: 18px;
 }
 
+.profile-pic {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 @media only screen and (max-width:600px) {
     .module_one_images {
         width: 100%;

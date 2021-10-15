@@ -9,10 +9,14 @@
         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
             <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{user}}</span>
-            <img class="img-profile rounded-circle" src="{% static 'accounts/img/undraw_profile.svg' %}">
+            <img class="img-profile rounded-circle" src="{{request.user.parentsinfo.profile_pic.url}}">
         </a>
         <!-- Dropdown - User Information -->
         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown" style="width:unset;">
+                <a class="dropdown-item" href="{% url 'accounts:view_profile' %}">
+                    <i class="fa fa-key fa-sm fa-fw mr-2"></i>
+                    <span>My Profile</span>
+                </a>
                 <a class="dropdown-item" href="{% url 'accounts:change_password' %}">
                     <i class="fa fa-key fa-sm fa-fw mr-2"></i>
                     <span>Change Password</span>

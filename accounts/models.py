@@ -68,6 +68,7 @@ class Organization(models.Model):
 
 class ParentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_pic = models.ImageField(null=True, blank=True)
     email = models.BinaryField(null=True)
     consent = models.BooleanField(default=True)
     name = models.BinaryField()

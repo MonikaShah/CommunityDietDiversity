@@ -1,0 +1,131 @@
+{% extends 'partials/layout.html' %}
+
+{% load static %} {% load crispy_forms_tags%}
+
+{%block links %}
+<script src="{% static 'accounts/js/state_city.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+<title>Parent Registration</title>
+{% endblock %}
+
+{% block userinfo %}
+{% include 'partials/userinfo.html' %}
+{% endblock %}
+
+{%block content%}
+
+<div class="d-flex justify-content-center">
+    <div class="card shadow border rounded signup-card">
+        <form action="" method="POST" enctype="multipart/form-data">
+            {{form.media}}
+
+            {% csrf_token %}
+            <h2 class="mb-4"><center>Update Profile</center></h2>
+            <div class="col-md-12">
+                {{ form.profile_pic|as_crispy_field }}
+            </div>
+            <div class="col-md-12">
+                {{ form.email|as_crispy_field }}
+            </div>
+            <div class="col-md-12">
+                {{form.name|as_crispy_field}}
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.dob|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{form.mobile_no|as_crispy_field}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.edu|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.occupation|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.gender|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.pincode|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="sts">State*</label>
+                            {% if valid_state %}
+                                <select onchange="print_city('state', this.selectedIndex);" id="sts" name="state"
+                                class="select form-control" required></select>
+                            {% else %}
+                                <select onchange="print_city('state', this.selectedIndex);" id="sts" name="state"
+                                class="select form-control is-invalid" required></select>
+                                <p class="invalid-feedback">
+                                    <strong>Invalid input.</strong>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="state">City*</label>
+                            {% if valid_city %}
+                                <select id="state" class="select form-control" required name="city"></select>
+                                <script language="javascript">print_state("sts");</script>
+                            {% else %}
+                                <select id="state" class="select form-control is-invalid" required name="city"></select>
+                                <script language="javascript">print_state("sts");</script>
+                                <p class="invalid-feedback">
+                                    <strong>Invalid input.</strong>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                {{ form.address|as_crispy_field }}
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.religion|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.type_of_family|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.no_of_family_members|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.children_count|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                {{user_creation_form|crispy}}
+            </div>
+            <div class="d-flex justify-content-center">
+                <input type="submit" class="btn btn-primary btnmedium" value="Update">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

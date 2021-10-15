@@ -32,6 +32,7 @@ class ParentsInfoForm(forms.ModelForm):
         max_length=50,
         help_text="Numbers and special characters are not allowed except apostrophe.",
     )
+    profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
     mobile_no = forms.IntegerField(
         required=False, help_text="Enter 10 digit mobile number."

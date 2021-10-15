@@ -46,6 +46,8 @@ urlpatterns = [
         name="forgot_password_questions",
     ),
     path("change_password/", views_password.change_password, name="change_password"),
+    path("view_profile/", views_registration.view_profile, name="view_profile"),
+    path("edit_profile/", views_registration.edit_profile, name="edit_profile"),
     path("password_changed/", views_password.password_changed, name="password_changed"),
     path("draft/", views_moduleOne.draft, name="draft"),
     path("previous/", views_moduleOne.previous, name="previous"),

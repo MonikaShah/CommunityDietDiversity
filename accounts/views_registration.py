@@ -318,6 +318,7 @@ def students_info(request, is_adult=False):
                 parent.children_count = encryptionHelper.encrypt(
                     previousPOST["children_count"]
                 )
+                parent.profile_pic = "/undraw_profile.svg"
                 parent.save()
 
                 studentuser = studentuserform.save(commit=False)
@@ -501,3 +502,134 @@ def addSuperCoordinatorForm(request):
                 "registration/add_supercoordinator.html",
                 {"form": form, "user_creation_form": supercoordinatoruserform},
             )
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    lambda user: is_supercoordinator(user)
+    or is_coordinator(user)
+    or is_teacher(user)
+    or is_parent(user)
+    or is_student(user),
+    login_url="accounts:forbidden",
+)
+def view_profile(request):
+    if request.method == "GET":
+        user = request.user
+        if is_parent(user):
+            parent = ParentsInfo.objects.filter(user=user).first()
+            parent.name = encryptionHelper.decrypt(parent.name)
+            parent.email = encryptionHelper.decrypt(parent.email)
+            parent.mobile_no = encryptionHelper.decrypt(parent.mobile_no)
+            parent.dob = encryptionHelper.decrypt(parent.dob)
+            parent.gender = encryptionHelper.decrypt(parent.gender)
+            parent.pincode = encryptionHelper.decrypt(parent.pincode)
+            parent.no_of_family_members = encryptionHelper.decrypt(parent.no_of_family_members)
+            parent.children_count = encryptionHelper.decrypt(parent.children_count)
+            
+            return render( request, "registration/view_profile.html", {"page_type": "view_profile", "parent": parent})
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    lambda user: is_supercoordinator(user)
+    or is_coordinator(user)
+    or is_teacher(user)
+    or is_parent(user)
+    or is_student(user),
+    login_url="accounts:forbidden",
+)
+def edit_profile(request):
+    if request.method == "GET":
+        parent = ParentsInfo.objects.filter(user=request.user).first()
+        initial_dict = {
+            "name": encryptionHelper.decrypt(parent.name),
+            "profile_pic": parent.profile_pic,
+            "email": encryptionHelper.decrypt(parent.email),
+            "mobile_no": encryptionHelper.decrypt(parent.mobile_no),
+            "dob": encryptionHelper.decrypt(parent.dob),
+            "gender": encryptionHelper.decrypt(parent.gender),
+            "pincode": encryptionHelper.decrypt(parent.pincode),
+            "no_of_family_members": encryptionHelper.decrypt(parent.no_of_family_members),
+            "children_count": encryptionHelper.decrypt(parent.children_count),
+            "edu": parent.edu,
+            "occupation": parent.occupation,
+            "type_of_family": parent.type_of_family,
+            "religion": parent.religion,
+        }
+        form = ParentsInfoForm(request.POST or None, initial = initial_dict)
+        return render(
+            request, "registration/update_parents_info.html",
+            {
+                "form": form,
+                "valid_state": True,
+                "valid_city": True,
+            },
+        )
+    else:
+        form = ParentsInfoForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            temp = check_state_city(True, 0, str(request.POST["state"]))
+            if temp[0]:
+                if not check_state_city(False, temp[1], str(request.POST["city"])):
+                    return render(
+                        request,
+                        "registration/update_parents_info.html",
+                        {
+                            "form": form,
+                            "valid_state": True,
+                            "valid_city": False,
+                        },
+                    )
+            else:
+                return render(
+                    request,
+                    "registration/update_parents_info.html",
+                    {
+                        "form": form,
+                        "valid_state": False,
+                        "valid_city": True,
+                    },
+                )
+
+            parent = ParentsInfo.objects.filter(user=request.user).first()
+            parent.email = encryptionHelper.encrypt(request.POST["email"])
+            parent.name = encryptionHelper.encrypt(request.POST["name"])
+            parent.dob = encryptionHelper.encrypt(request.POST["dob"])
+            parent.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+            parent.gender = encryptionHelper.encrypt(request.POST["gender"])
+            parent.state = State.objects.get(
+                state__icontains=request.POST["state"].strip()
+            )
+            parent.city = City.objects.get(
+                city__icontains=request.POST["city"].strip()
+            )
+            parent.address = encryptionHelper.encrypt(request.POST["address"])
+            parent.edu = Education(request.POST["edu"])
+            parent.religion = ReligiousBelief(request.POST["religion"])
+            parent.occupation = Occupation(request.POST["occupation"])
+            parent.pincode = encryptionHelper.encrypt(request.POST["pincode"])
+            parent.no_of_family_members = encryptionHelper.encrypt(
+                request.POST["no_of_family_members"]
+            )
+            parent.type_of_family = FamilyType(request.POST["type_of_family"])
+            parent.children_count = encryptionHelper.encrypt(
+                request.POST["children_count"]
+            )
+            if request.FILES:
+                parent.profile_pic = request.FILES["profile_pic"]
+            else:
+                parent.profile_pic = "/undraw_profile.svg"
+
+            parent.save()
+            return redirect("accounts:view_profile")
+        else:
+            return render(
+                request,
+                "registration/update_parents_info.html",
+                {
+                    "valid_state": True,
+                    "valid_city": True,
+                },
+            )
+
+        
