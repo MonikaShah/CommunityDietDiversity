@@ -7,7 +7,6 @@ class AccountsAdminArea(admin.AdminSite):
 
 accounts_admin_area = AccountsAdminArea(name="accounts_admin")
 
-accounts_admin_area.register(ParentsInfo)
 accounts_admin_area.register(Occupation)
 accounts_admin_area.register(FamilyType)
 accounts_admin_area.register(ReligiousBelief)
