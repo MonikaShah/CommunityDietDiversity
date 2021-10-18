@@ -67,24 +67,31 @@ class Organization(models.Model):
 
 
 class ParentsInfo(models.Model):
+    # Primary form
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(null=True, blank=True)
-    email = models.BinaryField(null=True)
     consent = models.BooleanField(default=True)
-    name = models.BinaryField()
-    dob = models.BinaryField()
+    # name = models.BinaryField() # removed
+    fname = models.BinaryField()  # new
+    mname = models.BinaryField(null=True)  # new
+    lname = models.BinaryField()  # new
+    aadhar = models.BinaryField(null=True)  # new
+    email = models.BinaryField(null=True)
     mobile_no = models.BinaryField(null=True)
     gender = models.BinaryField()
-    occupation = models.ForeignKey(Occupation, on_delete=models.CASCADE)
+    dob = models.BinaryField()
     state = models.ForeignKey(State, on_delete=models.CASCADE)
-    edu = models.ForeignKey(Education, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
-    address = models.BinaryField()
     pincode = models.BinaryField()
-    no_of_family_members = models.BinaryField()
-    type_of_family = models.ForeignKey(FamilyType, on_delete=models.CASCADE)
-    religion = models.ForeignKey(ReligiousBelief, on_delete=models.CASCADE)
-    children_count = models.BinaryField()
+    # address = models.BinaryField() # removed
+    # Secondary form (Yet to work on)
+    occupation = models.ForeignKey(Occupation, on_delete=models.CASCADE, null=True)
+    edu = models.ForeignKey(Education, on_delete=models.CASCADE, null=True)
+    no_of_family_members = models.BinaryField(null=True)
+    type_of_family = models.ForeignKey(FamilyType, on_delete=models.CASCADE, null=True)
+    religion = models.ForeignKey(ReligiousBelief, on_delete=models.CASCADE, null=True)
+    children_count = models.BinaryField(null=True)
+    # Others
     first_password = models.CharField(max_length=225, default="")
     password_changed = models.BooleanField(default=True)
 
@@ -95,11 +102,15 @@ class ParentsInfo(models.Model):
 
 class SuperCoordinator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # name = models.BinaryField() # removed
+    fname = models.BinaryField()  # new
+    mname = models.BinaryField(null=True)  # new
+    lname = models.BinaryField()  # new
+    aadhar = models.BinaryField(null=True)  # new
     email = models.BinaryField()
-    name = models.BinaryField()
-    dob = models.BinaryField()
-    gender = models.BinaryField()
     mobile_no = models.BinaryField()
+    gender = models.BinaryField()
+    dob = models.BinaryField()
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
@@ -108,11 +119,15 @@ class SuperCoordinator(models.Model):
 
 class CoordinatorInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # name = models.BinaryField() # removed
+    fname = models.BinaryField()  # new
+    mname = models.BinaryField(null=True)  # new
+    lname = models.BinaryField()  # new
+    aadhar = models.BinaryField(null=True)  # new
     email = models.BinaryField(null=True)
-    name = models.BinaryField()
-    dob = models.BinaryField()
-    gender = models.BinaryField()
     mobile_no = models.BinaryField(null=True)
+    gender = models.BinaryField()
+    dob = models.BinaryField()
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     super_coordinator = models.ForeignKey(SuperCoordinator, on_delete=models.CASCADE)
     first_password = models.CharField(max_length=225, default="")
@@ -125,11 +140,15 @@ class CoordinatorInCharge(models.Model):
 
 class TeacherInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # name = models.BinaryField() # removed
+    fname = models.BinaryField()  # new
+    mname = models.BinaryField(null=True)  # new
+    lname = models.BinaryField()  # new
+    aadhar = models.BinaryField(null=True)  # new
     email = models.BinaryField(null=True)
-    name = models.BinaryField()
-    dob = models.BinaryField()
-    gender = models.BinaryField()
     mobile_no = models.BinaryField(null=True)
+    gender = models.BinaryField()
+    dob = models.BinaryField()
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     coordinator = models.ForeignKey(CoordinatorInCharge, on_delete=models.CASCADE)
     first_password = models.CharField(max_length=225, default="")
@@ -156,20 +175,27 @@ class Teacher_Session(models.Model):
 
 
 class StudentsInfo(models.Model):
+    # Primary form
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    rollno = models.BinaryField()
-    name = models.BinaryField()
+    consent = models.BooleanField(default=True)
+    # name = models.BinaryField()   # removed
+    fname = models.BinaryField()  # new
+    mname = models.BinaryField(null=True)  # new
+    lname = models.BinaryField()  # new
+    aadhar = models.BinaryField(null=True)  # new
     email = models.BinaryField(null=True)
-    dob = models.BinaryField()
     mobile_no = models.BinaryField(null=True)
     gender = models.BinaryField()
-    consent = models.BooleanField(default=True)
-    adult = models.BinaryField()
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    dob = models.BinaryField()
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     pincode = models.BinaryField()
-    address = models.BinaryField()
+    # address = models.BinaryField() # removed
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    rollno = models.BinaryField()
+    # Secondary form (Yet to work on)
+    # Others
+    adult = models.BinaryField()
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE, null=True)
     first_password = models.CharField(max_length=225, default="")
     password_changed = models.BooleanField(default=True)

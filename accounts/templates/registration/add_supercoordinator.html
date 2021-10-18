@@ -34,7 +34,14 @@
                 </div>
             </div>
             <div class="col-md-12">
-                {{form.mobile_no|as_crispy_field}}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{form.mobile_no|as_crispy_field}}
+                    </div>
+                    <div class="col-md-6">
+                        {{form.aadhar|as_crispy_field}}
+                    </div>
+                </div>
             </div>
             <div class="col-md-12">
                 {{user_creation_form|crispy}}

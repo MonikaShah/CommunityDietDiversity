@@ -18,7 +18,8 @@ def parent_dashboard(request):
         ParentsInfo.objects.filter(user=request.user).first().studentsinfo_set.all()
     )
     for student in students:
-        student.name = encryptionHelper.decrypt(student.name)
+        student.fname = encryptionHelper.decrypt(student.fname)
+        student.lname = encryptionHelper.decrypt(student.lname)
     return render(
         request,
         "parent/parent_dashboard.html",
@@ -93,7 +94,10 @@ def addStudentForm(request):
             student = form.save(commit=False)
             student.user = studentuser
             student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
-            student.name = encryptionHelper.encrypt(request.POST["name"])
+            student.fname = encryptionHelper.encrypt(request.POST["fname"])
+            student.mname = encryptionHelper.encrypt(request.POST["mname"])
+            student.lname = encryptionHelper.encrypt(request.POST["lname"])
+            student.aadhar = encryptionHelper.encrypt(request.POST["aadhar"])
             student.email = encryptionHelper.encrypt(request.POST["email"])
             student.dob = encryptionHelper.encrypt(request.POST["dob"])
             student.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
@@ -106,7 +110,6 @@ def addStudentForm(request):
                 city__icontains=request.POST["city"].strip()
             )
             student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
-            student.address = encryptionHelper.encrypt(request.POST["address"])
             student.parent = ParentsInfo.objects.filter(user=request.user).first()
             student.first_password = ""
             student.password_changed = True

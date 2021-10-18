@@ -22,7 +22,7 @@
 {% for teacher in teachers %}
     <div class="my-card card shadow border rounded">
         <div class="card-body">
-            <center><b><h3 class="card-title mb-3">{{ teacher.name }}</h3></b></center>
+            <center><b><h3 class="card-title mb-3">{{ teacher.fname }} {{ teacher.lname }}</h3></b></center>
             <h6 class="card-text"><b>Organization:</b> {{ teacher.organization }}</h6>
         </div>
     </div>

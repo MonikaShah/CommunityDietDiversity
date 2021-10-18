@@ -28,9 +28,20 @@ class ParentsInfoForm(forms.ModelForm):
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
     )
-    name = forms.CharField(
+    fname = forms.CharField(
         max_length=50,
         help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="First Name",
+    )
+    mname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Middle Name",
+    )
+    lname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Last Name",
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
@@ -39,39 +50,40 @@ class ParentsInfoForm(forms.ModelForm):
     )
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-    address = forms.CharField(max_length=100, widget=forms.Textarea())
     pincode = forms.IntegerField()
-    no_of_family_members = forms.IntegerField(label="Number of Family Members")
-    children_count = forms.IntegerField(label="Number of Children")
+    aadhar = forms.CharField(
+        max_length=255,
+        label="Aadhar Number",
+        help_text="Aadhar Number is used for password reset.",
+    )
 
     class Meta:
         model = ParentsInfo
-        fields = ["occupation", "edu", "type_of_family", "religion"]
-        labels = {"edu": "Education", "type_of_family": "Type of Family"}
+        fields = []
 
     def clean(self):
         cleaned_data = super().clean()
         dob = cleaned_data.get("dob")
         email = cleaned_data.get("email")
-        name = cleaned_data.get("name")
+        fname = cleaned_data.get("fname")
+        mname = cleaned_data.get("mname")
+        lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
         pincode = cleaned_data.get("pincode")
-        no_of_family_members = cleaned_data.get("no_of_family_members")
-        children_count = cleaned_data.get("children_count")
         if dob != None and not valid_adult(str(dob)):
             raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
-        if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError({"name": "Invalid Name."})
+        if (fname == None) or (not valid_name(fname)):
+            raise forms.ValidationError({"name": "Invalid First Name."})
+        if (mname == None) or (not valid_name(mname)):
+            raise forms.ValidationError({"name": "Invalid Middle Name."})
+        if (lname == None) or (not valid_name(lname)):
+            raise forms.ValidationError({"name": "Invalid Last Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         if (pincode == None) or (not valid_pincode(pincode)):
             raise forms.ValidationError({"pincode": "Invalid Pincode"})
-        if (no_of_family_members == None) or (not no_of_family_members > 1):
-            raise forms.ValidationError({"no_of_family_members": "Invalid Input."})
-        if (children_count == None) or (not children_count > 0):
-            raise forms.ValidationError({"children_count": "Invalid Input."})
         return cleaned_data
 
 
@@ -80,9 +92,20 @@ class StudentsInfoForm(forms.ModelForm):
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
     )
-    name = forms.CharField(
+    fname = forms.CharField(
         max_length=50,
         help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="First Name",
+    )
+    mname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Middle Name",
+    )
+    lname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date Of Birth")
     mobile_no = forms.IntegerField(
@@ -91,7 +114,11 @@ class StudentsInfoForm(forms.ModelForm):
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     pincode = forms.IntegerField()
-    address = forms.CharField(max_length=255, widget=forms.Textarea())
+    aadhar = forms.CharField(
+        max_length=255,
+        label="Aadhar Number",
+        help_text="Aadhar Number is used for password reset.",
+    )
 
     class Meta:
         model = StudentsInfo
@@ -100,7 +127,9 @@ class StudentsInfoForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         email = cleaned_data.get("email")
-        name = cleaned_data.get("name")
+        fname = cleaned_data.get("fname")
+        mname = cleaned_data.get("mname")
+        lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
         pincode = cleaned_data.get("pincode")
         dob = cleaned_data.get("dob")
@@ -110,8 +139,12 @@ class StudentsInfoForm(forms.ModelForm):
             )
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
-        if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError({"name": "Invalid Name."})
+        if (fname == None) or (not valid_name(fname)):
+            raise forms.ValidationError({"name": "Invalid First Name."})
+        if (mname == None) or (not valid_name(mname)):
+            raise forms.ValidationError({"name": "Invalid Middle Name."})
+        if (lname == None) or (not valid_name(lname)):
+            raise forms.ValidationError({"name": "Invalid Last Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         if (pincode == None) or (not valid_pincode(pincode)):
@@ -123,15 +156,31 @@ class TeachersInfoForm(forms.ModelForm):
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
     )
-    name = forms.CharField(
+    fname = forms.CharField(
         max_length=50,
         help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="First Name",
+    )
+    mname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Middle Name",
+    )
+    lname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     mobile_no = forms.IntegerField(
         required=False, help_text="Enter 10 digit mobile number."
+    )
+    aadhar = forms.CharField(
+        max_length=255,
+        label="Aadhar Number",
+        help_text="Aadhar Number is used for password reset.",
     )
 
     class Meta:
@@ -142,14 +191,20 @@ class TeachersInfoForm(forms.ModelForm):
         cleaned_data = super().clean()
         dob = cleaned_data.get("dob")
         email = cleaned_data.get("email")
-        name = cleaned_data.get("name")
+        fname = cleaned_data.get("fname")
+        mname = cleaned_data.get("mname")
+        lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
         if dob != None and not valid_adult(str(dob)):
             raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
-        if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError({"name": "Invalid Name."})
+        if (fname == None) or (not valid_name(fname)):
+            raise forms.ValidationError({"name": "Invalid First Name."})
+        if (mname == None) or (not valid_name(mname)):
+            raise forms.ValidationError({"name": "Invalid Middle Name."})
+        if (lname == None) or (not valid_name(lname)):
+            raise forms.ValidationError({"name": "Invalid Last Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
@@ -157,14 +212,30 @@ class TeachersInfoForm(forms.ModelForm):
 
 class SuperCoordinatorsInfoForm(forms.ModelForm):
     email = forms.EmailField(help_text="Email ID is used for password reset.")
-    name = forms.CharField(
+    fname = forms.CharField(
         max_length=50,
         help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="First Name",
+    )
+    mname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Middle Name",
+    )
+    lname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
     mobile_no = forms.IntegerField(help_text="Enter 10 digit mobile number.")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
+    aadhar = forms.CharField(
+        max_length=255,
+        label="Aadhar Number",
+        help_text="Aadhar Number is used for password reset.",
+    )
 
     class Meta:
         model = SuperCoordinator
@@ -174,14 +245,20 @@ class SuperCoordinatorsInfoForm(forms.ModelForm):
         cleaned_data = super().clean()
         dob = cleaned_data.get("dob")
         email = cleaned_data.get("email")
-        name = cleaned_data.get("name")
+        fname = cleaned_data.get("fname")
+        mname = cleaned_data.get("mname")
+        lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
         if dob != None and not valid_adult(str(dob)):
             raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email == "") or (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
-        if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError({"name": "Invalid Name."})
+        if (fname == None) or (not valid_name(fname)):
+            raise forms.ValidationError({"name": "Invalid First Name."})
+        if (mname == None) or (not valid_name(mname)):
+            raise forms.ValidationError({"name": "Invalid Middle Name."})
+        if (lname == None) or (not valid_name(lname)):
+            raise forms.ValidationError({"name": "Invalid Last Name."})
         if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
@@ -191,9 +268,20 @@ class CoordinatorsInfoForm(forms.ModelForm):
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
     )
-    name = forms.CharField(
+    fname = forms.CharField(
         max_length=50,
         help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="First Name",
+    )
+    mname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Middle Name",
+    )
+    lname = forms.CharField(
+        max_length=50,
+        help_text="Numbers and special characters are not allowed except apostrophe.",
+        label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
     mobile_no = forms.IntegerField(
@@ -201,6 +289,11 @@ class CoordinatorsInfoForm(forms.ModelForm):
     )
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
+    aadhar = forms.CharField(
+        max_length=255,
+        label="Aadhar Number",
+        help_text="Aadhar Number is used for password reset.",
+    )
 
     class Meta:
         model = CoordinatorInCharge
@@ -210,14 +303,20 @@ class CoordinatorsInfoForm(forms.ModelForm):
         cleaned_data = super().clean()
         dob = cleaned_data.get("dob")
         email = cleaned_data.get("email")
-        name = cleaned_data.get("name")
+        fname = cleaned_data.get("fname")
+        mname = cleaned_data.get("mname")
+        lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
         if dob != None and not valid_adult(str(dob)):
             raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
-        if (name == None) or (not valid_name(name)):
-            raise forms.ValidationError({"name": "Invalid Name."})
+        if (fname == None) or (not valid_name(fname)):
+            raise forms.ValidationError({"name": "Invalid First Name."})
+        if (mname == None) or (not valid_name(mname)):
+            raise forms.ValidationError({"name": "Invalid Middle Name."})
+        if (lname == None) or (not valid_name(lname)):
+            raise forms.ValidationError({"name": "Invalid Last Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data

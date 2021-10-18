@@ -300,7 +300,10 @@ def students_info(request, is_adult=False):
                 parent = parentform.save(commit=False)
                 parent.user = parentUser
                 parent.email = encryptionHelper.encrypt(previousPOST["email"])
-                parent.name = encryptionHelper.encrypt(previousPOST["name"])
+                parent.fname = encryptionHelper.encrypt(previousPOST["fname"])
+                parent.mname = encryptionHelper.encrypt(previousPOST["mname"])
+                parent.lname = encryptionHelper.encrypt(previousPOST["lname"])
+                parent.aadhar = encryptionHelper.encrypt(previousPOST["aadhar"])
                 parent.dob = encryptionHelper.encrypt(previousPOST["dob"])
                 parent.mobile_no = encryptionHelper.encrypt(previousPOST["mobile_no"])
                 parent.gender = encryptionHelper.encrypt(previousPOST["gender"])
@@ -310,14 +313,7 @@ def students_info(request, is_adult=False):
                 parent.city = City.objects.get(
                     city__icontains=previousPOST["city"].strip()
                 )
-                parent.address = encryptionHelper.encrypt(previousPOST["address"])
                 parent.pincode = encryptionHelper.encrypt(previousPOST["pincode"])
-                parent.no_of_family_members = encryptionHelper.encrypt(
-                    previousPOST["no_of_family_members"]
-                )
-                parent.children_count = encryptionHelper.encrypt(
-                    previousPOST["children_count"]
-                )
                 parent.profile_pic = "/undraw_profile.svg"
                 parent.save()
 
@@ -330,9 +326,12 @@ def students_info(request, is_adult=False):
                 student = form.save(commit=False)
                 student.user = studentuser
                 student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
-                student.name = encryptionHelper.encrypt(request.POST["name"])
+                student.fname = encryptionHelper.encrypt(request.POST["fname"])
+                student.mname = encryptionHelper.encrypt(request.POST["mname"])
+                student.lname = encryptionHelper.encrypt(request.POST["lname"])
                 student.email = encryptionHelper.encrypt(request.POST["email"])
                 student.dob = encryptionHelper.encrypt(student_dob)
+                student.aadhar = encryptionHelper.encrypt(request.POST["aadhar"])
                 student.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
                 student.gender = encryptionHelper.encrypt(request.POST["gender"])
                 student.adult = encryptionHelper.encrypt(is_adult_func(student_dob))
@@ -343,7 +342,6 @@ def students_info(request, is_adult=False):
                     city__icontains=request.POST["city"].strip()
                 )
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
-                student.address = encryptionHelper.encrypt(request.POST["address"])
                 student.parent = parent
                 student.save()
 
@@ -416,8 +414,11 @@ def students_info(request, is_adult=False):
                 student = form.save(commit=False)
                 student.user = studentuser
                 student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
-                student.name = encryptionHelper.encrypt(request.POST["name"])
+                student.fname = encryptionHelper.encrypt(request.POST["fname"])
+                student.mname = encryptionHelper.encrypt(request.POST["mname"])
+                student.lname = encryptionHelper.encrypt(request.POST["lname"])
                 student.email = encryptionHelper.encrypt(request.POST["email"])
+                student.aadhar = encryptionHelper.encrypt(request.POST["aadhar"])
                 student.dob = encryptionHelper.encrypt(student_dob)
                 student.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
                 student.gender = encryptionHelper.encrypt(request.POST["gender"])
@@ -429,7 +430,6 @@ def students_info(request, is_adult=False):
                     city__icontains=request.POST["city"].strip()
                 )
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
-                student.address = encryptionHelper.encrypt(request.POST["address"])
                 student.save()
 
                 user = authenticate(
@@ -488,7 +488,10 @@ def addSuperCoordinatorForm(request):
             supercoordinator = form.save(commit=False)
             supercoordinator.user = supercoordinatoruser
             supercoordinator.email = encryptionHelper.encrypt(request.POST["email"])
-            supercoordinator.name = encryptionHelper.encrypt(request.POST["name"])
+            supercoordinator.fname = encryptionHelper.encrypt(request.POST["fname"])
+            supercoordinator.mname = encryptionHelper.encrypt(request.POST["mname"])
+            supercoordinator.lname = encryptionHelper.encrypt(request.POST["lname"])
+            supercoordinator.aadhar = encryptionHelper.encrypt(request.POST["aadhar"])
             supercoordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
             supercoordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
             supercoordinator.mobile_no = encryptionHelper.encrypt(

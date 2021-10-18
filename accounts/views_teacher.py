@@ -68,7 +68,8 @@ def viewSessionStudents(request, id, open_id, my_messages=None):
     for object in objects:
         students.append(object.student)
     for student in students:
-        student.name = encryptionHelper.decrypt(student.name)
+        student.fname = encryptionHelper.decrypt(student.fname)
+        student.lname = encryptionHelper.decrypt(student.lname)
         student.rollno = encryptionHelper.decrypt(student.rollno)
     if my_messages != None:
         return render(
@@ -272,7 +273,8 @@ def addSessionStudentsList(request, id):
     if request.method == "GET":
         students = StudentsInfo.objects.filter(session=None, teacher=None)
         for student in students:
-            student.name = encryptionHelper.decrypt(student.name)
+            student.fname = encryptionHelper.decrypt(student.fname)
+            student.lname = encryptionHelper.decrypt(student.lname)
             student.rollno = encryptionHelper.decrypt(student.rollno)
         return render(
             request,
@@ -444,15 +446,15 @@ def getFormDetails(request, id):
                     ).first()
 
                     if draftForm.draft:
-                        temp.append(encryptionHelper.decrypt(student.name))
+                        temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                         temp.append("-")
                         not_filled_students.append(temp)
                     else:
-                        temp.append(encryptionHelper.decrypt(student.name))
+                        temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                         temp.append(draftForm.submission_timestamp)
                         filled_students.append(temp)
                 else:
-                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                     temp.append("-")
                     not_filled_students.append(temp)
 
@@ -465,11 +467,11 @@ def getFormDetails(request, id):
                     submitted_form = ModuleOne.objects.filter(
                         student=student, submission_timestamp__gte=form.start_timestamp
                     ).first()
-                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                     temp.append(submitted_form.submission_timestamp)
                     filled_students.append(temp)
                 else:
-                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                     temp.append("-")
                     not_filled_students.append(temp)
 
@@ -485,15 +487,15 @@ def getFormDetails(request, id):
                     ).first()
 
                     if draftForm.draft:
-                        temp.append(encryptionHelper.decrypt(student.name))
+                        temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                         temp.append("-")
                         not_filled_students.append(temp)
                     else:
-                        temp.append(encryptionHelper.decrypt(student.name))
+                        temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                         temp.append(draftForm.submission_timestamp)
                         filled_students.append(temp)
                 else:
-                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                     temp.append("-")
                     not_filled_students.append(temp)
 
@@ -506,11 +508,11 @@ def getFormDetails(request, id):
                     submitted_form = Activity.objects.filter(
                         student=student, submission_timestamp__gte=form.start_timestamp
                     ).first()
-                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                     temp.append(submitted_form.submission_timestamp)
                     filled_students.append(temp)
                 else:
-                    temp.append(encryptionHelper.decrypt(student.name))
+                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
                     temp.append("-")
                     not_filled_students.append(temp)
 

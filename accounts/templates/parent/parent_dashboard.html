@@ -24,7 +24,7 @@
     <div class="my-card card shadow">
         <div class="card-body">
             <center>
-                <h3 class="card-title mb-3">{{ student.name }}</h3>
+                <h3 class="card-title mb-3">{{ student.fname }} {{ student.lname }}</h3>
                 <a href="{% url 'accounts:parent_dashboard_student' student.id %}" class="btn btn-primary btnmedium">Edit Form</a>
             </center>
         </div>

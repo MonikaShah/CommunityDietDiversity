@@ -26,7 +26,8 @@ def coordinator_dashboard(request):
         .teacherincharge_set.all()
     )
     for teacher in teachers:
-        teacher.name = encryptionHelper.decrypt(teacher.name)
+        teacher.fname = encryptionHelper.decrypt(teacher.fname)
+        teacher.lname = encryptionHelper.decrypt(teacher.lname)
     return render(
         request,
         "coordinator/coordinator_dashboard.html",
@@ -50,7 +51,8 @@ def switchTeachersList(request,id,teacher_id):
 
 
         for teacher in teachers_in_sessions:
-            teacher.name = encryptionHelper.decrypt(teacher.name)
+            teacher.fname = encryptionHelper.decrypt(teacher.fname)
+            teacher.lname = encryptionHelper.decrypt(teacher.lname)
         return render(
             request,
             "coordinator/switch_teachers_list.html",
@@ -96,7 +98,10 @@ def addTeacherForm(request):
             teacher = form.save(commit=False)
             teacher.user = teacheruser
             teacher.email = encryptionHelper.encrypt(request.POST["email"])
-            teacher.name = encryptionHelper.encrypt(request.POST["name"])
+            teacher.fname = encryptionHelper.encrypt(request.POST["fname"])
+            teacher.mname = encryptionHelper.encrypt(request.POST["mname"])
+            teacher.lname = encryptionHelper.encrypt(request.POST["lname"])
+            teacher.aadhar = encryptionHelper.encrypt(request.POST["aadhar"])
             teacher.dob = encryptionHelper.encrypt(request.POST["dob"])
             teacher.gender = encryptionHelper.encrypt(request.POST["gender"])
             teacher.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
@@ -192,7 +197,8 @@ def viewSessionTeachers(request, id, open_id, my_messages=None):
     objects = Teacher_Session.objects.filter(session=session)
     teachers = []
     for object in objects:
-        object.teacher.name = encryptionHelper.decrypt(object.teacher.name)
+        object.teacher.fname = encryptionHelper.decrypt(object.teacher.fname)
+        object.teacher.lname = encryptionHelper.decrypt(object.teacher.lname)
         teachers.append(object.teacher)
     if my_messages != None:
         return render(
@@ -404,7 +410,8 @@ def addSessionTeachersList(request, id):
         ).exclude(id__in=teachers_in_sessions_id)
 
         for teacher in teachers:
-            teacher.name = encryptionHelper.decrypt(teacher.name)
+            teacher.fname = encryptionHelper.decrypt(teacher.fname)
+            teacher.lname = encryptionHelper.decrypt(teacher.lname)
         return render(
             request,
             "coordinator/add_session_teachers_list.html",

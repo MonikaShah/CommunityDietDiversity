@@ -88,7 +88,8 @@ def viewCoordinators(request, id):
     organization = Organization.objects.filter(id=id).first()
     coordinators = organization.coordinatorincharge_set.all()
     for coordinator in coordinators:
-        coordinator.name = encryptionHelper.decrypt(coordinator.name)
+        coordinator.fname = encryptionHelper.decrypt(coordinator.fname)
+        coordinator.lname = encryptionHelper.decrypt(coordinator.lname)
         coordinator.mobile_no = encryptionHelper.decrypt(coordinator.mobile_no)
         coordinator.email = encryptionHelper.decrypt(coordinator.email)
     return render(
@@ -126,7 +127,10 @@ def addCoordinatorForm(request, id):
             coordinator = form.save(commit=False)
             coordinator.user = coordinatoruser
             coordinator.email = encryptionHelper.encrypt(request.POST["email"])
-            coordinator.name = encryptionHelper.encrypt(request.POST["name"])
+            coordinator.fname = encryptionHelper.encrypt(request.POST["fname"])
+            coordinator.mname = encryptionHelper.encrypt(request.POST["mname"])
+            coordinator.lname = encryptionHelper.encrypt(request.POST["lname"])
+            coordinator.aadhar = encryptionHelper.encrypt(request.POST["aadhar"])
             coordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
             coordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
             coordinator.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
@@ -149,7 +153,8 @@ def addCoordinatorForm(request, id):
 def allCoordinators(request):
     coordinators = CoordinatorInCharge.objects.all()
     for coordinator in coordinators:
-        coordinator.name = encryptionHelper.decrypt(coordinator.name)
+        coordinator.fname = encryptionHelper.decrypt(coordinator.fname)
+        coordinator.lname = encryptionHelper.decrypt(coordinator.lname)
         coordinator.mobile_no = encryptionHelper.decrypt(coordinator.mobile_no)
         coordinator.email = encryptionHelper.decrypt(coordinator.email)
     return render(

@@ -41,7 +41,7 @@
                 {% for teacher in teachers %}
                     <tr>
                         <td align="center"><input type="checkbox" name="chk" value={{teacher.id}}></td>
-                        <td>{{teacher.name}}</td>
+                        <td>{{teacher.fname}} {{ teacher.lname }}</td>
                         <td>{{teacher.organization}}</td>
                         <td>{{teacher.user.username}}</td>
                     </tr>
