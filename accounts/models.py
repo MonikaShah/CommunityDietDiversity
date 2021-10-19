@@ -178,6 +178,7 @@ class StudentsInfo(models.Model):
     # Primary form
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     consent = models.BooleanField(default=True)
+    profile_pic = models.ImageField(null=True, blank=True)
     # name = models.BinaryField()   # removed
     fname = models.BinaryField()  # new
     mname = models.BinaryField(null=True)  # new

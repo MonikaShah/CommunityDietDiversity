@@ -37,6 +37,7 @@ class ParentsInfoForm(forms.ModelForm):
         max_length=50,
         help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Middle Name",
+        required=False
     )
     lname = forms.CharField(
         max_length=50,
@@ -55,6 +56,7 @@ class ParentsInfoForm(forms.ModelForm):
         max_length=255,
         label="Aadhar Number",
         help_text="Aadhar Number is used for password reset.",
+        required=False
     )
 
     class Meta:
@@ -101,6 +103,7 @@ class StudentsInfoForm(forms.ModelForm):
         max_length=50,
         help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Middle Name",
+        required=False
     )
     lname = forms.CharField(
         max_length=50,
@@ -111,6 +114,7 @@ class StudentsInfoForm(forms.ModelForm):
     mobile_no = forms.IntegerField(
         required=False, help_text="Enter 10 digit mobile number."
     )
+    profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     pincode = forms.IntegerField()
@@ -118,6 +122,7 @@ class StudentsInfoForm(forms.ModelForm):
         max_length=255,
         label="Aadhar Number",
         help_text="Aadhar Number is used for password reset.",
+        required=False
     )
 
     class Meta:
