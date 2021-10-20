@@ -241,6 +241,7 @@ class SuperCoordinatorsInfoForm(forms.ModelForm):
     mobile_no = forms.IntegerField(
         help_text="Enter 10 digit mobile number.", required=False
     )
+    profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     aadhar = forms.CharField(
@@ -302,6 +303,7 @@ class CoordinatorsInfoForm(forms.ModelForm):
     mobile_no = forms.IntegerField(
         required=False, help_text="Enter 10 digit mobile number."
     )
+    profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     aadhar = forms.CharField(
@@ -314,7 +316,7 @@ class CoordinatorsInfoForm(forms.ModelForm):
 
     class Meta:
         model = CoordinatorInCharge
-        fields = []
+        fields = ["organization"]
 
     def clean(self):
         cleaned_data = super().clean()

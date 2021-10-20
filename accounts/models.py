@@ -1,8 +1,14 @@
+import os
 from django.db import models
 from django.contrib.auth.models import User
 from shared.encryption import EncryptionHelper
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+def rename(instance, filename):
+    base, ext = os.path.splitext(filename)
+    upload_to = '../media'
+    filename = instance.user.username + ext
+    return os.path.join(upload_to, filename)
 
 class Occupation(models.Model):
     occupation = models.CharField(max_length=255)
@@ -69,7 +75,7 @@ class Organization(models.Model):
 class ParentsInfo(models.Model):
     # Primary form
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_pic = models.ImageField(null=True, blank=True)
+    profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
     consent = models.BooleanField(default=True)
     # name = models.BinaryField() # removed
     fname = models.BinaryField()  # new
@@ -103,6 +109,7 @@ class ParentsInfo(models.Model):
 class SuperCoordinator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # name = models.BinaryField() # removed
+    profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
     fname = models.BinaryField()  # new
     mname = models.BinaryField(null=True)  # new
     lname = models.BinaryField()  # new
@@ -120,6 +127,7 @@ class SuperCoordinator(models.Model):
 class CoordinatorInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # name = models.BinaryField() # removed
+    profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
     fname = models.BinaryField()  # new
     mname = models.BinaryField(null=True)  # new
     lname = models.BinaryField()  # new
@@ -178,7 +186,7 @@ class StudentsInfo(models.Model):
     # Primary form
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     consent = models.BooleanField(default=True)
-    profile_pic = models.ImageField(null=True, blank=True)
+    profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
     # name = models.BinaryField()   # removed
     fname = models.BinaryField()  # new
     mname = models.BinaryField(null=True)  # new

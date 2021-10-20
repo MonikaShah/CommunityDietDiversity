@@ -6,6 +6,7 @@ from .models import *
 from .forms import *
 from .helper_functions import *
 from shared.encryption import EncryptionHelper
+from django.conf import settings
 
 encryptionHelper = EncryptionHelper()
 
@@ -216,9 +217,7 @@ def edit_parent_profile(request):
             {
                 "form": form,
                 "valid_state": True,
-                "valid_city": True,
-                "state": parent.state,
-                "city": parent.city
+                "valid_city": True
             },
         )
     else:
@@ -272,9 +271,18 @@ def edit_parent_profile(request):
             parent.pincode = encryptionHelper.encrypt(request.POST["pincode"])
 
             if request.FILES:
+                x = parent.profile_pic.url.split('/account/media/')
+                if x[1] != 'default.svg':
+                    file = settings.MEDIA_ROOT + '\\' + x[1]
+                    os.remove(file)
                 parent.profile_pic = request.FILES["profile_pic"]
             else:
-                parent.profile_pic = "/default.svg"
+                if "profile_pic-clear" in request.POST.keys():
+                    x = parent.profile_pic.url.split('/account/media/')
+                    if x[1] != 'default.svg':
+                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        os.remove(file)
+                    parent.profile_pic = "/default.svg"
 
             parent.save()
             return redirect("accounts:view_parent_profile")

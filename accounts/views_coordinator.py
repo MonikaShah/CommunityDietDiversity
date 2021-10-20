@@ -12,6 +12,7 @@ from .forms import *
 from .helper_functions import *
 from shared.encryption import EncryptionHelper
 from django.utils import timezone
+from django.conf import settings
 
 encryptionHelper = EncryptionHelper()
 
@@ -679,3 +680,125 @@ def coordinator_reset_password_student_download(request):
         "Content-Disposition"
     ] = "attachment; filename=Student Login Credentials.xlsx"
     return response
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    lambda user: is_coordinator(user),
+    login_url="accounts:forbidden",
+)
+def view_coordinator_profile(request):
+    if request.method == "GET":
+        user = request.user
+        if is_coordinator(user):
+            coordinator = CoordinatorInCharge.objects.filter(user=user).first()
+
+            coordinator.fname = encryptionHelper.decrypt(coordinator.fname)
+            coordinator.lname = encryptionHelper.decrypt(coordinator.lname)
+
+            if coordinator.mname:
+                coordinator.mname = encryptionHelper.decrypt(coordinator.mname)
+                if coordinator.mname == '':
+                    coordinator.mname = ""
+            else:
+                coordinator.mname = ""
+            
+            if coordinator.aadhar:
+                coordinator.aadhar = encryptionHelper.decrypt(coordinator.aadhar)
+                if coordinator.aadhar == '':
+                    coordinator.aadhar = "-"
+            else:
+                coordinator.aadhar = "-"
+            
+            if coordinator.email:
+                coordinator.email = encryptionHelper.decrypt(coordinator.email)
+                if coordinator.email == '':
+                    coordinator.email = "-"
+            else:
+                coordinator.email = "-"
+            
+            if coordinator.mobile_no:
+                coordinator.mobile_no = encryptionHelper.decrypt(coordinator.mobile_no)
+                if coordinator.mobile_no == '':
+                    coordinator.mobile_no = "-"
+            else:
+                coordinator.mobile_no = "-"
+
+            coordinator.dob = encryptionHelper.decrypt(coordinator.dob)
+            coordinator.gender = encryptionHelper.decrypt(coordinator.gender)
+            
+            return render( request, "coordinator/view_coordinator_profile.html", {"page_type": "view_coordinator_profile", "coordinator": coordinator})
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    lambda user: is_coordinator(user),
+    login_url="accounts:forbidden",
+)
+def edit_coordinator_profile(request):
+    if request.method == "GET":
+        coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
+        initial_dict = {
+            "fname": encryptionHelper.decrypt(coordinator.fname),
+            "lname": encryptionHelper.decrypt(coordinator.lname),
+            "profile_pic": coordinator.profile_pic,
+            "dob": encryptionHelper.decrypt(coordinator.dob),
+            "gender": encryptionHelper.decrypt(coordinator.gender),
+            "organization": coordinator.organization
+        }
+
+        if coordinator.mname:
+            initial_dict["mname"] = encryptionHelper.decrypt(coordinator.mname)
+        if coordinator.aadhar:
+            initial_dict["aadhar"] = encryptionHelper.decrypt(coordinator.aadhar)
+        if coordinator.email:
+            initial_dict["email"] = encryptionHelper.decrypt(coordinator.email)
+        if coordinator.mobile_no:
+            initial_dict["mobile_no"] = encryptionHelper.decrypt(coordinator.mobile_no)
+
+        form = CoordinatorsInfoForm(request.POST or None, initial = initial_dict)
+        form.fields["organization"].disabled = True
+        return render(
+            request, "coordinator/update_coordinators_info.html",
+            {
+                "form": form
+            },
+        )
+    else:
+        form = CoordinatorsInfoForm(request.POST, request.FILES)
+        if form.is_valid():
+            coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
+
+            if coordinator.mname:
+                coordinator.mname = encryptionHelper.encrypt(request.POST["mname"])
+            if coordinator.aadhar:
+                coordinator.aadhar = encryptionHelper.encrypt(request.POST["aadhar"])
+            if coordinator.email:
+                coordinator.email = encryptionHelper.encrypt(request.POST["email"])
+            if coordinator.mobile_no:
+                coordinator.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+
+            coordinator.fname = encryptionHelper.encrypt(request.POST["fname"])
+            coordinator.lname = encryptionHelper.encrypt(request.POST["lname"])
+            coordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
+            coordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
+
+            if request.FILES:
+                x = coordinator.profile_pic.url.split('/account/media/')
+                if x[1] != 'default.svg':
+                    file = settings.MEDIA_ROOT + '\\' + x[1]
+                    os.remove(file)
+                coordinator.profile_pic = request.FILES["profile_pic"]
+            else:
+                if "profile_pic-clear" in request.POST.keys():
+                    x = coordinator.profile_pic.url.split('/account/media/')
+                    if x[1] != 'default.svg':
+                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        os.remove(file)
+                    coordinator.profile_pic = "/default.svg"
+
+            coordinator.save()
+            return redirect("accounts:view_coordinator_profile")
+        else:
+            return render(
+                request,
+                "coordinator/update_coordinators_info.html"
+            )

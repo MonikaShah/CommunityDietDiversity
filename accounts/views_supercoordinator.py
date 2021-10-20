@@ -1,6 +1,8 @@
 import io
 import xlsxwriter
+import os
 from django.shortcuts import render, redirect
+from django.conf import settings
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group, User
@@ -12,7 +14,6 @@ from .helper_functions import *
 from shared.encryption import EncryptionHelper
 
 encryptionHelper = EncryptionHelper()
-
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
@@ -254,3 +255,122 @@ def supercoordinator_reset_password_download(request):
     )
     response["Content-Disposition"] = "attachment; filename=Login Credentials.xlsx"
     return response
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    lambda user: is_supercoordinator(user),
+    login_url="accounts:forbidden",
+)
+def view_supercoordinator_profile(request):
+    if request.method == "GET":
+        user = request.user
+        if is_supercoordinator(user):
+            supercoordinator = SuperCoordinator.objects.filter(user=user).first()
+
+            supercoordinator.fname = encryptionHelper.decrypt(supercoordinator.fname)
+            supercoordinator.lname = encryptionHelper.decrypt(supercoordinator.lname)
+
+            if supercoordinator.mname:
+                supercoordinator.mname = encryptionHelper.decrypt(supercoordinator.mname)
+                if supercoordinator.mname == '':
+                    supercoordinator.mname = ""
+            else:
+                supercoordinator.mname = ""
+            
+            if supercoordinator.aadhar:
+                supercoordinator.aadhar = encryptionHelper.decrypt(supercoordinator.aadhar)
+                if supercoordinator.aadhar == '':
+                    supercoordinator.aadhar = "-"
+            else:
+                supercoordinator.aadhar = "-"
+            
+            if supercoordinator.email:
+                supercoordinator.email = encryptionHelper.decrypt(supercoordinator.email)
+                if supercoordinator.email == '':
+                    supercoordinator.email = "-"
+            else:
+                supercoordinator.email = "-"
+            
+            if supercoordinator.mobile_no:
+                supercoordinator.mobile_no = encryptionHelper.decrypt(supercoordinator.mobile_no)
+                if supercoordinator.mobile_no == '':
+                    supercoordinator.mobile_no = "-"
+            else:
+                supercoordinator.mobile_no = "-"
+
+            supercoordinator.dob = encryptionHelper.decrypt(supercoordinator.dob)
+            supercoordinator.gender = encryptionHelper.decrypt(supercoordinator.gender)
+            
+            return render( request, "supercoordinator/view_supercoordinator_profile.html", {"page_type": "view_supercoordinator_profile", "supercoordinator": supercoordinator})
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    lambda user: is_supercoordinator(user),
+    login_url="accounts:forbidden",
+)
+def edit_supercoordinator_profile(request):
+    if request.method == "GET":
+        supercoordinator = SuperCoordinator.objects.filter(user=request.user).first()
+        initial_dict = {
+            "fname": encryptionHelper.decrypt(supercoordinator.fname),
+            "lname": encryptionHelper.decrypt(supercoordinator.lname),
+            "profile_pic": supercoordinator.profile_pic,
+            "dob": encryptionHelper.decrypt(supercoordinator.dob),
+            "gender": encryptionHelper.decrypt(supercoordinator.gender),
+        }
+
+        if supercoordinator.mname:
+            initial_dict["mname"] = encryptionHelper.decrypt(supercoordinator.mname)
+        if supercoordinator.aadhar:
+            initial_dict["aadhar"] = encryptionHelper.decrypt(supercoordinator.aadhar)
+        if supercoordinator.email:
+            initial_dict["email"] = encryptionHelper.decrypt(supercoordinator.email)
+        if supercoordinator.mobile_no:
+            initial_dict["mobile_no"] = encryptionHelper.decrypt(supercoordinator.mobile_no)
+
+        form = SuperCoordinatorsInfoForm(request.POST or None, initial = initial_dict)
+
+        return render(
+            request, "supercoordinator/update_supercoordinators_info.html",
+            {
+                "form": form
+            },
+        )
+    else:
+        form = SuperCoordinatorsInfoForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            supercoordinator = SuperCoordinator.objects.filter(user=request.user).first()
+
+            if supercoordinator.mname:
+                supercoordinator.mname = encryptionHelper.encrypt(request.POST["mname"])
+            if supercoordinator.aadhar:
+                supercoordinator.aadhar = encryptionHelper.encrypt(request.POST["aadhar"])
+            if supercoordinator.email:
+                supercoordinator.email = encryptionHelper.encrypt(request.POST["email"])
+            if supercoordinator.mobile_no:
+                supercoordinator.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+
+            supercoordinator.fname = encryptionHelper.encrypt(request.POST["fname"])
+            supercoordinator.lname = encryptionHelper.encrypt(request.POST["lname"])
+            supercoordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
+            supercoordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
+
+            if request.FILES:
+                x = supercoordinator.profile_pic.url.split('/account/media/')
+                if x[1] != 'default.svg':
+                    file = settings.MEDIA_ROOT + '\\' + x[1]
+                    os.remove(file)
+                supercoordinator.profile_pic = request.FILES["profile_pic"]
+            else:
+                if "profile_pic-clear" in request.POST.keys():
+                    x = supercoordinator.profile_pic.url.split('/account/media/')
+                    if x[1] != 'default.svg':
+                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        os.remove(file)
+                    supercoordinator.profile_pic = "/default.svg"
+
+            supercoordinator.save()
+            return redirect("accounts:view_supercoordinator_profile")
+        else:
+            return render( request, "supercoordinator/update_supercoordinators_info.html" )

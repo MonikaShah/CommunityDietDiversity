@@ -5,6 +5,7 @@ from .helper_functions import *
 from .models import *
 from .forms import *
 from shared.encryption import EncryptionHelper
+from django.conf import settings
 
 encryptionHelper = EncryptionHelper()
 
@@ -160,9 +161,18 @@ def edit_student_profile(request):
             student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
 
             if request.FILES:
+                x = student.profile_pic.url.split('/account/media/')
+                if x[1] != 'default.svg':
+                    file = settings.MEDIA_ROOT + '\\' + x[1]
+                    os.remove(file)
                 student.profile_pic = request.FILES["profile_pic"]
             else:
-                student.profile_pic = "/default.svg"
+                if "profile_pic-clear" in request.POST.keys():
+                    x = student.profile_pic.url.split('/account/media/')
+                    if x[1] != 'default.svg':
+                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        os.remove(file)
+                    student.profile_pic = "/default.svg"
 
             student.save()
             return redirect("accounts:view_student_profile")
