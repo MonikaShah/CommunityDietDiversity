@@ -30,18 +30,15 @@ class ParentsInfoForm(forms.ModelForm):
     )
     fname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="First Name",
     )
     mname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Middle Name",
-        required=False
+        required=False,
     )
     lname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Last Name",
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
@@ -53,10 +50,11 @@ class ParentsInfoForm(forms.ModelForm):
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     pincode = forms.IntegerField()
     aadhar = forms.CharField(
-        max_length=255,
+        max_length=14,
         label="Aadhar Number",
         help_text="Aadhar Number is used for password reset.",
-        required=False
+        required=False,
+        widget=forms.TextInput(attrs={"onkeyup": "addSpace(this)"}),
     )
 
     class Meta:
@@ -72,6 +70,9 @@ class ParentsInfoForm(forms.ModelForm):
         lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
         pincode = cleaned_data.get("pincode")
+        aadhar = cleaned_data.get("aadhar")
+        if (aadhar != "") and (not valid_aadhar(aadhar)):
+            raise forms.ValidationError({"aadhar": "Invalid Aadhar Number."})
         if dob != None and not valid_adult(str(dob)):
             raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email != "") and (not valid_email(email)):
@@ -96,18 +97,15 @@ class StudentsInfoForm(forms.ModelForm):
     )
     fname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="First Name",
     )
     mname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Middle Name",
-        required=False
+        required=False,
     )
     lname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date Of Birth")
@@ -119,10 +117,11 @@ class StudentsInfoForm(forms.ModelForm):
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     pincode = forms.IntegerField()
     aadhar = forms.CharField(
-        max_length=255,
+        max_length=14,
         label="Aadhar Number",
         help_text="Aadhar Number is used for password reset.",
-        required=False
+        required=False,
+        widget=forms.TextInput(attrs={"onkeyup": "addSpace(this)"}),
     )
 
     class Meta:
@@ -138,6 +137,9 @@ class StudentsInfoForm(forms.ModelForm):
         mobile_no = cleaned_data.get("mobile_no")
         pincode = cleaned_data.get("pincode")
         dob = cleaned_data.get("dob")
+        aadhar = cleaned_data.get("aadhar")
+        if (aadhar != "") and (not valid_aadhar(aadhar)):
+            raise forms.ValidationError({"aadhar": "Invalid Aadhar Number."})
         if dob != None and not valid_dob(str(dob)):
             raise forms.ValidationError(
                 {"dob": "Student should be at least 5 years or older."}
@@ -163,17 +165,15 @@ class TeachersInfoForm(forms.ModelForm):
     )
     fname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="First Name",
     )
     mname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Middle Name",
+        required=False,
     )
     lname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
@@ -183,9 +183,11 @@ class TeachersInfoForm(forms.ModelForm):
         required=False, help_text="Enter 10 digit mobile number."
     )
     aadhar = forms.CharField(
-        max_length=255,
+        max_length=14,
         label="Aadhar Number",
         help_text="Aadhar Number is used for password reset.",
+        required=False,
+        widget=forms.TextInput(attrs={"onkeyup": "addSpace(this)"}),
     )
 
     class Meta:
@@ -200,6 +202,9 @@ class TeachersInfoForm(forms.ModelForm):
         mname = cleaned_data.get("mname")
         lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
+        aadhar = cleaned_data.get("aadhar")
+        if (aadhar != "") and (not valid_aadhar(aadhar)):
+            raise forms.ValidationError({"aadhar": "Invalid Aadhar Number."})
         if dob != None and not valid_adult(str(dob)):
             raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email != "") and (not valid_email(email)):
@@ -216,30 +221,34 @@ class TeachersInfoForm(forms.ModelForm):
 
 
 class SuperCoordinatorsInfoForm(forms.ModelForm):
-    email = forms.EmailField(help_text="Email ID is used for password reset.")
+    email = forms.EmailField(
+        help_text="Email ID is used for password reset.", required=False
+    )
     fname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="First Name",
     )
     mname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Middle Name",
+        required=False,
     )
     lname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField(help_text="Enter 10 digit mobile number.")
+    mobile_no = forms.IntegerField(
+        help_text="Enter 10 digit mobile number.", required=False
+    )
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     aadhar = forms.CharField(
-        max_length=255,
+        max_length=14,
         label="Aadhar Number",
         help_text="Aadhar Number is used for password reset.",
+        required=False,
+        widget=forms.TextInput(attrs={"onkeyup": "addSpace(this)"}),
     )
 
     class Meta:
@@ -254,6 +263,9 @@ class SuperCoordinatorsInfoForm(forms.ModelForm):
         mname = cleaned_data.get("mname")
         lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
+        aadhar = cleaned_data.get("aadhar")
+        if (aadhar != "") and (not valid_aadhar(aadhar)):
+            raise forms.ValidationError({"aadhar": "Invalid Aadhar Number."})
         if dob != None and not valid_adult(str(dob)):
             raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email == "") or (not valid_email(email)):
@@ -275,17 +287,15 @@ class CoordinatorsInfoForm(forms.ModelForm):
     )
     fname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="First Name",
     )
     mname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Middle Name",
+        required=False,
     )
     lname = forms.CharField(
         max_length=50,
-        help_text="Numbers and special characters are not allowed except apostrophe.",
         label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
@@ -295,9 +305,11 @@ class CoordinatorsInfoForm(forms.ModelForm):
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     aadhar = forms.CharField(
-        max_length=255,
+        max_length=14,
         label="Aadhar Number",
         help_text="Aadhar Number is used for password reset.",
+        required=False,
+        widget=forms.TextInput(attrs={"onkeyup": "addSpace(this)"}),
     )
 
     class Meta:
@@ -312,6 +324,9 @@ class CoordinatorsInfoForm(forms.ModelForm):
         mname = cleaned_data.get("mname")
         lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
+        aadhar = cleaned_data.get("aadhar")
+        if (aadhar != "") and (not valid_aadhar(aadhar)):
+            raise forms.ValidationError({"aadhar": "Invalid Aadhar Number."})
         if dob != None and not valid_adult(str(dob)):
             raise forms.ValidationError({"dob": "User isn't an adult."})
         if (email != "") and (not valid_email(email)):

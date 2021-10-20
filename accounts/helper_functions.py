@@ -100,6 +100,19 @@ def is_teacher(user):
 # Validation functions
 
 # forms.py validations
+def valid_aadhar(aadhar):
+    if len(aadhar) == 14:
+        aadhar = aadhar.split(" ")
+        try:
+            for i in aadhar:
+                temp = int(i)
+            return True
+        except:
+            return False
+    else:
+        return False
+
+
 def valid_adult(dob):
     today = str(date.today())
     student_dob_year = int(dob[:4])

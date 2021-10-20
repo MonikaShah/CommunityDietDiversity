@@ -107,8 +107,8 @@ class SuperCoordinator(models.Model):
     mname = models.BinaryField(null=True)  # new
     lname = models.BinaryField()  # new
     aadhar = models.BinaryField(null=True)  # new
-    email = models.BinaryField()
-    mobile_no = models.BinaryField()
+    email = models.BinaryField(null=True)
+    mobile_no = models.BinaryField(null=True)
     gender = models.BinaryField()
     dob = models.BinaryField()
 
