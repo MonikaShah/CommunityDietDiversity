@@ -149,6 +149,7 @@ class CoordinatorInCharge(models.Model):
 class TeacherInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # name = models.BinaryField() # removed
+    profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
     fname = models.BinaryField()  # new
     mname = models.BinaryField(null=True)  # new
     lname = models.BinaryField()  # new

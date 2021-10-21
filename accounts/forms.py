@@ -177,6 +177,7 @@ class TeachersInfoForm(forms.ModelForm):
         label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
+    profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     mobile_no = forms.IntegerField(
@@ -192,7 +193,7 @@ class TeachersInfoForm(forms.ModelForm):
 
     class Meta:
         model = TeacherInCharge
-        fields = []
+        fields = ["organization"]
 
     def clean(self):
         cleaned_data = super().clean()

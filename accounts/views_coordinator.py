@@ -734,8 +734,8 @@ def view_coordinator_profile(request):
     login_url="accounts:forbidden",
 )
 def edit_coordinator_profile(request):
+    coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
     if request.method == "GET":
-        coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
         initial_dict = {
             "fname": encryptionHelper.decrypt(coordinator.fname),
             "lname": encryptionHelper.decrypt(coordinator.lname),
@@ -756,6 +756,7 @@ def edit_coordinator_profile(request):
 
         form = CoordinatorsInfoForm(request.POST or None, initial = initial_dict)
         form.fields["organization"].disabled = True
+        form.fields["organization"].initial = coordinator.organization
         return render(
             request, "coordinator/update_coordinators_info.html",
             {
@@ -764,6 +765,8 @@ def edit_coordinator_profile(request):
         )
     else:
         form = CoordinatorsInfoForm(request.POST, request.FILES)
+        form.fields["organization"].disabled = True
+        form.fields["organization"].initial = coordinator.organization
         if form.is_valid():
             coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
 
@@ -800,5 +803,6 @@ def edit_coordinator_profile(request):
         else:
             return render(
                 request,
-                "coordinator/update_coordinators_info.html"
+                "coordinator/update_coordinators_info.html",
+                {"form": form}
             )

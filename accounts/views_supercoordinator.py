@@ -373,4 +373,4 @@ def edit_supercoordinator_profile(request):
             supercoordinator.save()
             return redirect("accounts:view_supercoordinator_profile")
         else:
-            return render( request, "supercoordinator/update_supercoordinators_info.html" )
+            return render( request, "supercoordinator/update_supercoordinators_info.html", {"form": form} )

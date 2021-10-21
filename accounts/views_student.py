@@ -74,8 +74,8 @@ def view_student_profile(request):
     login_url="accounts:forbidden",
 )
 def edit_student_profile(request):
+    student = StudentsInfo.objects.filter(user=request.user).first()
     if request.method == "GET":
-        student = StudentsInfo.objects.filter(user=request.user).first()
         initial_dict = {
             "fname": encryptionHelper.decrypt(student.fname),
             "lname": encryptionHelper.decrypt(student.lname),
@@ -97,7 +97,7 @@ def edit_student_profile(request):
             initial_dict["mobile_no"] = encryptionHelper.decrypt(student.mobile_no)
 
         form = StudentsInfoForm(request.POST or None, initial = initial_dict)
-
+        form.fields["organization"].disabled = True
         return render(
             request, "student/update_students_info.html",
             {
@@ -110,7 +110,9 @@ def edit_student_profile(request):
         )
     else:
         form = StudentsInfoForm(request.POST, request.FILES)
-
+        form.fields["organization"].disabled = True
+        form.fields["organization"].initial = student.organization
+        
         if form.is_valid():
             temp = check_state_city(True, 0, str(request.POST["state"]))
             if temp[0]:
@@ -151,7 +153,7 @@ def edit_student_profile(request):
             student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
             student.dob = encryptionHelper.encrypt(request.POST["dob"])
             student.gender = encryptionHelper.encrypt(request.POST["gender"])
-            student.organization = Organization(request.POST["organization"])
+
             student.state = State.objects.get(
                 state__icontains=request.POST["state"].strip()
             )
@@ -183,5 +185,6 @@ def edit_student_profile(request):
                 {
                     "valid_state": True,
                     "valid_city": True,
+                    "form": form
                 },
             )
