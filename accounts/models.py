@@ -103,7 +103,7 @@ class ParentsInfo(models.Model):
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
-        return encryptionHelper.decrypt(self.name)
+        return encryptionHelper.decrypt(self.fname)
 
 
 class SuperCoordinator(models.Model):
@@ -121,7 +121,7 @@ class SuperCoordinator(models.Model):
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
-        return encryptionHelper.decrypt(self.name)
+        return encryptionHelper.decrypt(self.fname)
 
 
 class CoordinatorInCharge(models.Model):
@@ -143,7 +143,7 @@ class CoordinatorInCharge(models.Model):
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
-        return encryptionHelper.decrypt(self.name)
+        return encryptionHelper.decrypt(self.fname)
 
 
 class TeacherInCharge(models.Model):
@@ -164,7 +164,7 @@ class TeacherInCharge(models.Model):
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
-        return encryptionHelper.decrypt(self.name)
+        return encryptionHelper.decrypt(self.fname)
 
 
 class Session(models.Model):
@@ -213,7 +213,7 @@ class StudentsInfo(models.Model):
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()
-        return encryptionHelper.decrypt(self.name)
+        return encryptionHelper.decrypt(self.fname)
 
 
 class Student_Session(models.Model):

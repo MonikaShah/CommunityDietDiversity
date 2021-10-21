@@ -78,11 +78,11 @@ class ParentsInfoForm(forms.ModelForm):
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
-            raise forms.ValidationError({"name": "Invalid First Name."})
+            raise forms.ValidationError({"fname": "Invalid First Name."})
         if (mname == None) or (not valid_name(mname)):
-            raise forms.ValidationError({"name": "Invalid Middle Name."})
+            raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
-            raise forms.ValidationError({"name": "Invalid Last Name."})
+            raise forms.ValidationError({"lname": "Invalid Last Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         if (pincode == None) or (not valid_pincode(pincode)):
@@ -147,11 +147,11 @@ class StudentsInfoForm(forms.ModelForm):
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
-            raise forms.ValidationError({"name": "Invalid First Name."})
+            raise forms.ValidationError({"fname": "Invalid First Name."})
         if (mname == None) or (not valid_name(mname)):
-            raise forms.ValidationError({"name": "Invalid Middle Name."})
+            raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
-            raise forms.ValidationError({"name": "Invalid Last Name."})
+            raise forms.ValidationError({"lname": "Invalid Last Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         if (pincode == None) or (not valid_pincode(pincode)):
@@ -210,11 +210,11 @@ class TeachersInfoForm(forms.ModelForm):
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
-            raise forms.ValidationError({"name": "Invalid First Name."})
+            raise forms.ValidationError({"fname": "Invalid First Name."})
         if (mname == None) or (not valid_name(mname)):
-            raise forms.ValidationError({"name": "Invalid Middle Name."})
+            raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
-            raise forms.ValidationError({"name": "Invalid Last Name."})
+            raise forms.ValidationError({"lname": "Invalid Last Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
@@ -272,11 +272,11 @@ class SuperCoordinatorsInfoForm(forms.ModelForm):
         if (email == "") or (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
-            raise forms.ValidationError({"name": "Invalid First Name."})
+            raise forms.ValidationError({"fname": "Invalid First Name."})
         if (mname == None) or (not valid_name(mname)):
-            raise forms.ValidationError({"name": "Invalid Middle Name."})
+            raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
-            raise forms.ValidationError({"name": "Invalid Last Name."})
+            raise forms.ValidationError({"lname": "Invalid Last Name."})
         if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
@@ -334,11 +334,11 @@ class CoordinatorsInfoForm(forms.ModelForm):
         if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
-            raise forms.ValidationError({"name": "Invalid First Name."})
+            raise forms.ValidationError({"fname": "Invalid First Name."})
         if (mname == None) or (not valid_name(mname)):
-            raise forms.ValidationError({"name": "Invalid Middle Name."})
+            raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
-            raise forms.ValidationError({"name": "Invalid Last Name."})
+            raise forms.ValidationError({"lname": "Invalid Last Name."})
         if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
