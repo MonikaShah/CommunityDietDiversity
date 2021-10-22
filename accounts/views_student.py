@@ -9,6 +9,7 @@ from django.conf import settings
 
 encryptionHelper = EncryptionHelper()
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_student, login_url="accounts:forbidden")
 @password_change_required
@@ -18,6 +19,7 @@ def student_dashboard(request):
         "student/student_dashboard.html",
         {"page_type": "student_dashboard"},
     )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
@@ -36,28 +38,28 @@ def view_student_profile(request):
 
             if student.mname:
                 student.mname = encryptionHelper.decrypt(student.mname)
-                if student.mname == '':
+                if student.mname == "":
                     student.mname = ""
             else:
                 student.mname = ""
-            
+
             if student.aadhar:
                 student.aadhar = encryptionHelper.decrypt(student.aadhar)
-                if student.aadhar == '':
+                if student.aadhar == "":
                     student.aadhar = "-"
             else:
                 student.aadhar = "-"
-            
+
             if student.email:
                 student.email = encryptionHelper.decrypt(student.email)
-                if student.email == '':
+                if student.email == "":
                     student.email = "-"
             else:
                 student.email = "-"
-            
+
             if student.mobile_no:
                 student.mobile_no = encryptionHelper.decrypt(student.mobile_no)
-                if student.mobile_no == '':
+                if student.mobile_no == "":
                     student.mobile_no = "-"
             else:
                 student.mobile_no = "-"
@@ -65,8 +67,13 @@ def view_student_profile(request):
             student.dob = encryptionHelper.decrypt(student.dob)
             student.gender = encryptionHelper.decrypt(student.gender)
             student.pincode = encryptionHelper.decrypt(student.pincode)
-            
-            return render( request, "student/view_student_profile.html", {"page_type": "view_student_profile", "student": student})
+
+            return render(
+                request,
+                "student/view_student_profile.html",
+                {"page_type": "view_student_profile", "student": student},
+            )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
@@ -96,23 +103,24 @@ def edit_student_profile(request):
         if student.mobile_no:
             initial_dict["mobile_no"] = encryptionHelper.decrypt(student.mobile_no)
 
-        form = StudentsInfoForm(request.POST or None, initial = initial_dict)
+        form = StudentsInfoForm(request.POST or None, initial=initial_dict)
         form.fields["organization"].disabled = True
         return render(
-            request, "student/update_students_info.html",
+            request,
+            "student/update_students_info.html",
             {
                 "form": form,
                 "valid_state": True,
                 "valid_city": True,
                 "state": student.state,
-                "city": student.city
+                "city": student.city,
             },
         )
     else:
         form = StudentsInfoForm(request.POST, request.FILES)
         form.fields["organization"].disabled = True
         form.fields["organization"].initial = student.organization
-        
+
         if form.is_valid():
             temp = check_state_city(True, 0, str(request.POST["state"]))
             if temp[0]:
@@ -124,6 +132,8 @@ def edit_student_profile(request):
                             "form": form,
                             "valid_state": True,
                             "valid_city": False,
+                            "state": request.POST["state"],
+                            "city": request.POST["city"],
                         },
                     )
             else:
@@ -134,6 +144,8 @@ def edit_student_profile(request):
                         "form": form,
                         "valid_state": False,
                         "valid_city": True,
+                        "state": request.POST["state"],
+                        "city": request.POST["city"],
                     },
                 )
 
@@ -163,16 +175,16 @@ def edit_student_profile(request):
             student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
 
             if request.FILES:
-                x = student.profile_pic.url.split('/account/media/')
-                if x[1] != 'default.svg':
-                    file = settings.MEDIA_ROOT + '\\' + x[1]
+                x = student.profile_pic.url.split("/account/media/")
+                if x[1] != "default.svg":
+                    file = settings.MEDIA_ROOT + "\\" + x[1]
                     os.remove(file)
                 student.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = student.profile_pic.url.split('/account/media/')
-                    if x[1] != 'default.svg':
-                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                    x = student.profile_pic.url.split("/account/media/")
+                    if x[1] != "default.svg":
+                        file = settings.MEDIA_ROOT + "\\" + x[1]
                         os.remove(file)
                     student.profile_pic = "/default.svg"
 
@@ -183,8 +195,10 @@ def edit_student_profile(request):
                 request,
                 "student/update_students_info.html",
                 {
+                    "form": form,
                     "valid_state": True,
                     "valid_city": True,
-                    "form": form
+                    "state": request.POST["state"],
+                    "city": request.POST["city"],
                 },
             )

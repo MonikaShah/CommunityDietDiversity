@@ -43,6 +43,8 @@ def addStudentForm(request):
                 "user_creation_form": user_creation_form,
                 "valid_state": True,
                 "valid_city": True,
+                "state": "",
+                "city": "",
             },
         )
     else:
@@ -60,6 +62,8 @@ def addStudentForm(request):
                             "user_creation_form": studentuserform,
                             "valid_state": True,
                             "valid_city": False,
+                            "state": request.POST["state"],
+                            "city": request.POST["city"],
                         },
                     )
             else:
@@ -71,6 +75,8 @@ def addStudentForm(request):
                         "user_creation_form": studentuserform,
                         "valid_state": False,
                         "valid_city": True,
+                        "state": request.POST["state"],
+                        "city": request.POST["city"],
                     },
                 )
             if is_adult_func(request.POST["dob"]) == "True":
@@ -85,6 +91,8 @@ def addStudentForm(request):
                         "user_creation_form": studentuserform,
                         "valid_state": True,
                         "valid_city": True,
+                        "state": request.POST["state"],
+                        "city": request.POST["city"],
                     },
                 )
             studentuser = studentuserform.save(commit=False)
@@ -125,6 +133,8 @@ def addStudentForm(request):
                     "user_creation_form": studentuserform,
                     "valid_state": True,
                     "valid_city": True,
+                    "state": request.POST["state"],
+                    "city": request.POST["city"],
                 },
             )
 
@@ -135,6 +145,7 @@ def addStudentForm(request):
 def showStudent(request, id):
     student = StudentsInfo.objects.get(pk=id)
     return render(request, "parent/student_modules.html", {"student": student})
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
@@ -152,28 +163,28 @@ def view_parent_profile(request):
 
             if parent.mname:
                 parent.mname = encryptionHelper.decrypt(parent.mname)
-                if parent.mname == '':
+                if parent.mname == "":
                     parent.mname = ""
             else:
                 parent.mname = ""
-            
+
             if parent.aadhar:
                 parent.aadhar = encryptionHelper.decrypt(parent.aadhar)
-                if parent.aadhar == '':
+                if parent.aadhar == "":
                     parent.aadhar = "-"
             else:
                 parent.aadhar = "-"
-            
+
             if parent.email:
                 parent.email = encryptionHelper.decrypt(parent.email)
-                if parent.email == '':
+                if parent.email == "":
                     parent.email = "-"
             else:
                 parent.email = "-"
-            
+
             if parent.mobile_no:
                 parent.mobile_no = encryptionHelper.decrypt(parent.mobile_no)
-                if parent.mobile_no == '':
+                if parent.mobile_no == "":
                     parent.mobile_no = "-"
             else:
                 parent.mobile_no = "-"
@@ -181,8 +192,13 @@ def view_parent_profile(request):
             parent.dob = encryptionHelper.decrypt(parent.dob)
             parent.gender = encryptionHelper.decrypt(parent.gender)
             parent.pincode = encryptionHelper.decrypt(parent.pincode)
-            
-            return render( request, "parent/view_parent_profile.html", {"page_type": "view_parent_profile", "parent": parent})
+
+            return render(
+                request,
+                "parent/view_parent_profile.html",
+                {"page_type": "view_parent_profile", "parent": parent},
+            )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
@@ -210,14 +226,17 @@ def edit_parent_profile(request):
         if parent.mobile_no:
             initial_dict["mobile_no"] = encryptionHelper.decrypt(parent.mobile_no)
 
-        form = ParentsInfoForm(request.POST or None, initial = initial_dict)
+        form = ParentsInfoForm(request.POST or None, initial=initial_dict)
 
         return render(
-            request, "parent/update_parents_info.html",
+            request,
+            "parent/update_parents_info.html",
             {
                 "form": form,
                 "valid_state": True,
-                "valid_city": True
+                "valid_city": True,
+                "state": parent.state,
+                "city": parent.city,
             },
         )
     else:
@@ -234,6 +253,8 @@ def edit_parent_profile(request):
                             "form": form,
                             "valid_state": True,
                             "valid_city": False,
+                            "state": request.POST["state"],
+                            "city": request.POST["city"],
                         },
                     )
             else:
@@ -244,6 +265,8 @@ def edit_parent_profile(request):
                         "form": form,
                         "valid_state": False,
                         "valid_city": True,
+                        "state": request.POST["state"],
+                        "city": request.POST["city"],
                     },
                 )
 
@@ -265,22 +288,20 @@ def edit_parent_profile(request):
             parent.state = State.objects.get(
                 state__icontains=request.POST["state"].strip()
             )
-            parent.city = City.objects.get(
-                city__icontains=request.POST["city"].strip()
-            )
+            parent.city = City.objects.get(city__icontains=request.POST["city"].strip())
             parent.pincode = encryptionHelper.encrypt(request.POST["pincode"])
 
             if request.FILES:
-                x = parent.profile_pic.url.split('/account/media/')
-                if x[1] != 'default.svg':
-                    file = settings.MEDIA_ROOT + '\\' + x[1]
+                x = parent.profile_pic.url.split("/account/media/")
+                if x[1] != "default.svg":
+                    file = settings.MEDIA_ROOT + "\\" + x[1]
                     os.remove(file)
                 parent.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = parent.profile_pic.url.split('/account/media/')
-                    if x[1] != 'default.svg':
-                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                    x = parent.profile_pic.url.split("/account/media/")
+                    if x[1] != "default.svg":
+                        file = settings.MEDIA_ROOT + "\\" + x[1]
                         os.remove(file)
                     parent.profile_pic = "/default.svg"
 
@@ -291,8 +312,10 @@ def edit_parent_profile(request):
                 request,
                 "parent/update_parents_info.html",
                 {
+                    "form": form,
                     "valid_state": True,
                     "valid_city": True,
-                    "form": form
+                    "state": request.POST["state"],
+                    "city": request.POST["city"],
                 },
             )

@@ -166,19 +166,33 @@ def parents_info(request):
         if request.session.get("data"):
             form = ParentsInfoForm(request.session.get("data"))
             user_creation_form = UserCreationForm(request.session.get("data"))
+            return render(
+                request,
+                "registration/parents_info.html",
+                {
+                    "form": form,
+                    "user_creation_form": user_creation_form,
+                    "valid_state": True,
+                    "valid_city": True,
+                    "state": request.session.get("data")["state"],
+                    "city": request.session.get("data")["city"],
+                },
+            )
         else:
             form = ParentsInfoForm()
             user_creation_form = UserCreationForm()
-        return render(
-            request,
-            "registration/parents_info.html",
-            {
-                "form": form,
-                "user_creation_form": user_creation_form,
-                "valid_state": True,
-                "valid_city": True,
-            },
-        )
+            return render(
+                request,
+                "registration/parents_info.html",
+                {
+                    "form": form,
+                    "user_creation_form": user_creation_form,
+                    "valid_state": True,
+                    "valid_city": True,
+                    "state": "",
+                    "city": "",
+                },
+            )
     else:
         form = ParentsInfoForm(request.POST)
         user_creation_form = UserCreationForm(request.POST)
@@ -195,6 +209,8 @@ def parents_info(request):
                             "user_creation_form": user_creation_form,
                             "valid_state": True,
                             "valid_city": False,
+                            "state": request.POST["state"],
+                            "city": request.POST["city"],
                         },
                     )
             else:
@@ -206,6 +222,8 @@ def parents_info(request):
                         "user_creation_form": user_creation_form,
                         "valid_state": False,
                         "valid_city": True,
+                        "state": request.POST["state"],
+                        "city": request.POST["city"],
                     },
                 )
             request.session["data"] = request.POST
@@ -220,6 +238,8 @@ def parents_info(request):
                     "user_creation_form": user_creation_form,
                     "valid_state": True,
                     "valid_city": True,
+                    "state": request.POST["state"],
+                    "city": request.POST["city"],
                 },
             )
 
@@ -253,6 +273,8 @@ def students_info(request, is_adult=False):
                 "is_adult": is_adult,
                 "valid_state": True,
                 "valid_city": True,
+                "state": "",
+                "city": "",
             },
         )
     else:
@@ -277,6 +299,8 @@ def students_info(request, is_adult=False):
                                 "is_adult": is_adult,
                                 "valid_state": True,
                                 "valid_city": False,
+                                "state": request.POST["state"],
+                                "city": request.POST["city"],
                             },
                         )
                 else:
@@ -289,6 +313,8 @@ def students_info(request, is_adult=False):
                             "is_adult": is_adult,
                             "valid_state": False,
                             "valid_city": True,
+                            "state": request.POST["state"],
+                            "city": request.POST["city"],
                         },
                     )
                 parentUser = parentuserform.save(commit=False)
@@ -371,6 +397,8 @@ def students_info(request, is_adult=False):
                         "is_adult": is_adult,
                         "valid_state": True,
                         "valid_city": True,
+                        "state": request.POST["state"],
+                        "city": request.POST["city"],
                     },
                 )
         else:
@@ -391,6 +419,8 @@ def students_info(request, is_adult=False):
                                 "is_adult": is_adult,
                                 "valid_state": True,
                                 "valid_city": False,
+                                "state": request.POST["state"],
+                                "city": request.POST["city"],
                             },
                         )
                 else:
@@ -403,6 +433,8 @@ def students_info(request, is_adult=False):
                             "is_adult": is_adult,
                             "valid_state": False,
                             "valid_city": True,
+                            "state": request.POST["state"],
+                            "city": request.POST["city"],
                         },
                     )
                 studentuser = studentuserform.save(commit=False)
@@ -456,6 +488,8 @@ def students_info(request, is_adult=False):
                         "is_adult": is_adult,
                         "valid_state": True,
                         "valid_city": True,
+                        "state": request.POST["state"],
+                        "city": request.POST["city"],
                     },
                 )
 
@@ -504,4 +538,4 @@ def addSuperCoordinatorForm(request):
                 request,
                 "registration/add_supercoordinator.html",
                 {"form": form, "user_creation_form": supercoordinatoruserform},
-            )       
+            )

@@ -71,37 +71,16 @@
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="sts">State*</label>
-                            {% if valid_state %}
-                            <select onchange="print_city('state', this.selectedIndex);" id="sts" name="state"
-                                class="select form-control" required></select>
-                            {% else %}
-                            <select onchange="print_city('state', this.selectedIndex);" id="sts" name="state"
-                                class="select form-control is-invalid" required></select>
-                            <p class="invalid-feedback">
-                                <strong>Invalid input.</strong>
-                            </p>
-                            {% endif %}
+                        <div class="form-group" id="state-div">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="state">City*</label>
-                            {% if valid_city %}
-                            <select id="state" class="select form-control" required name="city"></select>
-                            <script language="javascript">print_state("sts");</script>
-                            {% else %}
-                            <select id="state" class="select form-control is-invalid" required name="city"></select>
-                            <script language="javascript">print_state("sts");</script>
-                            <p class="invalid-feedback">
-                                <strong>Invalid input.</strong>
-                            </p>
-                            {% endif %}
+                        <div class="form-group" id="city-div">
                         </div>
                     </div>
                 </div>
             </div>
+            <script language="javascript">state_city_main('{{valid_state}}','{{valid_city}}','{{state}}', '{{city}}');</script>
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-6">
