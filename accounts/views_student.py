@@ -19,6 +19,15 @@ def student_dashboard(request):
         "student/student_dashboard.html",
         {"page_type": "student_dashboard"},
     )
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_student, login_url="accounts:forbidden")
+@password_change_required
+def information_forms(request):
+    return render(
+        request,
+        "student/info_forms.html",
+        {"page_type": "info_forms"},
+    )
 
 
 @login_required(login_url="accounts:loginlink")

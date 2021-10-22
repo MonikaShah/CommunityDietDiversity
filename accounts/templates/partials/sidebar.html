@@ -139,9 +139,9 @@
                     <i class="fas fa-fw fa-pen"></i>
                     <span>Module One</span>
                 </a>
-            </li>
+            </li>    
 
-            {% if page_type == "student_activity" %}
+            {% comment %} {% if page_type == "student_activity" %}
             <li class="nav-item active">
             {% else %}
             <li class="nav-item">
@@ -149,6 +149,16 @@
                 <a class="my-nav-link nav-link" href="{% url 'accounts:activity'%}">
                     <i class="fas fa-fw fa-pen"></i>
                     <span>Activity</span>
+                </a>
+            </li> {% endcomment %}
+            {% if page_type == "info_forms" %}
+            <li class="nav-item active">
+            {% else %}
+            <li class="nav-item">
+            {% endif %}
+                <a class="my-nav-link nav-link" href="{% url 'accounts:info_forms'%}">
+                    <i class="fas fa-fw fa-pen"></i>
+                    <span>Information Forms</span>
                 </a>
             </li>
 
