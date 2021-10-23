@@ -91,7 +91,7 @@ class ParentsInfoForm(forms.ModelForm):
 
 
 class StudentsInfoForm(forms.ModelForm):
-    rollno = forms.IntegerField(label="Roll Number")
+    unique_no = forms.IntegerField(label="Unique Number", help_text="This could be your Roll number, GR number etc (Ask your organization coordinator before filling this feild)")
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
     )

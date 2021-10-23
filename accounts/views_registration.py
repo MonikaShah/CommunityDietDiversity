@@ -303,7 +303,7 @@ def students_info(request, is_adult=False):
 
                 student = form.save(commit=False)
                 student.user = studentuser
-                student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
+                student.unique_no = encryptionHelper.encrypt(request.POST["unique_no"])
                 student.fname = encryptionHelper.encrypt(request.POST["fname"])
                 student.mname = encryptionHelper.encrypt(request.POST["mname"])
                 student.lname = encryptionHelper.encrypt(request.POST["lname"])
@@ -391,7 +391,7 @@ def students_info(request, is_adult=False):
 
                 student = form.save(commit=False)
                 student.user = studentuser
-                student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
+                student.unique_no = encryptionHelper.encrypt(request.POST["unique_no"])
                 student.fname = encryptionHelper.encrypt(request.POST["fname"])
                 student.mname = encryptionHelper.encrypt(request.POST["mname"])
                 student.lname = encryptionHelper.encrypt(request.POST["lname"])

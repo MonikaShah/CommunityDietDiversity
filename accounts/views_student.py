@@ -19,6 +19,8 @@ def student_dashboard(request):
         "student/student_dashboard.html",
         {"page_type": "student_dashboard"},
     )
+
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_student, login_url="accounts:forbidden")
 @password_change_required
@@ -43,7 +45,7 @@ def view_student_profile(request):
 
             student.fname = encryptionHelper.decrypt(student.fname)
             student.lname = encryptionHelper.decrypt(student.lname)
-            student.rollno = encryptionHelper.decrypt(student.rollno)
+            student.unique_no = encryptionHelper.decrypt(student.unique_no)
 
             if student.mname:
                 student.mname = encryptionHelper.decrypt(student.mname)
@@ -99,7 +101,7 @@ def edit_student_profile(request):
             "dob": encryptionHelper.decrypt(student.dob),
             "gender": encryptionHelper.decrypt(student.gender),
             "pincode": encryptionHelper.decrypt(student.pincode),
-            "rollno": encryptionHelper.decrypt(student.rollno),
+            "unique_no": encryptionHelper.decrypt(student.unique_no),
             "organization": student.organization,
         }
 
@@ -171,7 +173,7 @@ def edit_student_profile(request):
 
             student.fname = encryptionHelper.encrypt(request.POST["fname"])
             student.lname = encryptionHelper.encrypt(request.POST["lname"])
-            student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
+            student.unique_no = encryptionHelper.encrypt(request.POST["unique_no"])
             student.dob = encryptionHelper.encrypt(request.POST["dob"])
             student.gender = encryptionHelper.encrypt(request.POST["gender"])
 
@@ -186,14 +188,14 @@ def edit_student_profile(request):
             if request.FILES:
                 x = student.profile_pic.url.split("/account/media/")
                 if x[1] != "default.svg":
-                    file = settings.MEDIA_ROOT + '/' + x[1]
+                    file = settings.MEDIA_ROOT + "/" + x[1]
                     os.remove(file)
                 student.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = student.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     student.profile_pic = "/default.svg"
 

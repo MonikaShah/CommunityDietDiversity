@@ -1,14 +1,17 @@
 import os
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.deletion import SET, SET_NULL
 from shared.encryption import EncryptionHelper
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 def rename(instance, filename):
     base, ext = os.path.splitext(filename)
-    upload_to = '../media'
+    upload_to = "../media"
     filename = instance.user.username + ext
     return os.path.join(upload_to, filename)
+
 
 class Occupation(models.Model):
     occupation = models.CharField(max_length=255)
@@ -53,6 +56,20 @@ class Education(models.Model):
         return self.education
 
 
+class FamilyIncome(models.Model):
+    family_income = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.family_income
+
+
+class RationCardColor(models.Model):
+    ration_card_color = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.ration_card_color
+
+
 class OrganizationTypes(models.Model):
     type = models.CharField(max_length=255)
 
@@ -85,14 +102,6 @@ class ParentsInfo(models.Model):
     gender = models.BinaryField()
     dob = models.BinaryField()
     pincode = models.BinaryField()
-    # Secondary form (Yet to work on)
-    occupation = models.ForeignKey(Occupation, on_delete=models.CASCADE, null=True)
-    edu = models.ForeignKey(Education, on_delete=models.CASCADE, null=True)
-    no_of_family_members = models.BinaryField(null=True)
-    type_of_family = models.ForeignKey(FamilyType, on_delete=models.CASCADE, null=True)
-    religion = models.ForeignKey(ReligiousBelief, on_delete=models.CASCADE, null=True)
-    children_count = models.BinaryField(null=True)
-    # Others
     first_password = models.CharField(max_length=225, default="")
     password_changed = models.BooleanField(default=True)
 
@@ -175,6 +184,18 @@ class Teacher_Session(models.Model):
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
 
 
+class SecondaryReg(models.Model):
+    occupation = models.ForeignKey(Occupation, on_delete=SET_NULL, null=True)
+    edu = models.ForeignKey(Education, on_delete=SET_NULL, null=True)
+    no_of_family_members = models.BinaryField(null=True)
+    type_of_family = models.ForeignKey(FamilyType, on_delete=SET_NULL, null=True)
+    religion = models.ForeignKey(ReligiousBelief, on_delete=SET_NULL, null=True)
+    family_income = models.ForeignKey(FamilyIncome, on_delete=SET_NULL, null=True)
+    ration_card_color = models.ForeignKey(
+        RationCardColor, on_delete=SET_NULL, null=True
+    )
+
+
 class StudentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     consent = models.BooleanField(default=True)
@@ -191,7 +212,8 @@ class StudentsInfo(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     pincode = models.BinaryField()
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    rollno = models.BinaryField()
+    unique_no = models.BinaryField()
+    secondary_reg = models.ForeignKey(SecondaryReg, on_delete=SET_NULL, null=True)
     adult = models.BinaryField()
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE, null=True)
     first_password = models.CharField(max_length=225, default="")
