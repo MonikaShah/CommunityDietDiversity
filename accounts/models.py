@@ -73,23 +73,18 @@ class Organization(models.Model):
 
 
 class ParentsInfo(models.Model):
-    # Primary form
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
     consent = models.BooleanField(default=True)
-    # name = models.BinaryField() # removed
-    fname = models.BinaryField()  # new
-    mname = models.BinaryField(null=True)  # new
-    lname = models.BinaryField()  # new
-    aadhar = models.BinaryField(null=True)  # new
+    fname = models.BinaryField()
+    mname = models.BinaryField(null=True)
+    lname = models.BinaryField()
+    aadhar = models.BinaryField(null=True)
     email = models.BinaryField(null=True)
     mobile_no = models.BinaryField(null=True)
     gender = models.BinaryField()
     dob = models.BinaryField()
-    state = models.ForeignKey(State, on_delete=models.CASCADE)
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
     pincode = models.BinaryField()
-    # address = models.BinaryField() # removed
     # Secondary form (Yet to work on)
     occupation = models.ForeignKey(Occupation, on_delete=models.CASCADE, null=True)
     edu = models.ForeignKey(Education, on_delete=models.CASCADE, null=True)
@@ -108,12 +103,11 @@ class ParentsInfo(models.Model):
 
 class SuperCoordinator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # name = models.BinaryField() # removed
     profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
-    fname = models.BinaryField()  # new
-    mname = models.BinaryField(null=True)  # new
-    lname = models.BinaryField()  # new
-    aadhar = models.BinaryField(null=True)  # new
+    fname = models.BinaryField()
+    mname = models.BinaryField(null=True)
+    lname = models.BinaryField()
+    aadhar = models.BinaryField(null=True)
     email = models.BinaryField(null=True)
     mobile_no = models.BinaryField(null=True)
     gender = models.BinaryField()
@@ -126,12 +120,11 @@ class SuperCoordinator(models.Model):
 
 class CoordinatorInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # name = models.BinaryField() # removed
     profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
-    fname = models.BinaryField()  # new
-    mname = models.BinaryField(null=True)  # new
-    lname = models.BinaryField()  # new
-    aadhar = models.BinaryField(null=True)  # new
+    fname = models.BinaryField()
+    mname = models.BinaryField(null=True)
+    lname = models.BinaryField()
+    aadhar = models.BinaryField(null=True)
     email = models.BinaryField(null=True)
     mobile_no = models.BinaryField(null=True)
     gender = models.BinaryField()
@@ -148,12 +141,11 @@ class CoordinatorInCharge(models.Model):
 
 class TeacherInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # name = models.BinaryField() # removed
     profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
-    fname = models.BinaryField()  # new
-    mname = models.BinaryField(null=True)  # new
-    lname = models.BinaryField()  # new
-    aadhar = models.BinaryField(null=True)  # new
+    fname = models.BinaryField()
+    mname = models.BinaryField(null=True)
+    lname = models.BinaryField()
+    aadhar = models.BinaryField(null=True)
     email = models.BinaryField(null=True)
     mobile_no = models.BinaryField(null=True)
     gender = models.BinaryField()
@@ -184,15 +176,13 @@ class Teacher_Session(models.Model):
 
 
 class StudentsInfo(models.Model):
-    # Primary form
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     consent = models.BooleanField(default=True)
     profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
-    # name = models.BinaryField()   # removed
-    fname = models.BinaryField()  # new
-    mname = models.BinaryField(null=True)  # new
-    lname = models.BinaryField()  # new
-    aadhar = models.BinaryField(null=True)  # new
+    fname = models.BinaryField()
+    mname = models.BinaryField(null=True)
+    lname = models.BinaryField()
+    aadhar = models.BinaryField(null=True)
     email = models.BinaryField(null=True)
     mobile_no = models.BinaryField(null=True)
     gender = models.BinaryField()
@@ -200,11 +190,8 @@ class StudentsInfo(models.Model):
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     pincode = models.BinaryField()
-    # address = models.BinaryField() # removed
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     rollno = models.BinaryField()
-    # Secondary form (Yet to work on)
-    # Others
     adult = models.BinaryField()
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE, null=True)
     first_password = models.CharField(max_length=225, default="")

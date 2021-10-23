@@ -43,12 +43,12 @@ class ParentsInfoForm(forms.ModelForm):
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField(
-        required=False, help_text="Enter 10 digit mobile number."
+    mobile_no = forms.CharField(
+        required=False, help_text="Enter 10 digit mobile number.", max_length=10
     )
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-    pincode = forms.IntegerField()
+    pincode = forms.CharField(max_length=6)
     aadhar = forms.CharField(
         max_length=14,
         label="Aadhar Number",
@@ -109,13 +109,13 @@ class StudentsInfoForm(forms.ModelForm):
         label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date Of Birth")
-    mobile_no = forms.IntegerField(
-        required=False, help_text="Enter 10 digit mobile number."
+    mobile_no = forms.CharField(
+        required=False, help_text="Enter 10 digit mobile number.", max_length=10
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-    pincode = forms.IntegerField()
+    pincode = forms.CharField(max_length=6)
     aadhar = forms.CharField(
         max_length=14,
         label="Aadhar Number",
@@ -180,8 +180,8 @@ class TeachersInfoForm(forms.ModelForm):
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-    mobile_no = forms.IntegerField(
-        required=False, help_text="Enter 10 digit mobile number."
+    mobile_no = forms.CharField(
+        required=False, help_text="Enter 10 digit mobile number.", max_length=10
     )
     aadhar = forms.CharField(
         max_length=14,
@@ -239,8 +239,8 @@ class SuperCoordinatorsInfoForm(forms.ModelForm):
         label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField(
-        help_text="Enter 10 digit mobile number.", required=False
+    mobile_no = forms.CharField(
+        required=False, help_text="Enter 10 digit mobile number.", max_length=10
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
@@ -301,8 +301,8 @@ class CoordinatorsInfoForm(forms.ModelForm):
         label="Last Name",
     )
     dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
-    mobile_no = forms.IntegerField(
-        required=False, help_text="Enter 10 digit mobile number."
+    mobile_no = forms.CharField(
+        required=False, help_text="Enter 10 digit mobile number.", max_length=10
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]

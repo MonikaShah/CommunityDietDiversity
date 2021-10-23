@@ -233,43 +233,12 @@ def edit_parent_profile(request):
             "parent/update_parents_info.html",
             {
                 "form": form,
-                "valid_state": True,
-                "valid_city": True,
-                "state": parent.state,
-                "city": parent.city,
             },
         )
     else:
         form = ParentsInfoForm(request.POST, request.FILES)
 
         if form.is_valid():
-            temp = check_state_city(True, 0, str(request.POST["state"]))
-            if temp[0]:
-                if not check_state_city(False, temp[1], str(request.POST["city"])):
-                    return render(
-                        request,
-                        "parent/update_parents_info.html",
-                        {
-                            "form": form,
-                            "valid_state": True,
-                            "valid_city": False,
-                            "state": request.POST["state"],
-                            "city": request.POST["city"],
-                        },
-                    )
-            else:
-                return render(
-                    request,
-                    "parent/update_parents_info.html",
-                    {
-                        "form": form,
-                        "valid_state": False,
-                        "valid_city": True,
-                        "state": request.POST["state"],
-                        "city": request.POST["city"],
-                    },
-                )
-
             parent = ParentsInfo.objects.filter(user=request.user).first()
 
             if parent.mname:
@@ -285,10 +254,6 @@ def edit_parent_profile(request):
             parent.lname = encryptionHelper.encrypt(request.POST["lname"])
             parent.dob = encryptionHelper.encrypt(request.POST["dob"])
             parent.gender = encryptionHelper.encrypt(request.POST["gender"])
-            parent.state = State.objects.get(
-                state__icontains=request.POST["state"].strip()
-            )
-            parent.city = City.objects.get(city__icontains=request.POST["city"].strip())
             parent.pincode = encryptionHelper.encrypt(request.POST["pincode"])
 
             if request.FILES:
@@ -313,9 +278,5 @@ def edit_parent_profile(request):
                 "parent/update_parents_info.html",
                 {
                     "form": form,
-                    "valid_state": True,
-                    "valid_city": True,
-                    "state": request.POST["state"],
-                    "city": request.POST["city"],
                 },
             )

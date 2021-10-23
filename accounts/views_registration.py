@@ -166,66 +166,22 @@ def parents_info(request):
         if request.session.get("data"):
             form = ParentsInfoForm(request.session.get("data"))
             user_creation_form = UserCreationForm(request.session.get("data"))
-            return render(
-                request,
-                "registration/parents_info.html",
-                {
-                    "form": form,
-                    "user_creation_form": user_creation_form,
-                    "valid_state": True,
-                    "valid_city": True,
-                    "state": request.session.get("data")["state"],
-                    "city": request.session.get("data")["city"],
-                },
-            )
         else:
             form = ParentsInfoForm()
             user_creation_form = UserCreationForm()
-            return render(
-                request,
-                "registration/parents_info.html",
-                {
-                    "form": form,
-                    "user_creation_form": user_creation_form,
-                    "valid_state": True,
-                    "valid_city": True,
-                    "state": "",
-                    "city": "",
-                },
-            )
+        return render(
+            request,
+            "registration/parents_info.html",
+            {
+                "form": form,
+                "user_creation_form": user_creation_form,
+            },
+        )
     else:
         form = ParentsInfoForm(request.POST)
         user_creation_form = UserCreationForm(request.POST)
 
         if form.is_valid() and user_creation_form.is_valid():
-            temp = check_state_city(True, 0, str(request.POST["state"]))
-            if temp[0]:
-                if not check_state_city(False, temp[1], str(request.POST["city"])):
-                    return render(
-                        request,
-                        "registration/parents_info.html",
-                        {
-                            "form": form,
-                            "user_creation_form": user_creation_form,
-                            "valid_state": True,
-                            "valid_city": False,
-                            "state": request.POST["state"],
-                            "city": request.POST["city"],
-                        },
-                    )
-            else:
-                return render(
-                    request,
-                    "registration/parents_info.html",
-                    {
-                        "form": form,
-                        "user_creation_form": user_creation_form,
-                        "valid_state": False,
-                        "valid_city": True,
-                        "state": request.POST["state"],
-                        "city": request.POST["city"],
-                    },
-                )
             request.session["data"] = request.POST
             request.session["parents_info_visited"] = True
             return redirect("accounts:students_info")
@@ -236,10 +192,6 @@ def parents_info(request):
                 {
                     "form": form,
                     "user_creation_form": user_creation_form,
-                    "valid_state": True,
-                    "valid_city": True,
-                    "state": request.POST["state"],
-                    "city": request.POST["city"],
                 },
             )
 
@@ -361,12 +313,6 @@ def students_info(request, is_adult=False):
                 student.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
                 student.gender = encryptionHelper.encrypt(request.POST["gender"])
                 student.adult = encryptionHelper.encrypt(is_adult_func(student_dob))
-                student.state = State.objects.get(
-                    state__icontains=request.POST["state"].strip()
-                )
-                student.city = City.objects.get(
-                    city__icontains=request.POST["city"].strip()
-                )
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
                 student.parent = parent
                 student.save()

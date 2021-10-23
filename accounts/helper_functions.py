@@ -101,16 +101,8 @@ def is_teacher(user):
 
 # forms.py validations
 def valid_aadhar(aadhar):
-    if len(aadhar) == 14:
-        aadhar = aadhar.split(" ")
-        try:
-            for i in aadhar:
-                temp = int(i)
-            return True
-        except:
-            return False
-    else:
-        return False
+    aadhar = "".join(aadhar.split(" "))
+    return re.match("^\d{12}$", aadhar)
 
 
 def valid_adult(dob):
