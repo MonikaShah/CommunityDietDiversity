@@ -294,14 +294,14 @@ def edit_parent_profile(request):
             if request.FILES:
                 x = parent.profile_pic.url.split("/account/media/")
                 if x[1] != "default.svg":
-                    file = settings.MEDIA_ROOT + "\\" + x[1]
+                    file = settings.MEDIA_ROOT + '/' + x[1]
                     os.remove(file)
                 parent.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = parent.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "\\" + x[1]
+                        file = settings.MEDIA_ROOT + '/' + x[1]
                         os.remove(file)
                     parent.profile_pic = "/default.svg"
 

@@ -359,14 +359,14 @@ def edit_supercoordinator_profile(request):
             if request.FILES:
                 x = supercoordinator.profile_pic.url.split('/account/media/')
                 if x[1] != 'default.svg':
-                    file = settings.MEDIA_ROOT + '\\' + x[1]
+                    file = settings.MEDIA_ROOT + '/' + x[1]
                     os.remove(file)
                 supercoordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = supercoordinator.profile_pic.url.split('/account/media/')
                     if x[1] != 'default.svg':
-                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        file = settings.MEDIA_ROOT + '/' + x[1]
                         os.remove(file)
                     supercoordinator.profile_pic = "/default.svg"
 
