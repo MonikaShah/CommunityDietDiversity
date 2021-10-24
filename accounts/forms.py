@@ -90,8 +90,26 @@ class ParentsInfoForm(forms.ModelForm):
         return cleaned_data
 
 
+class SecondaryRegForm(forms.ModelForm):
+    class Meta:
+        model = SecondaryReg
+        fields = "__all__"
+        labels = {
+            "occupation": "Parent's Occupation",
+            "edu": "Parent's Education",
+            "no_of_family_member": "Total No of Family Members",
+            "type_of_family": "Type of Family",
+            "religion": "Religious Belief",
+            "family_income": "Total Family Income",
+            "ration_card_color": "Ration Card Color",
+        }
+
+
 class StudentsInfoForm(forms.ModelForm):
-    unique_no = forms.IntegerField(label="Unique Number", help_text="This could be your Roll number, GR number etc (Ask your organization coordinator before filling this feild)")
+    unique_no = forms.IntegerField(
+        label="Unique Number",
+        help_text="This could be your Roll number, GR number etc (Ask your organization coordinator before filling this feild)",
+    )
     email = forms.EmailField(
         required=False, help_text="Email ID is used for password reset."
     )
@@ -193,7 +211,7 @@ class TeachersInfoForm(forms.ModelForm):
 
     class Meta:
         model = TeacherInCharge
-        fields = ["organization"]
+        fields = []
 
     def clean(self):
         cleaned_data = super().clean()
@@ -317,7 +335,7 @@ class CoordinatorsInfoForm(forms.ModelForm):
 
     class Meta:
         model = CoordinatorInCharge
-        fields = ["organization"]
+        fields = []
 
     def clean(self):
         cleaned_data = super().clean()

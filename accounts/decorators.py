@@ -105,3 +105,22 @@ def password_change_required(func):
         return func(request, *args, **kwargs)
 
     return logic
+
+
+def secondary_reg(func):
+    def logic(request, *args, **kwargs):
+        if is_student(request.user):
+            student = StudentsInfo.objects.filter(user=request.user).first()
+            secondary_reg_fields = student.secondary_reg
+            if secondary_reg_fields == None:
+                return redirect("accounts:secondary_registration")
+            else:
+                secondary_reg_fields_names = [
+                    f.name for f in secondary_reg_fields._meta.get_fields()
+                ][2:]
+                for i in secondary_reg_fields_names:
+                    if getattr(secondary_reg_fields, i) == None:
+                        return redirect("accounts:secondary_registration")
+        return func(request, *args, **kwargs)
+
+    return logic

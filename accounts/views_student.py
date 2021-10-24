@@ -13,6 +13,7 @@ encryptionHelper = EncryptionHelper()
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_student, login_url="accounts:forbidden")
 @password_change_required
+@secondary_reg
 def student_dashboard(request):
     return render(
         request,
@@ -24,6 +25,7 @@ def student_dashboard(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_student, login_url="accounts:forbidden")
 @password_change_required
+@secondary_reg
 def information_forms(request):
     return render(
         request,
@@ -37,6 +39,8 @@ def information_forms(request):
     lambda user: is_student(user),
     login_url="accounts:forbidden",
 )
+@password_change_required
+@secondary_reg
 def view_student_profile(request):
     if request.method == "GET":
         user = request.user
@@ -91,6 +95,8 @@ def view_student_profile(request):
     lambda user: is_student(user),
     login_url="accounts:forbidden",
 )
+@password_change_required
+@secondary_reg
 def edit_student_profile(request):
     student = StudentsInfo.objects.filter(user=request.user).first()
     if request.method == "GET":
@@ -212,4 +218,60 @@ def edit_student_profile(request):
                     "state": request.POST["state"],
                     "city": request.POST["city"],
                 },
+            )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    lambda user: is_student(user),
+    login_url="accounts:forbidden",
+)
+@password_change_required
+def secondary_registration(request):
+    student = StudentsInfo.objects.filter(user=request.user).first()
+    adult = student.adult
+    if request.method == "GET":
+        if student.secondary_reg == None:
+            form = SecondaryRegForm()
+        else:
+            initial_dict = {
+                "occupation": student.secondary_reg.occupation
+                if student.secondary_reg.occupation
+                else "",
+                "edu": student.secondary_reg.edu if student.secondary_reg.edu else "",
+                "no_of_family_members": student.secondary_reg.no_of_family_members
+                if student.secondary_reg.no_of_family_members
+                else "",
+                "type_of_family": student.secondary_reg.type_of_family
+                if student.secondary_reg.type_of_family
+                else "",
+                "religion": student.secondary_reg.religion
+                if student.secondary_reg.religion
+                else "",
+                "family_income": student.secondary_reg.family_income
+                if student.secondary_reg.family_income
+                else "",
+                "ration_card_color": student.secondary_reg.ration_card_color
+                if student.secondary_reg.ration_card_color
+                else "",
+            }
+            form = SecondaryRegForm(initial=initial_dict)
+        return render(
+            request,
+            "student/secondary_registration.html",
+            {"form": form, "adult": adult},
+        )
+    else:
+        form = SecondaryRegForm(request.POST)
+        if form.is_valid():
+            secondary_reg = form.save(commit=False)
+            secondary_reg.save()
+            student.secondary_reg = secondary_reg
+            student.save()
+            return redirect("accounts:student_dashboard")
+        else:
+            return render(
+                request,
+                "student/secondary_registration.html",
+                {"form": form, "adult": adult},
             )

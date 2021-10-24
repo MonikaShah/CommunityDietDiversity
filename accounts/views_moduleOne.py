@@ -54,6 +54,7 @@ def creatingOrUpdatingDrafts(temp, user, formName):
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
 @password_change_required
+@secondary_reg
 def draft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
         module = request.META.get("HTTP_REFERER").split("/")[-1]
@@ -90,6 +91,7 @@ def draft(request):
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
 @password_change_required
+@secondary_reg
 def previous(request):
     link = request.META.get("HTTP_REFERER").split("/")
     if "parent_dashboard" in link:
@@ -110,6 +112,7 @@ def previous(request):
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
 @password_change_required
+@secondary_reg
 @isActive("moduleOne", "student")
 def moduleOne(request, user=None):
     if request.method == "GET":
@@ -215,6 +218,7 @@ def moduleOne(request, user=None):
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
 @password_change_required
+@secondary_reg
 @isActive("moduleOne", "student")
 def moduleOne2(request, user=None):
     if request.method == "GET":
@@ -298,6 +302,7 @@ def moduleOne2(request, user=None):
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
 @password_change_required
+@secondary_reg
 @isActive("moduleOne", "student")
 def moduleOne3(request, user=None):
     if request.method == "GET":

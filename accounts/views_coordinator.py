@@ -686,6 +686,7 @@ def coordinator_reset_password_student_download(request):
     lambda user: is_coordinator(user),
     login_url="accounts:forbidden",
 )
+@password_change_required
 def view_coordinator_profile(request):
     if request.method == "GET":
         user = request.user
@@ -733,6 +734,7 @@ def view_coordinator_profile(request):
     lambda user: is_coordinator(user),
     login_url="accounts:forbidden",
 )
+@password_change_required
 def edit_coordinator_profile(request):
     coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
     if request.method == "GET":

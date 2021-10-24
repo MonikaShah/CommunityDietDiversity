@@ -102,7 +102,7 @@ def addStudentForm(request):
             studentuser.save()
             student = form.save(commit=False)
             student.user = studentuser
-            student.rollno = encryptionHelper.encrypt(request.POST["rollno"])
+            student.unique_no = encryptionHelper.encrypt(request.POST["unique_no"])
             student.fname = encryptionHelper.encrypt(request.POST["fname"])
             student.mname = encryptionHelper.encrypt(request.POST["mname"])
             student.lname = encryptionHelper.encrypt(request.POST["lname"])
@@ -152,6 +152,7 @@ def showStudent(request, id):
     lambda user: is_parent(user),
     login_url="accounts:forbidden",
 )
+@password_change_required
 def view_parent_profile(request):
     if request.method == "GET":
         user = request.user
@@ -205,6 +206,7 @@ def view_parent_profile(request):
     lambda user: is_parent(user),
     login_url="accounts:forbidden",
 )
+@password_change_required
 def edit_parent_profile(request):
     if request.method == "GET":
         parent = ParentsInfo.objects.filter(user=request.user).first()

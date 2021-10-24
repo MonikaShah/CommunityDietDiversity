@@ -51,6 +51,7 @@ def creatingOrUpdatingDraftsActivity(temp, user, formName):
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
 @password_change_required
+@secondary_reg
 def activityDraft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
         module = request.META.get("HTTP_REFERER").split("/")[-1]
@@ -87,6 +88,7 @@ def activityDraft(request):
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
 @password_change_required
+@secondary_reg
 @isActive("activity", "student")
 def activity(request, user=None):
     if request.method == "GET":

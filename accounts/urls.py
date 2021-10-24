@@ -46,16 +46,56 @@ urlpatterns = [
         name="forgot_password_questions",
     ),
     path("change_password/", views_password.change_password, name="change_password"),
-    path("view_supercoordinator_profile/", views_supercoordinator.view_supercoordinator_profile, name="view_supercoordinator_profile"),
-    path("edit_supercoordinator_profile/", views_supercoordinator.edit_supercoordinator_profile, name="edit_supercoordinator_profile"),
-    path("view_coordinator_profile/", views_coordinator.view_coordinator_profile, name="view_coordinator_profile"),
-    path("edit_coordinator_profile/", views_coordinator.edit_coordinator_profile, name="edit_coordinator_profile"),
-    path("view_teacher_profile/", views_teacher.view_teacher_profile, name="view_teacher_profile"),
-    path("edit_teacher_profile/", views_teacher.edit_teacher_profile, name="edit_teacher_profile"),
-    path("view_parent_profile/", views_parent.view_parent_profile, name="view_parent_profile"),
-    path("edit_parent_profile/", views_parent.edit_parent_profile, name="edit_parent_profile"),
-    path("view_student_profile/", views_student.view_student_profile, name="view_student_profile"),
-    path("edit_student_profile/", views_student.edit_student_profile, name="edit_student_profile"),
+    path(
+        "view_supercoordinator_profile/",
+        views_supercoordinator.view_supercoordinator_profile,
+        name="view_supercoordinator_profile",
+    ),
+    path(
+        "edit_supercoordinator_profile/",
+        views_supercoordinator.edit_supercoordinator_profile,
+        name="edit_supercoordinator_profile",
+    ),
+    path(
+        "view_coordinator_profile/",
+        views_coordinator.view_coordinator_profile,
+        name="view_coordinator_profile",
+    ),
+    path(
+        "edit_coordinator_profile/",
+        views_coordinator.edit_coordinator_profile,
+        name="edit_coordinator_profile",
+    ),
+    path(
+        "view_teacher_profile/",
+        views_teacher.view_teacher_profile,
+        name="view_teacher_profile",
+    ),
+    path(
+        "edit_teacher_profile/",
+        views_teacher.edit_teacher_profile,
+        name="edit_teacher_profile",
+    ),
+    path(
+        "view_parent_profile/",
+        views_parent.view_parent_profile,
+        name="view_parent_profile",
+    ),
+    path(
+        "edit_parent_profile/",
+        views_parent.edit_parent_profile,
+        name="edit_parent_profile",
+    ),
+    path(
+        "view_student_profile/",
+        views_student.view_student_profile,
+        name="view_student_profile",
+    ),
+    path(
+        "edit_student_profile/",
+        views_student.edit_student_profile,
+        name="edit_student_profile",
+    ),
     path("password_changed/", views_password.password_changed, name="password_changed"),
     path("draft/", views_moduleOne.draft, name="draft"),
     path("previous/", views_moduleOne.previous, name="previous"),
@@ -231,7 +271,10 @@ urlpatterns = [
     path(
         "student_dashboard/", views_student.student_dashboard, name="student_dashboard"
     ),
+    path("info_forms/", views_student.information_forms, name="info_forms"),
     path(
-        "info_forms/", views_student.information_forms, name="info_forms"
+        "secondary_registration/",
+        views_student.secondary_registration,
+        name="secondary_registration",
     ),
 ]

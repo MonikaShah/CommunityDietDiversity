@@ -187,7 +187,7 @@ class Teacher_Session(models.Model):
 class SecondaryReg(models.Model):
     occupation = models.ForeignKey(Occupation, on_delete=SET_NULL, null=True)
     edu = models.ForeignKey(Education, on_delete=SET_NULL, null=True)
-    no_of_family_members = models.BinaryField(null=True)
+    no_of_family_members = models.IntegerField(null=True)
     type_of_family = models.ForeignKey(FamilyType, on_delete=SET_NULL, null=True)
     religion = models.ForeignKey(ReligiousBelief, on_delete=SET_NULL, null=True)
     family_income = models.ForeignKey(FamilyIncome, on_delete=SET_NULL, null=True)

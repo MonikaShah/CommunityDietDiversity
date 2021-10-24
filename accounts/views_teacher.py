@@ -1728,6 +1728,7 @@ def downloadData(request):
     lambda user: is_teacher(user),
     login_url="accounts:forbidden",
 )
+@password_change_required
 def view_teacher_profile(request):
     if request.method == "GET":
         user = request.user
@@ -1775,6 +1776,7 @@ def view_teacher_profile(request):
     lambda user: is_teacher(user),
     login_url="accounts:forbidden",
 )
+@password_change_required
 def edit_teacher_profile(request):
     teacher = TeacherInCharge.objects.filter(user=request.user).first()
     if request.method == "GET":
