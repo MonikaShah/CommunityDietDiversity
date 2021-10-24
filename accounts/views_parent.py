@@ -192,7 +192,6 @@ def view_parent_profile(request):
 
             parent.dob = encryptionHelper.decrypt(parent.dob)
             parent.gender = encryptionHelper.decrypt(parent.gender)
-            parent.pincode = encryptionHelper.decrypt(parent.pincode)
 
             return render(
                 request,
@@ -216,7 +215,6 @@ def edit_parent_profile(request):
             "profile_pic": parent.profile_pic,
             "dob": encryptionHelper.decrypt(parent.dob),
             "gender": encryptionHelper.decrypt(parent.gender),
-            "pincode": encryptionHelper.decrypt(parent.pincode),
         }
 
         if parent.mname:
@@ -256,7 +254,6 @@ def edit_parent_profile(request):
             parent.lname = encryptionHelper.encrypt(request.POST["lname"])
             parent.dob = encryptionHelper.encrypt(request.POST["dob"])
             parent.gender = encryptionHelper.encrypt(request.POST["gender"])
-            parent.pincode = encryptionHelper.encrypt(request.POST["pincode"])
 
             if request.FILES:
                 x = parent.profile_pic.url.split("/account/media/")

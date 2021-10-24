@@ -48,7 +48,6 @@ class ParentsInfoForm(forms.ModelForm):
     )
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
-    pincode = forms.CharField(max_length=6)
     aadhar = forms.CharField(
         max_length=14,
         label="Aadhar Number",
@@ -69,7 +68,6 @@ class ParentsInfoForm(forms.ModelForm):
         mname = cleaned_data.get("mname")
         lname = cleaned_data.get("lname")
         mobile_no = cleaned_data.get("mobile_no")
-        pincode = cleaned_data.get("pincode")
         aadhar = cleaned_data.get("aadhar")
         if (aadhar != "") and (not valid_aadhar(aadhar)):
             raise forms.ValidationError({"aadhar": "Invalid Aadhar Number."})
@@ -79,14 +77,12 @@ class ParentsInfoForm(forms.ModelForm):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
             raise forms.ValidationError({"fname": "Invalid First Name."})
-        if (mname == None) or (not valid_name(mname)):
+        if (mname != "") and (not valid_name(mname)):
             raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
             raise forms.ValidationError({"lname": "Invalid Last Name."})
-        if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
+        if (mobile_no != "") and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
-        if (pincode == None) or (not valid_pincode(pincode)):
-            raise forms.ValidationError({"pincode": "Invalid Pincode"})
         return cleaned_data
 
 
@@ -166,13 +162,13 @@ class StudentsInfoForm(forms.ModelForm):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
             raise forms.ValidationError({"fname": "Invalid First Name."})
-        if (mname == None) or (not valid_name(mname)):
+        if (mname != "") and (not valid_name(mname)):
             raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
             raise forms.ValidationError({"lname": "Invalid Last Name."})
-        if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
+        if (mobile_no != "") and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
-        if (pincode == None) or (not valid_pincode(pincode)):
+        if (pincode != "") and (not valid_pincode(pincode)):
             raise forms.ValidationError({"pincode": "Invalid Pincode"})
         return cleaned_data
 
@@ -230,11 +226,11 @@ class TeachersInfoForm(forms.ModelForm):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
             raise forms.ValidationError({"fname": "Invalid First Name."})
-        if (mname == None) or (not valid_name(mname)):
+        if (mname != "") and (not valid_name(mname)):
             raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
             raise forms.ValidationError({"lname": "Invalid Last Name."})
-        if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
+        if (mobile_no != "") and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
 
@@ -292,11 +288,11 @@ class SuperCoordinatorsInfoForm(forms.ModelForm):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
             raise forms.ValidationError({"fname": "Invalid First Name."})
-        if (mname == None) or (not valid_name(mname)):
+        if (mname != "") and (not valid_name(mname)):
             raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
             raise forms.ValidationError({"lname": "Invalid Last Name."})
-        if (mobile_no == None) or (not valid_mobile_no(mobile_no)):
+        if (mobile_no != "") and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
 
@@ -354,11 +350,11 @@ class CoordinatorsInfoForm(forms.ModelForm):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
             raise forms.ValidationError({"fname": "Invalid First Name."})
-        if (mname == None) or (not valid_name(mname)):
+        if (mname != "") and (not valid_name(mname)):
             raise forms.ValidationError({"mname": "Invalid Middle Name."})
         if (lname == None) or (not valid_name(lname)):
             raise forms.ValidationError({"lname": "Invalid Last Name."})
-        if (mobile_no != None) and (not valid_mobile_no(mobile_no)):
+        if (mobile_no != "") and (not valid_mobile_no(mobile_no)):
             raise forms.ValidationError({"mobile_no": "Invalid Mobile Number."})
         return cleaned_data
 
@@ -371,6 +367,7 @@ class SessionsInfoForm(forms.ModelForm):
 
 class OrganizationsInfoForm(forms.ModelForm):
     address = forms.CharField(widget=forms.Textarea())
+    pincode = forms.CharField(max_length=6)
 
     class Meta:
         model = Organization
@@ -384,7 +381,7 @@ class OrganizationsInfoForm(forms.ModelForm):
             raise forms.ValidationError(
                 {"name": "No Numeric and Special characters are allowed."}
             )
-        if (pincode == None) or (not valid_pincode(pincode)):
+        if (pincode == "") or (not valid_pincode(pincode)):
             raise forms.ValidationError({"pincode": "Invalid Pincode."})
         return cleaned_data
 

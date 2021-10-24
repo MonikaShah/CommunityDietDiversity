@@ -1,16 +1,21 @@
 from datetime import datetime, date
+from os import name
 from .models import *
 import string
 import random
 import re
 
 # username and password auto generators
-def username_generator(name):
+def username_generator(fname, lname):
     username_initial = ""
-    name_list = name.split(" ")
+    name_list_temp = fname.split(" ")
+    name_list = []
+    for i in name_list_temp:
+        temp = i.split("'")
+        for j in temp:
+            name_list.append(j)
     for i in name_list:
-        if re.match("^[a-zA-Z]*$", i):
-            username_initial += i.lower()
+        username_initial += i.lower()
     temp = User.objects.all()
     users_list = []
     for i in temp:
@@ -20,20 +25,35 @@ def username_generator(name):
     for i in users_list:
         if re.match(username_regex, i):
             count += 1
+    if count >= 100:
+        temp_username_initial = ""
+        lname_list_temp = lname.split(" ")
+        lname_list = []
+        for i in lname_list_temp:
+            temp = i.split("'")
+            for j in temp:
+                lname_list.append(j)
+        for i in lname_list:
+            temp_username_initial += i.lower()
+        username_initial += temp_username_initial[0]
+        count = 1
+        username_regex = "^" + username_initial + "[0-9]*$"
+        for i in users_list:
+            if re.match(username_regex, i):
+                count += 1
+        if count >= 100:
+            username_initial = username_initial[:-1] + temp_username_initial
+            count = 1
+            username_regex = "^" + username_initial + "[0-9]*$"
+            for i in users_list:
+                if re.match(username_regex, i):
+                    count += 1
     username = (
         username_initial
         + random.choices(string.digits, k=1)[0]
         + str(count)
         + random.choices(string.digits, k=1)[0]
     )
-    while username in users_list:
-        count += 1
-        username = (
-            username_initial
-            + random.choices(string.digits, k=1)[0]
-            + str(count)
-            + random.choices(string.digits, k=1)[0]
-        )
     return username
 
 
@@ -147,7 +167,7 @@ def valid_dob(dob):
 
 def valid_name(name):
     name = str(name)
-    return re.match("^[a-zA-Z' ]*$", name)
+    return re.match("^[a-zA-z][a-zA-Z' ]*$", name)
 
 
 def valid_email(email):

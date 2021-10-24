@@ -155,9 +155,9 @@ urlpatterns = [
         name="supercoordinator_reset_password",
     ),
     path(
-        "supercoordinator_reset_password_download/",
-        views_supercoordinator.supercoordinator_reset_password_download,
-        name="supercoordinator_reset_password_download",
+        "coordinator_login_credentials_download/",
+        views_supercoordinator.coordinator_login_credentials_download,
+        name="coordinator_login_credentials_download",
     ),
     path(
         "coordinator_dashboard/",

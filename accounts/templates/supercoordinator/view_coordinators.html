@@ -3,6 +3,7 @@
 {% load static %} {% load crispy_forms_tags%}
 
 {%block links %}
+<script src="{% static 'accounts/js/message_hider.js' %}"></script>
 <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
 {% endblock %}
 
@@ -15,7 +16,17 @@
 {% endblock %}
 
 {%block content%}
-<center><h2 class="mb-3">Organization Information</h2></center>
+<div id="message">
+    {% if my_messages %}
+    <div class="mb-3 alert alert-success" role="alert">
+        {{ my_messages.success }}
+    </div>
+    {% endif %}
+</div>
+
+<center>
+    <h2 class="mb-3">Organization Information</h2>
+</center>
 <div class="col-md-10 offset-md-1 mb-3">
     <ul class="list-group">
         <h6>
@@ -29,19 +40,24 @@
     </ul>
 </div>
 
-
-<center><h2>Coordinators</h2></center>
+<center>
+    <h2>Coordinators</h2>
+</center>
 
 <div class="d-flex justify-content-end mb-4">
     <a href="{% url 'accounts:add_coordinator_form' org_id %}" class="btn btn-info btnmedium">Add Coordinator</a>
 </div>
 
 <div class="item-container d-flex" id="parentCard">
-{% for coordinator in coordinators %}
+    {% for coordinator in coordinators %}
     <div class="my-card card shadow border rounded">
         <div class="card-body">
-            <center><b><h3 class="card-title mb-3">{{ coordinator.fname }} {{ coordinator.lname }}</h3></b></center>
-            <h6 class="card-text"><b>Mobile No. </b> {{ coordinator.mobile_no }}</h6>
+            <center>
+                <b>
+                    <h3 class="card-title mb-3">{{ coordinator.fname }} {{ coordinator.lname }}</h3>
+                </b>
+            </center>
+            <h6 class="card-text"><b>Mobile Number: </b> {{ coordinator.mobile_no }}</h6>
             <h6 class="card-text"><b>Email: </b> {{ coordinator.email }}</h6>
         </div>
     </div>

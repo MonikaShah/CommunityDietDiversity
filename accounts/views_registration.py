@@ -291,7 +291,6 @@ def students_info(request, is_adult=False):
                 parent.city = City.objects.get(
                     city__icontains=previousPOST["city"].strip()
                 )
-                parent.pincode = encryptionHelper.encrypt(previousPOST["pincode"])
                 parent.profile_pic = "/default.svg"
                 parent.save()
 

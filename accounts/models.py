@@ -80,7 +80,7 @@ class OrganizationTypes(models.Model):
 class Organization(models.Model):
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
-    pincode = models.IntegerField()
+    pincode = models.CharField(max_length=6)
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     type = models.ForeignKey(OrganizationTypes, on_delete=models.CASCADE)
@@ -101,7 +101,6 @@ class ParentsInfo(models.Model):
     mobile_no = models.BinaryField(null=True)
     gender = models.BinaryField()
     dob = models.BinaryField()
-    pincode = models.BinaryField()
     first_password = models.CharField(max_length=225, default="")
     password_changed = models.BooleanField(default=True)
 
