@@ -787,16 +787,29 @@ def edit_coordinator_profile(request):
             coordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
 
             if request.FILES:
-                x = coordinator.profile_pic.url.split('/account/media/')
-                if x[1] != 'default.svg':
-                    file = settings.MEDIA_ROOT + '/' + x[1]
-                    os.remove(file)
-                coordinator.profile_pic = request.FILES["profile_pic"]
+                if request.FILES["profile_pic"].size > 5 * 1024 * 1024:
+                    form.add_error(
+                        "profile_pic", "File size must be less than 5MB."
+                    )
+
+                    return render(
+                        request,
+                        "coordinator/update_coordinators_info.html",
+                        {
+                            "form": form,
+                        },
+                    )
+                else:
+                    x = coordinator.profile_pic.url.split('/account/media/')
+                    if x[1] != 'default.svg':
+                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        os.remove(file)
+                    coordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = coordinator.profile_pic.url.split('/account/media/')
                     if x[1] != 'default.svg':
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + '\\' + x[1]
                         os.remove(file)
                     coordinator.profile_pic = "/default.svg"
 

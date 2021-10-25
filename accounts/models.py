@@ -5,7 +5,6 @@ from django.db.models.deletion import SET, SET_NULL
 from shared.encryption import EncryptionHelper
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
 def rename(instance, filename):
     base, ext = os.path.splitext(filename)
     upload_to = "../media"

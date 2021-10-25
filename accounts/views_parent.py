@@ -256,16 +256,29 @@ def edit_parent_profile(request):
             parent.gender = encryptionHelper.encrypt(request.POST["gender"])
 
             if request.FILES:
-                x = parent.profile_pic.url.split("/account/media/")
-                if x[1] != "default.svg":
-                    file = settings.MEDIA_ROOT + '/' + x[1]
-                    os.remove(file)
-                parent.profile_pic = request.FILES["profile_pic"]
+                if request.FILES["profile_pic"].size > 5 * 1024 * 1024:
+                    form.add_error(
+                        "profile_pic", "File size must be less than 5MB."
+                    )
+
+                    return render(
+                        request,
+                        "parent/update_parents_info.html",
+                        {
+                            "form": form,
+                        },
+                    )
+                else:
+                    x = parent.profile_pic.url.split("/account/media/")
+                    if x[1] != "default.svg":
+                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        os.remove(file)
+                    parent.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = parent.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + '\\' + x[1]
                         os.remove(file)
                     parent.profile_pic = "/default.svg"
 
