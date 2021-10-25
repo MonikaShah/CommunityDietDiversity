@@ -313,6 +313,7 @@ def students_info(request, is_adult=False):
                 student.gender = encryptionHelper.encrypt(request.POST["gender"])
                 student.adult = encryptionHelper.encrypt(is_adult_func(student_dob))
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
+                student.profile_pic = "/default.svg"
                 student.parent = parent
                 student.save()
 
@@ -407,6 +408,7 @@ def students_info(request, is_adult=False):
                     city__icontains=request.POST["city"].strip()
                 )
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
+                student.profile_pic = "/default.svg"
                 student.save()
 
                 user = authenticate(
@@ -476,6 +478,7 @@ def addSuperCoordinatorForm(request):
             supercoordinator.mobile_no = encryptionHelper.encrypt(
                 request.POST["mobile_no"]
             )
+            supercoordinator.profile_pic = "/default.svg"
             supercoordinator.save()
             return redirect("accounts:add_supercoordinator_form")
         else:

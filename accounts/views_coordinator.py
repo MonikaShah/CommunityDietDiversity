@@ -29,27 +29,51 @@ def coordinator_dashboard(request):
     for teacher in teachers:
         teacher.fname = encryptionHelper.decrypt(teacher.fname)
         teacher.lname = encryptionHelper.decrypt(teacher.lname)
+        if teacher.mobile_no:
+            teacher.mobile_no = encryptionHelper.decrypt(teacher.mobile_no)
+            if teacher.mobile_no == "":
+                teacher.mobile_no = "-"
+        else:
+            teacher.mobile_no = "-"
+        if teacher.email:
+            teacher.email = encryptionHelper.decrypt(teacher.email)
+            if teacher.email == "":
+                teacher.email = "-"
+        else:
+            teacher.email = "-"
+    if "my_messages" in request.session:
+        my_messages = request.session["my_messages"]
+        del request.session["my_messages"]
+        return render(
+            request,
+            "coordinator/coordinator_dashboard.html",
+            {
+                "teachers": teachers,
+                "page_type": "coordinator_dashboard",
+                "my_messages": my_messages,
+            },
+        )
     return render(
         request,
         "coordinator/coordinator_dashboard.html",
         {"teachers": teachers, "page_type": "coordinator_dashboard"},
     )
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 @password_change_required
-def switchTeachersList(request,id,teacher_id):
+def switchTeachersList(request, id, teacher_id):
     if request.method == "GET":
-        session=Session.objects.filter(id=id).first()
+        session = Session.objects.filter(id=id).first()
         objects_in_sessions = Teacher_Session.objects.filter(session=session)
-        teachers_in_sessions= []
-        teacher=TeacherInCharge.objects.filter(id=teacher_id).first()
+        teachers_in_sessions = []
+        teacher = TeacherInCharge.objects.filter(id=teacher_id).first()
         coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
         organization = coordinator.organization
         for object1 in objects_in_sessions:
-            if object1.teacher!=teacher:
+            if object1.teacher != teacher:
                 teachers_in_sessions.append(object1.teacher)
-
 
         for teacher in teachers_in_sessions:
             teacher.fname = encryptionHelper.decrypt(teacher.fname)
@@ -61,19 +85,24 @@ def switchTeachersList(request,id,teacher_id):
         )
     else:
         new_teacher_id = request.POST.get("new_teacher")
-        new_teacher=TeacherInCharge.objects.filter(id=new_teacher_id).first()
+        new_teacher = TeacherInCharge.objects.filter(id=new_teacher_id).first()
         session = Session.objects.filter(id=id).first()
-        teacher=TeacherInCharge.objects.filter(id=teacher_id).first()
-        teacher_session=Teacher_Session.objects.filter(session=session, teacher=teacher).delete()
-        students=StudentsInfo.objects.filter(session=session,teacher=teacher)
+        teacher = TeacherInCharge.objects.filter(id=teacher_id).first()
+        teacher_session = Teacher_Session.objects.filter(
+            session=session, teacher=teacher
+        ).delete()
+        students = StudentsInfo.objects.filter(session=session, teacher=teacher)
         for student in students:
-            student.teacher=new_teacher
-            student_session=Student_Session.objects.filter(session=session,student=student,teacher=teacher).first()
-            student_session.teacher=new_teacher
+            student.teacher = new_teacher
+            student_session = Student_Session.objects.filter(
+                session=session, student=student, teacher=teacher
+            ).first()
+            student_session.teacher = new_teacher
             student.save()
             student_session.save()
 
         return redirect("accounts:view_session_teachers", id, 1)
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
@@ -81,17 +110,21 @@ def switchTeachersList(request,id,teacher_id):
 def addTeacherForm(request):
     if request.method == "GET":
         form = TeachersInfoForm()
-        user_creation_form = UserCreationForm()
         return render(
             request,
             "coordinator/add_teacher.html",
-            {"form": form, "user_creation_form": user_creation_form},
+            {"form": form},
         )
     else:
         form = TeachersInfoForm(request.POST)
-        teacheruserform = UserCreationForm(request.POST)
-        if form.is_valid() and teacheruserform.is_valid():
-            teacheruser = teacheruserform.save(commit=False)
+        if form.is_valid():
+            password = random_password_generator()
+            teacheruser = User.objects.create_user(
+                username=username_generator(
+                    request.POST["fname"], request.POST["lname"]
+                ),
+                password=password,
+            )
             teacheruser.save()
             teacher_group = Group.objects.get(name="Teachers")
             teacheruser.groups.add(teacher_group)
@@ -114,13 +147,17 @@ def addTeacherForm(request):
             teacher.coordinator = CoordinatorInCharge.objects.filter(
                 user=request.user
             ).first()
+            teacher.profile_pic = "/default.svg"
             teacher.save()
+            request.session["my_messages"] = {
+                "success": "Registration Successful. Download the Login Credentials from the sidebar on the left."
+            }
             return redirect("accounts:coordinator_dashboard")
         else:
             return render(
                 request,
                 "coordinator/add_teacher.html",
-                {"form": form, "user_creation_form": teacheruserform},
+                {"form": form},
             )
 
 
@@ -193,15 +230,31 @@ def addSessionForm(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 @password_change_required
-def viewSessionTeachers(request, id, open_id, my_messages=None):
+def viewSessionTeachers(request, id, open_id):
     session = Session.objects.filter(id=id).first()
     objects = Teacher_Session.objects.filter(session=session)
     teachers = []
     for object in objects:
         object.teacher.fname = encryptionHelper.decrypt(object.teacher.fname)
         object.teacher.lname = encryptionHelper.decrypt(object.teacher.lname)
+        if object.teacher.mobile_no:
+            object.teacher.mobile_no = encryptionHelper.decrypt(
+                object.teacher.mobile_no
+            )
+            if object.teacher.mobile_no == "":
+                object.teacher.mobile_no = "-"
+        else:
+            object.teacher.mobile_no = "-"
+        if object.teacher.email:
+            object.teacher.email = encryptionHelper.decrypt(object.teacher.email)
+            if object.teacher.email == "":
+                object.teacher.email = "-"
+        else:
+            object.teacher.email = "-"
         teachers.append(object.teacher)
-    if my_messages != None:
+    if "my_messages" in request.session:
+        my_messages = request.session["my_messages"]
+        del request.session["my_messages"]
         return render(
             request,
             "coordinator/view_session_teachers.html",
@@ -389,8 +442,8 @@ def addSessionTeachers(request, id):
                 + ", Newly registered: "
                 + str(teacher_added)
             }
-
-        return viewSessionTeachers(request, id, 1, my_messages)
+        request.session["my_messages"] = my_messages
+        return redirect("accounts:view_session_teachers", id, 1)
 
 
 @login_required(login_url="accounts:loginlink")
@@ -398,7 +451,7 @@ def addSessionTeachers(request, id):
 @password_change_required
 def addSessionTeachersList(request, id):
     if request.method == "GET":
-        session=Session.objects.filter(id=id).first()
+        session = Session.objects.filter(id=id).first()
         teachers_in_sessions = Teacher_Session.objects.filter(session=session)
         teachers_in_sessions_id = []
         coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
@@ -435,17 +488,21 @@ def addSessionTeachersList(request, id):
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 @password_change_required
 def removeSessionTeacher(request, session_id, teacher_id):
-    session= Session.objects.filter(id=session_id).first()
+    session = Session.objects.filter(id=session_id).first()
     teacher = TeacherInCharge.objects.filter(id=teacher_id).first()
-    students= StudentsInfo.objects.filter(teacher=teacher, session=session)
+    students = StudentsInfo.objects.filter(teacher=teacher, session=session)
     for student in students:
-        student.teacher=None
-        student.session=None
+        student.teacher = None
+        student.session = None
         student.save()
     Teacher_Session.objects.filter(teacher=teacher).delete()
-    student_session=Student_Session.objects.filter(session=session, teacher=teacher).delete()
-    my_messages = {"success": "Teacher removed from session successfully"}
-    return viewSessionTeachers(request, session_id, 1, my_messages)
+    student_session = Student_Session.objects.filter(
+        session=session, teacher=teacher
+    ).delete()
+    request.session["my_messages"] = {
+        "success": "Teacher removed from session successfully"
+    }
+    return redirect("accounts:view_session_teachers", session_id, 1)
 
 
 @login_required(login_url="accounts:loginlink")
@@ -482,7 +539,7 @@ def coordinator_reset_password(request):
                                 "form": form,
                                 "page_type": "reset_password",
                                 "my_messages": {
-                                    "success": "Password reset successfull. Download login credentions from below."
+                                    "success": "Password reset successfull. Download the Login Credentials from the sidebar on the left."
                                 },
                             },
                         )
@@ -514,7 +571,7 @@ def coordinator_reset_password(request):
                                 "form": form,
                                 "page_type": "reset_password",
                                 "my_messages": {
-                                    "success": "Password reset successfull. Download login credentions from below."
+                                    "success": "Password reset successfull. Download the Login Credentials from the sidebar on the left."
                                 },
                             },
                         )
@@ -546,7 +603,7 @@ def coordinator_reset_password(request):
                                 "form": form,
                                 "page_type": "reset_password",
                                 "my_messages": {
-                                    "success": "Password reset successfull. Download login credentions from below."
+                                    "success": "Password reset successfull. Download the Login Credentials from the sidebar on the left."
                                 },
                             },
                         )
@@ -595,21 +652,75 @@ def coordinator_reset_password(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 @password_change_required
-def coordinator_reset_password_teacher_download(request):
+def teachers_login_credentials_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
     bold = wb.add_format({"bold": True})
+    merge_format = wb.add_format(
+        {
+            "bold": True,
+            "align": "center",
+            "valign": "vcenter",
+        }
+    )
     credentials = wb.add_worksheet("Credentials")
+    credentials.set_row(0, 40)
+    credentials.merge_range(
+        "A1:J1",
+        "This sheet contains only the data of the teachers who haven't changed their password.",
+        merge_format,
+    )
     columns = [
-        "Username",
-        "Password",
+        "USERNAME",
+        "PASSWORD",
+        "First Name",
+        "Middle Name",
+        "Last Name",
+        "Aadhar Number",
+        "Email",
+        "Mobile Number",
+        "Date of Birth",
+        "Gender",
     ]
+    credentials.set_column(0, len(columns) - 1, 18)
     for col_num in range(len(columns)):
-        credentials.write(0, col_num, columns[col_num], bold)
+        credentials.write(1, col_num, columns[col_num], bold)
     teacher = TeacherInCharge.objects.filter(password_changed=False)
     for row_no, x in enumerate(teacher):
-        credentials.write(row_no + 1, 0, x.user.username)
-        credentials.write(row_no + 1, 1, x.first_password)
+        credentials.write(row_no + 2, 0, x.user.username)
+        credentials.write(row_no + 2, 1, x.first_password)
+        credentials.write(row_no + 2, 2, encryptionHelper.decrypt(x.fname))
+        if x.mname:
+            x.mname = encryptionHelper.decrypt(x.mname)
+            if x.mname == "":
+                x.mname = "-"
+        else:
+            x.mname = "-"
+        credentials.write(row_no + 2, 3, x.mname)
+        credentials.write(row_no + 2, 4, encryptionHelper.decrypt(x.lname))
+        if x.aadhar:
+            x.aadhar = encryptionHelper.decrypt(x.aadhar)
+            if x.aadhar == "":
+                x.aadhar = "-"
+        else:
+            x.aadhar = "-"
+        credentials.write(row_no + 2, 5, x.aadhar)
+        if x.email:
+            x.email = encryptionHelper.decrypt(x.email)
+            if x.email == "":
+                x.email = "-"
+        else:
+            x.email = "-"
+        credentials.write(row_no + 2, 6, x.email)
+        if x.mobile_no:
+            x.mobile_no = encryptionHelper.decrypt(x.mobile_no)
+            if x.mobile_no == "":
+                x.mobile_no = "-"
+        else:
+            x.mobile_no = "-"
+        credentials.write(row_no + 2, 7, x.mobile_no)
+        credentials.write(row_no + 2, 8, encryptionHelper.decrypt(x.dob))
+        credentials.write(row_no + 2, 9, encryptionHelper.decrypt(x.gender))
     wb.close()
     output.seek(0)
     response = HttpResponse(
@@ -618,14 +729,17 @@ def coordinator_reset_password_teacher_download(request):
     )
     response[
         "Content-Disposition"
-    ] = "attachment; filename=Teacher Login Credentials.xlsx"
+    ] = "attachment; filename=Teachers Login Credentials.xlsx"
     return response
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@user_passes_test(
+    lambda user: is_coordinator(user) or is_teacher(user),
+    login_url="accounts:forbidden",
+)
 @password_change_required
-def coordinator_reset_password_parent_download(request):
+def parents_login_credentials_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
     bold = wb.add_format({"bold": True})
@@ -653,9 +767,12 @@ def coordinator_reset_password_parent_download(request):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@user_passes_test(
+    lambda user: is_coordinator(user) or is_teacher(user),
+    login_url="accounts:forbidden",
+)
 @password_change_required
-def coordinator_reset_password_student_download(request):
+def students_login_credentials_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
     bold = wb.add_format({"bold": True})
@@ -681,6 +798,7 @@ def coordinator_reset_password_student_download(request):
     ] = "attachment; filename=Student Login Credentials.xlsx"
     return response
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
     lambda user: is_coordinator(user),
@@ -698,36 +816,41 @@ def view_coordinator_profile(request):
 
             if coordinator.mname:
                 coordinator.mname = encryptionHelper.decrypt(coordinator.mname)
-                if coordinator.mname == '':
+                if coordinator.mname == "":
                     coordinator.mname = ""
             else:
                 coordinator.mname = ""
-            
+
             if coordinator.aadhar:
                 coordinator.aadhar = encryptionHelper.decrypt(coordinator.aadhar)
-                if coordinator.aadhar == '':
+                if coordinator.aadhar == "":
                     coordinator.aadhar = "-"
             else:
                 coordinator.aadhar = "-"
-            
+
             if coordinator.email:
                 coordinator.email = encryptionHelper.decrypt(coordinator.email)
-                if coordinator.email == '':
+                if coordinator.email == "":
                     coordinator.email = "-"
             else:
                 coordinator.email = "-"
-            
+
             if coordinator.mobile_no:
                 coordinator.mobile_no = encryptionHelper.decrypt(coordinator.mobile_no)
-                if coordinator.mobile_no == '':
+                if coordinator.mobile_no == "":
                     coordinator.mobile_no = "-"
             else:
                 coordinator.mobile_no = "-"
 
             coordinator.dob = encryptionHelper.decrypt(coordinator.dob)
             coordinator.gender = encryptionHelper.decrypt(coordinator.gender)
-            
-            return render( request, "coordinator/view_coordinator_profile.html", {"page_type": "view_coordinator_profile", "coordinator": coordinator})
+
+            return render(
+                request,
+                "coordinator/view_coordinator_profile.html",
+                {"page_type": "view_coordinator_profile", "coordinator": coordinator},
+            )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
@@ -744,7 +867,7 @@ def edit_coordinator_profile(request):
             "profile_pic": coordinator.profile_pic,
             "dob": encryptionHelper.decrypt(coordinator.dob),
             "gender": encryptionHelper.decrypt(coordinator.gender),
-            "organization": coordinator.organization
+            "organization": coordinator.organization,
         }
 
         if coordinator.mname:
@@ -756,14 +879,13 @@ def edit_coordinator_profile(request):
         if coordinator.mobile_no:
             initial_dict["mobile_no"] = encryptionHelper.decrypt(coordinator.mobile_no)
 
-        form = CoordinatorsInfoForm(request.POST or None, initial = initial_dict)
+        form = CoordinatorsInfoForm(request.POST or None, initial=initial_dict)
         form.fields["organization"].disabled = True
         form.fields["organization"].initial = coordinator.organization
         return render(
-            request, "coordinator/update_coordinators_info.html",
-            {
-                "form": form
-            },
+            request,
+            "coordinator/update_coordinators_info.html",
+            {"form": form},
         )
     else:
         form = CoordinatorsInfoForm(request.POST, request.FILES)
@@ -779,7 +901,9 @@ def edit_coordinator_profile(request):
             if coordinator.email:
                 coordinator.email = encryptionHelper.encrypt(request.POST["email"])
             if coordinator.mobile_no:
-                coordinator.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
+                coordinator.mobile_no = encryptionHelper.encrypt(
+                    request.POST["mobile_no"]
+                )
 
             coordinator.fname = encryptionHelper.encrypt(request.POST["fname"])
             coordinator.lname = encryptionHelper.encrypt(request.POST["lname"])
@@ -788,9 +912,7 @@ def edit_coordinator_profile(request):
 
             if request.FILES:
                 if request.FILES["profile_pic"].size > 5 * 1024 * 1024:
-                    form.add_error(
-                        "profile_pic", "File size must be less than 5MB."
-                    )
+                    form.add_error("profile_pic", "File size must be less than 5MB.")
 
                     return render(
                         request,
@@ -800,16 +922,16 @@ def edit_coordinator_profile(request):
                         },
                     )
                 else:
-                    x = coordinator.profile_pic.url.split('/account/media/')
-                    if x[1] != 'default.svg':
-                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                    x = coordinator.profile_pic.url.split("/account/media/")
+                    if x[1] != "default.svg":
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = coordinator.profile_pic.url.split('/account/media/')
-                    if x[1] != 'default.svg':
-                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                    x = coordinator.profile_pic.url.split("/account/media/")
+                    if x[1] != "default.svg":
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = "/default.svg"
 
@@ -817,7 +939,5 @@ def edit_coordinator_profile(request):
             return redirect("accounts:view_coordinator_profile")
         else:
             return render(
-                request,
-                "coordinator/update_coordinators_info.html",
-                {"form": form}
+                request, "coordinator/update_coordinators_info.html", {"form": form}
             )

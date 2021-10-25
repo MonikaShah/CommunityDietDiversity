@@ -3,6 +3,7 @@
 {% load static %} {% load crispy_forms_tags%}
 
 {%block links %}
+<script src="{% static 'accounts/js/message_hider.js' %}"></script>
 <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
 {% endblock %}
 
@@ -15,6 +16,14 @@
 {% endblock %}
 
 {%block content%}
+<div id="message">
+    {% if my_messages %}
+    <div class="mb-3 alert alert-success" role="alert">
+        {{ my_messages.success }}
+    </div>
+    {% endif %}
+</div>
+
 <div class="d-flex justify-content-end mb-4">
     <a href="{% url 'accounts:add_teacher_form' %}" class="btn btn-info btnmedium">Add Teacher</a>
 </div>
@@ -22,8 +31,13 @@
 {% for teacher in teachers %}
     <div class="my-card card shadow border rounded">
         <div class="card-body">
-            <center><b><h3 class="card-title mb-3">{{ teacher.fname }} {{ teacher.lname }}</h3></b></center>
-            <h6 class="card-text"><b>Organization:</b> {{ teacher.organization }}</h6>
+            <center>
+                <b>
+                    <h3 class="card-title mb-3">{{ teacher.fname }} {{ teacher.lname }}</h3>
+                </b>
+            </center>
+            <h6 class="card-text"><b>Mobile Number: </b> {{ teacher.mobile_no }}</h6>
+            <h6 class="card-text"><b>Email: </b> {{ teacher.email }}</h6>
         </div>
     </div>
     {% endfor %}

@@ -184,6 +184,7 @@ def addCoordinatorForm(request, id):
             coordinator.organization = Organization.objects.filter(id=id).first()
             coordinator.first_password = password
             coordinator.password_changed = False
+            coordinator.profile_pic = "/default.svg"
             coordinator.save()
             request.session["my_messages"] = True
             return redirect("accounts:view_coordinators", id)
@@ -288,7 +289,7 @@ def supercoordinator_reset_password(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
-def coordinator_login_credentials_download(request):
+def coordinators_login_credentials_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
     bold = wb.add_format({"bold": True})
@@ -510,14 +511,14 @@ def edit_supercoordinator_profile(request):
                 else:
                     x = supercoordinator.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        file = settings.MEDIA_ROOT + '/' + x[1]
                         os.remove(file)
                     supercoordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = supercoordinator.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        file = settings.MEDIA_ROOT + '/' + x[1]
                         os.remove(file)
                     supercoordinator.profile_pic = "/default.svg"
 

@@ -30,7 +30,7 @@
             <div class="card-body">
                 <center><b><h3 class="card-title mb-3">{{ session.name }}</h3></b></center>
                 <h6 class="card-text"><b>Start Date: </b> {{ session.start_date}}</h6>
-                <h6 class="card-text"><b>End Date: </b> {{ session.end_date }}</h6>
+                <h6 class="card-text mb-3"><b>End Date: </b> {{ session.end_date }}</h6>
                 <center><a href="{% url 'accounts:view_session_teachers' session.id 1 %}" class="btn btn-primary btnmedium">View Teachers</a></center>
             </div>
         </div>
@@ -46,8 +46,7 @@
         <div class="my-card card shadow border rounded">
             <div class="card-body">
                 <center><b><h3 class="card-title mb-3">{{ session.name }}</h3></b></center>
-                <h6 class="card-text"><b>Start Date: </b> {{ session.start_date}}</h6>
-                <h6 class="card-text"><b>End Date: </b> Ongoing </h6>
+                <h6 class="card-text mb-3"><b>Start Date: </b> {{ session.start_date}}</h6>
                 <center><a href="{% url 'accounts:view_session_teachers' session.id 1 %}" class="btn btn-primary btnmedium">View Teachers</a></center>
             </div>
         </div>
@@ -64,7 +63,7 @@
             <div class="card-body">
                 <center><b><h3 class="card-title mb-3">{{ session.name }}</h3></b></center>
                 <h6 class="card-text"><b>Start Date: </b> {{ session.start_date}}</h6>
-                <h6 class="card-text"><b>End Date: </b> {{ session.end_date }}</h6>
+                <h6 class="card-text mb-3"><b>End Date: </b> {{ session.end_date }}</h6>
                 <center><a href="{% url 'accounts:view_session_teachers' session.id 0 %}" class="btn btn-primary btnmedium">View Teachers</a></center>
             </div>
         </div>

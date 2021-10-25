@@ -118,6 +118,7 @@ def addStudentForm(request):
             student.city = City.objects.get(
                 city__icontains=request.POST["city"].strip()
             )
+            student.profile_pic = "/default.svg"
             student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
             student.parent = ParentsInfo.objects.filter(user=request.user).first()
             student.first_password = ""
@@ -271,14 +272,14 @@ def edit_parent_profile(request):
                 else:
                     x = parent.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        file = settings.MEDIA_ROOT + '/' + x[1]
                         os.remove(file)
                     parent.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = parent.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '\\' + x[1]
+                        file = settings.MEDIA_ROOT + '/' + x[1]
                         os.remove(file)
                     parent.profile_pic = "/default.svg"
 
