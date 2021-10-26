@@ -99,6 +99,7 @@ def view_student_profile(request):
 @secondary_reg
 def edit_student_profile(request):
     student = StudentsInfo.objects.filter(user=request.user).first()
+    adult = student.adult
     if request.method == "GET":
         initial_dict = {
             "fname": encryptionHelper.decrypt(student.fname),
@@ -111,6 +112,28 @@ def edit_student_profile(request):
             "organization": student.organization,
         }
 
+        initial_dict_2 = {
+            "occupation": student.secondary_reg.occupation
+            if student.secondary_reg.occupation
+            else "",
+            "edu": student.secondary_reg.edu if student.secondary_reg.edu else "",
+            "no_of_family_members": student.secondary_reg.no_of_family_members
+            if student.secondary_reg.no_of_family_members
+            else "",
+            "type_of_family": student.secondary_reg.type_of_family
+            if student.secondary_reg.type_of_family
+            else "",
+            "religion": student.secondary_reg.religion
+            if student.secondary_reg.religion
+            else "",
+            "family_income": student.secondary_reg.family_income
+            if student.secondary_reg.family_income
+            else "",
+            "ration_card_color": student.secondary_reg.ration_card_color
+            if student.secondary_reg.ration_card_color
+            else "",
+        }
+
         if student.mname:
             initial_dict["mname"] = encryptionHelper.decrypt(student.mname)
         if student.aadhar:
@@ -121,12 +144,15 @@ def edit_student_profile(request):
             initial_dict["mobile_no"] = encryptionHelper.decrypt(student.mobile_no)
 
         form = StudentsInfoForm(request.POST or None, initial=initial_dict)
+        form2 = SecondaryRegForm(initial=initial_dict_2)
         form.fields["organization"].disabled = True
         return render(
             request,
             "student/update_students_info.html",
             {
                 "form": form,
+                "form2": form2,
+                "adult": adult,
                 "valid_state": True,
                 "valid_city": True,
                 "state": student.state,
@@ -138,7 +164,9 @@ def edit_student_profile(request):
         form.fields["organization"].disabled = True
         form.fields["organization"].initial = student.organization
 
-        if form.is_valid():
+        form2 = SecondaryRegForm(request.POST)
+         
+        if form.is_valid() and form2.is_valid():
             temp = check_state_city(True, 0, str(request.POST["state"]))
             if temp[0]:
                 if not check_state_city(False, temp[1], str(request.POST["city"])):
@@ -147,6 +175,8 @@ def edit_student_profile(request):
                         "student/update_students_info.html",
                         {
                             "form": form,
+                            "form2": form2,
+                            "adult": adult,
                             "valid_state": True,
                             "valid_city": False,
                             "state": request.POST["state"],
@@ -159,6 +189,8 @@ def edit_student_profile(request):
                     "student/update_students_info.html",
                     {
                         "form": form,
+                        "form2": form2,
+                        "adult": adult,
                         "valid_state": False,
                         "valid_city": True,
                         "state": request.POST["state"],
@@ -202,6 +234,12 @@ def edit_student_profile(request):
                         "student/update_students_info.html",
                         {
                             "form": form,
+                            "form2": form2,
+                            "adult": adult,
+                            "valid_state": True,
+                            "valid_city": True,
+                            "state": request.POST["state"],
+                            "city": request.POST["city"],
                         },
                     )
                 else:
@@ -218,14 +256,20 @@ def edit_student_profile(request):
                         os.remove(file)
                     student.profile_pic = "/default.svg"
 
+            secondary_reg = form2.save(commit=False)
+            secondary_reg.save()
+            student.secondary_reg = secondary_reg
             student.save()
-            return redirect("accounts:view_student_profile")
+            return redirect("accounts:student_dashboard")
+
         else:
             return render(
                 request,
                 "student/update_students_info.html",
                 {
                     "form": form,
+                    "form2": form2,
+                    "adult": adult,
                     "valid_state": True,
                     "valid_city": True,
                     "state": request.POST["state"],
@@ -281,7 +325,7 @@ def secondary_registration(request):
             secondary_reg.save()
             student.secondary_reg = secondary_reg
             student.save()
-            return redirect("accounts:student_dashboard")
+            return redirect("accounts:view_student_profile")
         else:
             return render(
                 request,

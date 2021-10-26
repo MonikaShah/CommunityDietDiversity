@@ -208,8 +208,8 @@ def view_parent_profile(request):
 )
 @password_change_required
 def edit_parent_profile(request):
+    parent = ParentsInfo.objects.filter(user=request.user).first()
     if request.method == "GET":
-        parent = ParentsInfo.objects.filter(user=request.user).first()
         initial_dict = {
             "fname": encryptionHelper.decrypt(parent.fname),
             "lname": encryptionHelper.decrypt(parent.lname),
@@ -286,6 +286,11 @@ def edit_parent_profile(request):
             parent.save()
             return redirect("accounts:view_parent_profile")
         else:
+            initial_dict = {
+                "profile_pic": parent.profile_pic,
+            }
+            form = ParentsInfoForm(request.POST, request.FILES, initial=initial_dict)
+            print(request.FILES)
             return render(
                 request,
                 "parent/update_parents_info.html",

@@ -92,6 +92,50 @@
                     </div>
                 </div>
             </div>
+
+            {% if adult %}
+            <p class="mb-4 ml-3"><strong>NOTE:</strong> "Parent" below refers to one of your parents.</p>
+            {% else %}
+            <p clas="mb-4 ml-3"><strong>NOTE:</strong> "Parent" below refers to the parent who has been registered along with you.</p>
+            {% endif%}
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form2.occupation|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form2.edu|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form2.religion|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{form2.type_of_family|as_crispy_field}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form2.no_of_family_members|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form2.family_income|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form2.ration_card_color|as_crispy_field }}
+                    </div>
+                </div>
+            </div>
+
             <script
                 language="javascript">state_city_main('{{valid_state}}', '{{valid_city}}', '{{state}}', '{{city}}');</script>
             <div class="d-flex justify-content-center">
