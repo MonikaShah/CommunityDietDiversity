@@ -99,7 +99,7 @@ def view_student_profile(request):
 @secondary_reg
 def edit_student_profile(request):
     student = StudentsInfo.objects.filter(user=request.user).first()
-    adult = student.adult
+    adult = encryptionHelper.decrypt(student.adult)
     if request.method == "GET":
         initial_dict = {
             "fname": encryptionHelper.decrypt(student.fname),

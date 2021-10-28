@@ -331,7 +331,7 @@ class CoordinatorsInfoForm(forms.ModelForm):
 
     class Meta:
         model = CoordinatorInCharge
-        fields = []
+        fields = ["organization"]
 
     def clean(self):
         cleaned_data = super().clean()

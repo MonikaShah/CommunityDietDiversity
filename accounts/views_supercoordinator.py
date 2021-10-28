@@ -117,6 +117,7 @@ def viewCoordinators(request, id):
         else:
             coordinator.email = "-"
     if "my_messages" in request.session:
+        my_messages = request.session["my_messages"]
         del request.session["my_messages"]
         return render(
             request,
@@ -124,9 +125,7 @@ def viewCoordinators(request, id):
             {
                 "coordinators": coordinators,
                 "organization": organization,
-                "my_messages": {
-                    "success": "Registration Successful. Download the Login Credentials from the sidebar on the left."
-                },
+                "my_messages": my_messages,
                 "page_type": "view_coordinators",
                 "org_id": id,
             },
@@ -186,7 +185,9 @@ def addCoordinatorForm(request, id):
             coordinator.password_changed = False
             coordinator.profile_pic = "/default.svg"
             coordinator.save()
-            request.session["my_messages"] = True
+            request.session["my_messages"] = {
+                "success": "Registration Successful. Download the Login Credentials from the sidebar on the left."
+            }
             return redirect("accounts:view_coordinators", id)
         else:
             return render(
@@ -578,9 +579,13 @@ def switchCoordinatorsList(request, coord_id, page_id):
 @password_change_required
 def removeCoordinator(request, coord_id, page_id):
     coordinator = CoordinatorInCharge.objects.filter(id = coord_id).first()
+    coordinator_user = coordinator.user
     organization = coordinator.organization
     sessions = Session.objects.filter(coordinator = coordinator)
     teachers = TeacherInCharge.objects.filter(coordinator = coordinator)
+    teachers_user = []
+    for teacher in teachers:
+        teachers_user.append(teacher.user)
     for session in sessions:
         for teacher in teachers:
             students = StudentsInfo.objects.filter(session=session, teacher = teacher)
@@ -593,10 +598,11 @@ def removeCoordinator(request, coord_id, page_id):
                 session=session, teacher=teacher
             ).delete()
     sessions.delete()
-    teachers.delete()
-    coordinator.delete()
+    for teacher in teachers_user:
+        teacher.delete()
+    coordinator_user.delete()
     request.session["my_messages"] = {
-        "success": "Coordinator removed from session successfully"
+        "success": "Coordinator deleted successfully"
     }
     if page_id == 1:
         return redirect("accounts:view_coordinators", organization.id)
