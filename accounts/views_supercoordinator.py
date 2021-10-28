@@ -530,3 +530,75 @@ def edit_supercoordinator_profile(request):
                 "supercoordinator/update_supercoordinators_info.html",
                 {"form": form},
             )
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+@password_change_required
+def switchCoordinatorsList(request, coord_id, page_id):
+    og_coordinator = CoordinatorInCharge.objects.filter(id = coord_id).first()
+    organization = og_coordinator.organization
+    if request.method == "GET":
+        coordinators = organization.coordinatorincharge_set.all()
+        coordinators_without_og = []
+
+        for coordinator in coordinators:
+            if coordinator != og_coordinator:
+                coordinators_without_og.append(coordinator)
+
+        for coordinator in coordinators_without_og:
+            coordinator.fname = encryptionHelper.decrypt(coordinator.fname)
+            coordinator.lname = encryptionHelper.decrypt(coordinator.lname)
+        return render(
+            request,
+            "supercoordinator/switch_coordinators_list.html",
+            {"page_type": "switch_coordinators_list", "coordinators": coordinators_without_og},
+        )
+    else:
+        new_coordinator_id = request.POST.get("new_coordinator")
+        new_coordinator = CoordinatorInCharge.objects.filter(id=new_coordinator_id).first()
+        sessions = Session.objects.filter(coordinator = og_coordinator)
+        teachers = TeacherInCharge.objects.filter(coordinator = og_coordinator)
+        for session in sessions:
+            session.coordinator = new_coordinator
+            session.save()
+
+        for teacher in teachers:
+            teacher.coordinator = new_coordinator
+            teacher.save()
+
+        og_coordinator.delete()
+
+        if page_id == 1:
+            return redirect("accounts:view_coordinators", organization.id)
+        elif page_id == 2:
+            return redirect("accounts:all_coordinators")
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
+@password_change_required
+def removeCoordinator(request, coord_id, page_id):
+    coordinator = CoordinatorInCharge.objects.filter(id = coord_id).first()
+    organization = coordinator.organization
+    sessions = Session.objects.filter(coordinator = coordinator)
+    teachers = TeacherInCharge.objects.filter(coordinator = coordinator)
+    for session in sessions:
+        for teacher in teachers:
+            students = StudentsInfo.objects.filter(session=session, teacher = teacher)
+            for student in students:
+                student.teacher = None
+                student.session = None
+                student.save()
+            Teacher_Session.objects.filter(teacher=teacher).delete()
+            Student_Session.objects.filter(
+                session=session, teacher=teacher
+            ).delete()
+    sessions.delete()
+    teachers.delete()
+    coordinator.delete()
+    request.session["my_messages"] = {
+        "success": "Coordinator removed from session successfully"
+    }
+    if page_id == 1:
+        return redirect("accounts:view_coordinators", organization.id)
+    elif page_id == 2:
+        return redirect("accounts:all_coordinators")

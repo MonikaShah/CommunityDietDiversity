@@ -3,7 +3,7 @@
 {% load static %} {% load crispy_forms_tags%}
 
 {% block title %}
-<title>Switch Teacher</title>
+<title>Switch Coordinator</title>
 {% endblock %}
 
 {% block links %}
@@ -28,18 +28,18 @@
             <thead>
                 <tr>
                     <th scope="col"></th>
-                    <th scope="col">Teacher Name</th>
+                    <th scope="col">Coordinator Name</th>
                     <th scope="col">Organization</th>
                     <th scope="col">Username</th>
                 </tr>
             </thead>
             <tbody>
-                {% for teacher in teachers %}
+                {% for coordinator in coordinators %}
                     <tr>
-                        <td align="center"><input type="radio" name="new_teacher" value={{teacher.id}}></td>
-                        <td>{{teacher.fname}} {{ teacher.lname }}</td>
-                        <td>{{teacher.organization}}</td>
-                        <td>{{teacher.user.username}}</td>
+                        <td align="center"><input type="radio" name="new_coordinator" value={{coordinator.id}}></td>
+                        <td>{{coordinator.fname}} {{ coordinator.lname }}</td>
+                        <td>{{coordinator.organization}}</td>
+                        <td>{{coordinator.user.username}}</td>
                     </tr>
                 {% endfor %}
             </tbody>

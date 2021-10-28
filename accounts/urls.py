@@ -178,6 +178,11 @@ urlpatterns = [
         name="switch_teachers_list",
     ),
     path(
+        "switch_coordinators_list/<int:coord_id>/<int:page_id>/",
+        views_supercoordinator.switchCoordinatorsList,
+        name="switch_coordinators_list",
+    ),
+    path(
         "get_session_teachers_template/",
         views_coordinator.getSessionTeachersTemplate,
         name="get_session_teachers_template",
@@ -196,6 +201,11 @@ urlpatterns = [
         "remove_session_teacher/<int:session_id>/<int:teacher_id>/",
         views_coordinator.removeSessionTeacher,
         name="remove_session_teacher",
+    ),
+    path(
+        "remove_coordinator/<int:coord_id>/<int:page_id>/",
+        views_supercoordinator.removeCoordinator,
+        name="remove_coordinator",
     ),
     path(
         "coordinator_reset_password/",
