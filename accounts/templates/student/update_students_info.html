@@ -92,9 +92,9 @@
                     </div>
                 </div>
             </div>
-            {% if adult == "True" %}
+            {% if adult %}
                 <p class="mb-4 ml-3"><strong>NOTE:</strong> "Parent" below refers to one of your parents.</p>
-            {% elif adult == "False" %}
+            {% else %}
                 <p clas="mb-4 ml-3"><strong>NOTE:</strong> "Parent" below refers to the parent who has been registered along with you.</p>
             {% endif %}
             <div class="col-md-12">

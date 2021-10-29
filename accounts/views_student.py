@@ -100,6 +100,7 @@ def view_student_profile(request):
 def edit_student_profile(request):
     student = StudentsInfo.objects.filter(user=request.user).first()
     adult = encryptionHelper.decrypt(student.adult)
+    adult = True if adult == "True" else False
     if request.method == "GET":
         initial_dict = {
             "fname": encryptionHelper.decrypt(student.fname),
@@ -165,7 +166,6 @@ def edit_student_profile(request):
         form.fields["organization"].initial = student.organization
 
         form2 = SecondaryRegForm(request.POST)
-         
         if form.is_valid() and form2.is_valid():
             temp = check_state_city(True, 0, str(request.POST["state"]))
             if temp[0]:
@@ -225,9 +225,7 @@ def edit_student_profile(request):
 
             if request.FILES:
                 if request.FILES["profile_pic"].size > 5 * 1024 * 1024:
-                    form.add_error(
-                        "profile_pic", "File size must be less than 5MB."
-                    )
+                    form.add_error("profile_pic", "File size must be less than 5MB.")
 
                     return render(
                         request,
@@ -245,14 +243,14 @@ def edit_student_profile(request):
                 else:
                     x = student.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     student.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = student.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     student.profile_pic = "/default.svg"
 
@@ -286,7 +284,8 @@ def edit_student_profile(request):
 @password_change_required
 def secondary_registration(request):
     student = StudentsInfo.objects.filter(user=request.user).first()
-    adult = student.adult
+    adult = encryptionHelper.decrypt(student.adult)
+    adult = True if adult == "True" else False
     if request.method == "GET":
         if student.secondary_reg == None:
             form = SecondaryRegForm()
