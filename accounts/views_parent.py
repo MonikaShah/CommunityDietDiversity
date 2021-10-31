@@ -13,6 +13,7 @@ encryptionHelper = EncryptionHelper()
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@consent
 @password_change_required
 def parent_dashboard(request):
     students = (
@@ -30,6 +31,7 @@ def parent_dashboard(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@consent
 @password_change_required
 def addStudentForm(request):
     if request.method == "GET":
@@ -121,8 +123,7 @@ def addStudentForm(request):
             student.profile_pic = "/default.svg"
             student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
             student.parent = ParentsInfo.objects.filter(user=request.user).first()
-            student.first_password = ""
-            student.password_changed = True
+            student.consent = True
             student.save()
             return redirect("accounts:parent_dashboard")
         else:
@@ -142,6 +143,7 @@ def addStudentForm(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@consent
 @password_change_required
 def showStudent(request, id):
     student = StudentsInfo.objects.get(pk=id)
@@ -153,6 +155,7 @@ def showStudent(request, id):
     lambda user: is_parent(user),
     login_url="accounts:forbidden",
 )
+@consent
 @password_change_required
 def view_parent_profile(request):
     if request.method == "GET":
@@ -206,6 +209,7 @@ def view_parent_profile(request):
     lambda user: is_parent(user),
     login_url="accounts:forbidden",
 )
+@consent
 @password_change_required
 def edit_parent_profile(request):
     parent = ParentsInfo.objects.filter(user=request.user).first()

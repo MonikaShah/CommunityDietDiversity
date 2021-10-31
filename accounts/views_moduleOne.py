@@ -53,6 +53,7 @@ def creatingOrUpdatingDrafts(temp, user, formName):
 @user_passes_test(
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
+@consent
 @password_change_required
 @secondary_reg
 def draft(request):
@@ -86,10 +87,12 @@ def draft(request):
         creatingOrUpdatingDrafts(temp, user, "moduleOne")
     return redirect(request.META.get("HTTP_REFERER"))
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
+@consent
 @password_change_required
 @secondary_reg
 def previous(request):
@@ -107,10 +110,12 @@ def previous(request):
     newLink = "/".join(link)
     return redirect(newLink)
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
+@consent
 @password_change_required
 @secondary_reg
 @isActive("moduleOne", "student")
@@ -217,6 +222,7 @@ def moduleOne(request, user=None):
 @user_passes_test(
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
+@consent
 @password_change_required
 @secondary_reg
 @isActive("moduleOne", "student")
@@ -301,6 +307,7 @@ def moduleOne2(request, user=None):
 @user_passes_test(
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
+@consent
 @password_change_required
 @secondary_reg
 @isActive("moduleOne", "student")
@@ -402,6 +409,7 @@ def moduleOne3(request, user=None):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@consent
 @password_change_required
 @isActive("moduleOne", "parent")
 def parentModuleOne(request, id):
@@ -411,6 +419,7 @@ def parentModuleOne(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@consent
 @password_change_required
 @isActive("moduleOne", "parent")
 def parentModuleOne2(request, id):
@@ -420,10 +429,9 @@ def parentModuleOne2(request, id):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@consent
 @password_change_required
 @isActive("moduleOne", "parent")
 def parentModuleOne3(request, id):
     user = StudentsInfo.objects.get(pk=id).user
     return moduleOne3(request, user)
-
-

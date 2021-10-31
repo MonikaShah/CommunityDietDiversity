@@ -91,7 +91,7 @@ class Organization(models.Model):
 class ParentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
-    consent = models.BooleanField(default=True)
+    consent = models.BooleanField(default=False)
     fname = models.BinaryField()
     mname = models.BinaryField(null=True)
     lname = models.BinaryField()
@@ -196,7 +196,7 @@ class SecondaryReg(models.Model):
 
 class StudentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    consent = models.BooleanField(default=True)
+    consent = models.BooleanField(default=False)
     profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
     fname = models.BinaryField()
     mname = models.BinaryField(null=True)

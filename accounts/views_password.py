@@ -182,6 +182,7 @@ def forgot_password_questions(request):
     or is_student(user),
     login_url="accounts:forbidden",
 )
+@consent
 def change_password(request):
     if request.method == "GET":
         form = change_password_form()

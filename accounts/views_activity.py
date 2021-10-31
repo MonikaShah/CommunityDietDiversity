@@ -50,6 +50,7 @@ def creatingOrUpdatingDraftsActivity(temp, user, formName):
 @user_passes_test(
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
+@consent
 @password_change_required
 @secondary_reg
 def activityDraft(request):
@@ -87,6 +88,7 @@ def activityDraft(request):
 @user_passes_test(
     lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
 )
+@consent
 @password_change_required
 @secondary_reg
 @isActive("activity", "student")
@@ -185,6 +187,7 @@ def activity(request, user=None):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_parent, login_url="accounts:forbidden")
+@consent
 @password_change_required
 @isActive("activity", "parent")
 def parentActivity(request, id):

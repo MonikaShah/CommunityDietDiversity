@@ -124,3 +124,18 @@ def secondary_reg(func):
         return func(request, *args, **kwargs)
 
     return logic
+
+
+def consent(func):
+    def logic(request, *args, **kwargs):
+        if is_student(request.user):
+            student = StudentsInfo.objects.filter(user=request.user).first()
+            if not student.consent:
+                return redirect("accounts:give_consent")
+        else:
+            parent = ParentsInfo.objects.filter(user=request.user).first()
+            if not parent.consent:
+                return redirect("accounts:give_consent")
+        return func(request, *args, **kwargs)
+
+    return logic

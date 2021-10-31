@@ -12,6 +12,7 @@ encryptionHelper = EncryptionHelper()
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_student, login_url="accounts:forbidden")
+@consent
 @password_change_required
 @secondary_reg
 def student_dashboard(request):
@@ -24,6 +25,7 @@ def student_dashboard(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_student, login_url="accounts:forbidden")
+@consent
 @password_change_required
 @secondary_reg
 def information_forms(request):
@@ -39,6 +41,7 @@ def information_forms(request):
     lambda user: is_student(user),
     login_url="accounts:forbidden",
 )
+@consent
 @password_change_required
 @secondary_reg
 def view_student_profile(request):
@@ -95,6 +98,7 @@ def view_student_profile(request):
     lambda user: is_student(user),
     login_url="accounts:forbidden",
 )
+@consent
 @password_change_required
 @secondary_reg
 def edit_student_profile(request):
@@ -281,6 +285,7 @@ def edit_student_profile(request):
     lambda user: is_student(user),
     login_url="accounts:forbidden",
 )
+@consent
 @password_change_required
 def secondary_registration(request):
     student = StudentsInfo.objects.filter(user=request.user).first()

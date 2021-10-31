@@ -286,6 +286,7 @@ def students_info(request, is_adult=False):
                 parent.mobile_no = encryptionHelper.encrypt(previousPOST["mobile_no"])
                 parent.gender = encryptionHelper.encrypt(previousPOST["gender"])
                 parent.profile_pic = "/default.svg"
+                parent.consent = True
                 parent.save()
 
                 studentuser = studentuserform.save(commit=False)
@@ -306,8 +307,15 @@ def students_info(request, is_adult=False):
                 student.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
                 student.gender = encryptionHelper.encrypt(request.POST["gender"])
                 student.adult = encryptionHelper.encrypt(is_adult_func(student_dob))
+                student.state = State.objects.get(
+                    state__icontains=request.POST["state"].strip()
+                )
+                student.city = City.objects.get(
+                    city__icontains=request.POST["city"].strip()
+                )
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
                 student.profile_pic = "/default.svg"
+                student.consent = True
                 student.parent = parent
                 student.save()
 
@@ -403,6 +411,7 @@ def students_info(request, is_adult=False):
                 )
                 student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
                 student.profile_pic = "/default.svg"
+                student.consent = True
                 student.save()
 
                 user = authenticate(
@@ -481,3 +490,45 @@ def addSuperCoordinatorForm(request):
                 "registration/add_supercoordinator.html",
                 {"form": form, "user_creation_form": supercoordinatoruserform},
             )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
+)
+def give_consent(request):
+    if request.method == "GET":
+        if is_student(request.user):
+            student = StudentsInfo.objects.filter(user=request.user).first()
+            initial_dic = {"consent": student.consent}
+        else:
+            parent = ParentsInfo.objects.filter(user=request.user).first()
+            initial_dic = {"consent": parent.consent}
+        form = ConsentForm(initial=initial_dic)
+        return render(request, "registration/give_consent.html", {"form": form})
+    else:
+        form = ConsentForm(request.POST)
+        if form.is_valid():
+            if is_student(request.user):
+                student = StudentsInfo.objects.filter(user=request.user).first()
+                student.consent = True
+                student.save()
+                if student.parent:
+                    parent = student.parent
+                    parent.consent = True
+                    parent.save()
+                    students = StudentsInfo.objects.filter(parent=parent)
+                    for i in students:
+                        i.consent = True
+                        i.save()
+            else:
+                parent = ParentsInfo.objects.filter(user=request.user).first()
+                parent.consent = True
+                parent.save()
+                students = StudentsInfo.objects.filter(parent=request.user)
+                for i in students:
+                    i.consent = True
+                    i.save()
+            return redirect("accounts:loginlink")
+        else:
+            return render(request, "registration/give_consent.html", {"form": form})
