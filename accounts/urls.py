@@ -38,8 +38,8 @@ urlpatterns = [
     path("forgot_password/", views_password.forgot_password, name="forgot_password"),
     path(
         "forgot_password/<uidb64>/<token>/",
-        views_password.forgot_password_email,
-        name="forgot_password_email",
+        views_password.forgot_password_final,
+        name="forgot_password_final",
     ),
     path(
         "forgot_password/questions/",

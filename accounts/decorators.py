@@ -78,6 +78,8 @@ def registration_data_cleanup(func):
             del request.session["consent_visited"]
         if "parents_info_visited" in request.session:
             del request.session["parents_info_visited"]
+        if "forgot_password" in request.session:
+            del request.session["forgot_password"]
         return func(request, *args, **kwargs)
 
     return logic

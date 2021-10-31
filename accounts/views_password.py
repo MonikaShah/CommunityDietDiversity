@@ -22,10 +22,18 @@ encryptionHelper = EncryptionHelper()
 def reset_password_emailer(request, user, user_email):
     site = get_current_site(request)
     token = password_reset_token.make_token(user)
+    link = request.META.get("HTTP_REFERER")
+    if link[:4] == "http":
+        if link[:5] == "https":
+            protocol = "https://"
+        else:
+            protocol = "http://"
+    else:
+        protocol = ""
     message = get_template("password/email_template.html",).render(
         {
             "user": user,
-            "protocol": "https",
+            "protocol": protocol,
             "domain": site.domain,
             "uid": urlsafe_base64_encode(force_bytes(user.pk)),
             "token": token,
@@ -64,8 +72,8 @@ def forgot_password(request):
                 else:
                     user_email = encryptionHelper.decrypt(our_user[0].email)
                     if user_email == "":
-                        # Code for questions
-                        print()
+                        request.session["forgot_password"] = {"user": our_user}
+                        return redirect("accounts:forgot_password_questions")
                     else:
                         reset_password_emailer(request, user, user_email)
                         return render(
@@ -74,8 +82,9 @@ def forgot_password(request):
                             {
                                 "form": form,
                                 "my_messages": {
-                                    "success": "Mail sent on the email ID provided during registration. Please click on the link sent via mail to change password. The link will expire in 10 minutes."
+                                    "success": "Mail has been sent on the email ID provided during registration. Please click on the link sent via mail to change password. The link will expire in 10 minutes."
                                 },
+                                "user_type": our_user[1],
                             },
                         )
             else:
@@ -85,7 +94,7 @@ def forgot_password(request):
             return render(request, "password/forgot_password.html", {"form": form})
 
 
-def forgot_password_email(request, uidb64, token):
+def forgot_password_final(request, uidb64, token):
     if request.method == "GET":
         form = forgot_password_email_form()
         try:
@@ -94,13 +103,13 @@ def forgot_password_email(request, uidb64, token):
         except:
             return render(
                 request,
-                "password/forgot_password_email.html",
+                "password/forgot_password_final.html",
                 {"form": form, "my_messages": {"error": "Invalid URL."}},
             )
         if not password_reset_token.check_token(user, token):
             return render(
                 request,
-                "password/forgot_password_email.html",
+                "password/forgot_password_final.html",
                 {
                     "form": form,
                     "my_messages": {
@@ -108,7 +117,7 @@ def forgot_password_email(request, uidb64, token):
                     },
                 },
             )
-        return render(request, "password/forgot_password_email.html", {"form": form})
+        return render(request, "password/forgot_password_final.html", {"form": form})
     else:
         form = forgot_password_email_form(request.POST)
         try:
@@ -117,7 +126,7 @@ def forgot_password_email(request, uidb64, token):
         except:
             return render(
                 request,
-                "password/forgot_password_email.html",
+                "password/forgot_password_final.html",
                 {"form": form, "my_messages": {"error": "Invalid URL."}},
             )
         if password_reset_token.check_token(user, token):
@@ -135,14 +144,14 @@ def forgot_password_email(request, uidb64, token):
                             form.add_error("password2", "Both passwords didn't match!")
                             return render(
                                 request,
-                                "password/forgot_password_email.html",
+                                "password/forgot_password_final.html",
                                 {"form": form},
                             )
                     except ValidationError as e:
                         form.add_error("password1", e)
                         return render(
                             request,
-                            "password/forgot_password_email.html",
+                            "password/forgot_password_final.html",
                             {"form": form},
                         )
                 else:
@@ -150,16 +159,16 @@ def forgot_password_email(request, uidb64, token):
                         "password1", "Password entered is same as the previous one!"
                     )
                     return render(
-                        request, "password/forgot_password_email.html", {"form": form}
+                        request, "password/forgot_password_final.html", {"form": form}
                     )
             else:
                 return render(
-                    request, "password/forgot_password_email.html", {"form": form}
+                    request, "password/forgot_password_final.html", {"form": form}
                 )
         else:
             return render(
                 request,
-                "password/forgot_password_email.html",
+                "password/forgot_password_final.html",
                 {
                     "form": form,
                     "my_messages": {
@@ -170,6 +179,9 @@ def forgot_password_email(request, uidb64, token):
 
 
 def forgot_password_questions(request):
+    if not "forgot_password" in request.session:
+        return redirect("accounts:forbidden")
+    # Work in progress
     return render(request, "password/forgot_password_questions.html", {})
 
 
