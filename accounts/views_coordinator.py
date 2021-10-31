@@ -652,7 +652,7 @@ def coordinator_reset_password(request):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
 @password_change_required
-def teachers_login_credentials_download(request):
+def teachers_data_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
     bold = wb.add_format({"bold": True})
@@ -663,11 +663,11 @@ def teachers_login_credentials_download(request):
             "valign": "vcenter",
         }
     )
-    credentials = wb.add_worksheet("Credentials")
+    credentials = wb.add_worksheet("Teachers Data")
     credentials.set_row(0, 40)
     credentials.merge_range(
         "A1:J1",
-        "This sheet contains only the data of the teachers who haven't changed their password.",
+        '"***" indicates password changed by the user. (MAKE SURE THAT THE FOLLOWING SHEET CANNOT BE ACCESSED BY UNAUTHORIZED USERS SINCE IT CONTAINS SENSITIVE DATA)',
         merge_format,
     )
     columns = [
@@ -685,10 +685,17 @@ def teachers_login_credentials_download(request):
     credentials.set_column(0, len(columns) - 1, 18)
     for col_num in range(len(columns)):
         credentials.write(1, col_num, columns[col_num], bold)
-    teacher = TeacherInCharge.objects.filter(password_changed=False)
+    teacher = TeacherInCharge.objects.filter(
+        organization=CoordinatorInCharge.objects.filter(user=request.user)
+        .first()
+        .organization,
+    )
     for row_no, x in enumerate(teacher):
         credentials.write(row_no + 2, 0, x.user.username)
-        credentials.write(row_no + 2, 1, x.first_password)
+        if x.password_changed:
+            credentials.write(row_no + 2, 1, "***")
+        else:
+            credentials.write(row_no + 2, 1, x.first_password)
         credentials.write(row_no + 2, 2, encryptionHelper.decrypt(x.fname))
         if x.mname:
             x.mname = encryptionHelper.decrypt(x.mname)
@@ -719,7 +726,10 @@ def teachers_login_credentials_download(request):
         else:
             x.mobile_no = "-"
         credentials.write(row_no + 2, 7, x.mobile_no)
-        credentials.write(row_no + 2, 8, encryptionHelper.decrypt(x.dob))
+        dob = encryptionHelper.decrypt(x.dob).split("/")
+        dob[1], dob[0] = dob[0], dob[1]
+        dob = "/".join(dob)
+        credentials.write(row_no + 2, 8, dob)
         credentials.write(row_no + 2, 9, encryptionHelper.decrypt(x.gender))
     wb.close()
     output.seek(0)
@@ -729,7 +739,7 @@ def teachers_login_credentials_download(request):
     )
     response[
         "Content-Disposition"
-    ] = "attachment; filename=Teachers Login Credentials.xlsx"
+    ] = "attachment; filename=Teachers Data.xlsx"
     return response
 
 
@@ -739,21 +749,237 @@ def teachers_login_credentials_download(request):
     login_url="accounts:forbidden",
 )
 @password_change_required
-def parents_login_credentials_download(request):
+def parents_and_students_data_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
     bold = wb.add_format({"bold": True})
-    credentials = wb.add_worksheet("Credentials")
+    merge_format = wb.add_format(
+        {
+            "bold": True,
+            "align": "center",
+            "valign": "vcenter",
+        }
+    )
+    parent = wb.add_worksheet("Parents Data")
+    parent.set_row(0, 40)
+    parent.merge_range(
+        "A1:K1",
+        '"***" indicates password changed by the user. (MAKE SURE THAT THE FOLLOWING SHEET CANNOT BE ACCESSED BY UNAUTHORIZED USERS SINCE IT CONTAINS SENSITIVE DATA)',
+        merge_format,
+    )
     columns = [
-        "Username",
-        "Password",
+        "USERNAME",
+        "PASSWORD",
+        "Ref ID",
+        "First Name",
+        "Middle Name",
+        "Last Name",
+        "Aadhar Number",
+        "Email",
+        "Mobile Number",
+        "Date of Birth",
+        "Gender",
     ]
+    parent.set_column(0, len(columns) - 1, 18)
     for col_num in range(len(columns)):
-        credentials.write(0, col_num, columns[col_num], bold)
-    parent = ParentsInfo.objects.filter(password_changed=False)
-    for row_no, x in enumerate(parent):
-        credentials.write(row_no + 1, 0, x.user.username)
-        credentials.write(row_no + 1, 1, x.first_password)
+        parent.write(1, col_num, columns[col_num], bold)
+    student = wb.add_worksheet("Students Data")
+    student.set_row(0, 40)
+    student.merge_range(
+        "A1:V1",
+        '"***" indicates password changed by the user. "Parent\'s Ref ID" indicates the parent registered along with the student and "-" indicates that the student is an adult (MAKE SURE THAT THE FOLLOWING SHEET CANNOT BE ACCESSED BY UNAUTHORIZED USERS SINCE IT CONTAINS SENSITIVE DATA)',
+        merge_format,
+    )
+    columns = [
+        "USERNAME",
+        "PASSWORD",
+        "Parent's Ref ID",
+        "First Name",
+        "Middle Name",
+        "Last Name",
+        "Aadhar Number",
+        "Email",
+        "Mobile Number",
+        "Date of Birth",
+        "Gender",
+        "State",
+        "City",
+        "Pincode",
+        "Unique Number",
+        "Parent's Occupation",
+        "Parent's Education",
+        "Religious Belief",
+        "Type of Family",
+        "No. of Family Members",
+        "Total Family Income",
+        "Ration Card Color",
+    ]
+    student.set_column(0, len(columns) - 1, 18)
+    for col_num in range(len(columns)):
+        student.write(1, col_num, columns[col_num], bold)
+    if is_coordinator(request.user):
+        students = StudentsInfo.objects.filter(
+            organization=CoordinatorInCharge.objects.filter(user=request.user)
+            .first()
+            .organization,
+        )
+    else:
+        students = StudentsInfo.objects.filter(
+            organization=TeacherInCharge.objects.filter(user=request.user)
+            .first()
+            .organization,
+        )
+    parents_list = []
+    ref_count = 0
+    for row_no, x in enumerate(students):
+        student.write(row_no + 2, 0, x.user.username)
+        if x.password_changed:
+            student.write(row_no + 2, 1, "***")
+        else:
+            student.write(row_no + 2, 1, x.first_password)
+        if encryptionHelper.decrypt(x.adult) == "True":
+            student.write(row_no + 2, 2, "-")
+        else:
+            if x.parent in parents_list:
+                for index, i in enumerate(parents_list):
+                    if i == x.parent:
+                        student.write(row_no + 2, 2, index + 1)
+                        break
+            else:
+                ref_count += 1
+                student.write(row_no + 2, 2, ref_count)
+                parent_here = x.parent
+                parents_list.append(parent_here)
+                parent.write(ref_count + 1, 0, parent_here.user.username)
+                if parent_here.password_changed:
+                    parent.write(ref_count + 1, 1, "***")
+                else:
+                    parent.write(ref_count + 1, 1, parent_here.first_password)
+                parent.write(ref_count + 1, 2, ref_count)
+                parent.write(
+                    ref_count + 1, 3, encryptionHelper.decrypt(parent_here.fname)
+                )
+                if parent_here.mname:
+                    parent_here.mname = encryptionHelper.decrypt(parent_here.mname)
+                    if parent_here.mname == "":
+                        parent_here.mname = "-"
+                else:
+                    parent_here.mname = "-"
+                parent.write(ref_count + 1, 4, parent_here.mname)
+                parent.write(
+                    ref_count + 1, 5, encryptionHelper.decrypt(parent_here.lname)
+                )
+                if parent_here.aadhar:
+                    parent_here.aadhar = encryptionHelper.decrypt(parent_here.aadhar)
+                    if parent_here.aadhar == "":
+                        parent_here.aadhar = "-"
+                else:
+                    parent_here.aadhar = "-"
+                parent.write(ref_count + 1, 6, parent_here.aadhar)
+                if parent_here.email:
+                    parent_here.email = encryptionHelper.decrypt(parent_here.email)
+                    if parent_here.email == "":
+                        parent_here.email = "-"
+                else:
+                    parent_here.email = "-"
+                parent.write(ref_count + 1, 7, parent_here.email)
+                if parent_here.mobile_no:
+                    parent_here.mobile_no = encryptionHelper.decrypt(
+                        parent_here.mobile_no
+                    )
+                    if parent_here.mobile_no == "":
+                        parent_here.mobile_no = "-"
+                else:
+                    parent_here.mobile_no = "-"
+                parent.write(ref_count + 1, 8, parent_here.mobile_no)
+                dob = encryptionHelper.decrypt(parent_here.dob).split("/")
+                dob[1], dob[0] = dob[0], dob[1]
+                dob = "/".join(dob)
+                parent.write(ref_count + 1, 9, dob)
+                parent.write(
+                    ref_count + 1, 10, encryptionHelper.decrypt(parent_here.gender)
+                )
+        student.write(row_no + 2, 3, encryptionHelper.decrypt(x.fname))
+        if x.mname:
+            x.mname = encryptionHelper.decrypt(x.mname)
+            if x.mname == "":
+                x.mname = "-"
+        else:
+            x.mname = "-"
+        student.write(row_no + 2, 4, x.mname)
+        student.write(row_no + 2, 5, encryptionHelper.decrypt(x.lname))
+        if x.aadhar:
+            x.aadhar = encryptionHelper.decrypt(x.aadhar)
+            if x.aadhar == "":
+                x.aadhar = "-"
+        else:
+            x.aadhar = "-"
+        student.write(row_no + 2, 6, x.aadhar)
+        if x.email:
+            x.email = encryptionHelper.decrypt(x.email)
+            if x.email == "":
+                x.email = "-"
+        else:
+            x.email = "-"
+        student.write(row_no + 2, 7, x.email)
+        if x.mobile_no:
+            x.mobile_no = encryptionHelper.decrypt(x.mobile_no)
+            if x.mobile_no == "":
+                x.mobile_no = "-"
+        else:
+            x.mobile_no = "-"
+        student.write(row_no + 2, 8, x.mobile_no)
+        dob = encryptionHelper.decrypt(x.dob).split("/")
+        dob[1], dob[0] = dob[0], dob[1]
+        dob = "/".join(dob)
+        student.write(row_no + 2, 9, dob)
+        student.write(row_no + 2, 10, encryptionHelper.decrypt(x.gender))
+        student.write(row_no + 2, 11, x.state.state)
+        student.write(row_no + 2, 12, x.city.city)
+        student.write(row_no + 2, 13, encryptionHelper.decrypt(x.pincode))
+        student.write(row_no + 2, 14, encryptionHelper.decrypt(x.unique_no))
+        if x.secondary_reg:
+            if not x.secondary_reg.occupation:
+                occupation = "-"
+            else:
+                occupation = x.secondary_reg.occupation.occupation
+            student.write(row_no + 2, 15, occupation)
+            if not x.secondary_reg.edu:
+                edu = "-"
+            else:
+                edu = x.secondary_reg.edu.education
+            student.write(row_no + 2, 16, edu)
+            if not x.secondary_reg.religion:
+                religion = "-"
+            else:
+                religion = x.secondary_reg.religion.religion
+            student.write(row_no + 2, 17, religion)
+            if not x.secondary_reg.type_of_family:
+                type_of_family = "-"
+            else:
+                type_of_family = x.secondary_reg.type_of_family.family
+            student.write(row_no + 2, 18, type_of_family)
+            if not x.secondary_reg.no_of_family_members:
+                x.secondary_reg.no_of_family_members = "-"
+            student.write(row_no + 2, 19, x.secondary_reg.no_of_family_members)
+            if not x.secondary_reg.family_income:
+                family_income = "-"
+            else:
+                family_income = x.secondary_reg.family_income.family_income
+            student.write(row_no + 2, 20, family_income)
+            if not x.secondary_reg.ration_card_color:
+                ration_card_color = "-"
+            else:
+                ration_card_color = x.secondary_reg.ration_card_color.ration_card_color
+            student.write(row_no + 2, 21, ration_card_color)
+        else:
+            student.write(row_no + 2, 15, "-")
+            student.write(row_no + 2, 16, "-")
+            student.write(row_no + 2, 17, "-")
+            student.write(row_no + 2, 18, "-")
+            student.write(row_no + 2, 19, "-")
+            student.write(row_no + 2, 20, "-")
+            student.write(row_no + 2, 21, "-")
     wb.close()
     output.seek(0)
     response = HttpResponse(
@@ -762,40 +988,7 @@ def parents_login_credentials_download(request):
     )
     response[
         "Content-Disposition"
-    ] = "attachment; filename=Parent Login Credentials.xlsx"
-    return response
-
-
-@login_required(login_url="accounts:loginlink")
-@user_passes_test(
-    lambda user: is_coordinator(user) or is_teacher(user),
-    login_url="accounts:forbidden",
-)
-@password_change_required
-def students_login_credentials_download(request):
-    output = io.BytesIO()
-    wb = xlsxwriter.Workbook(output)
-    bold = wb.add_format({"bold": True})
-    credentials = wb.add_worksheet("Credentials")
-    columns = [
-        "Username",
-        "Password",
-    ]
-    for col_num in range(len(columns)):
-        credentials.write(0, col_num, columns[col_num], bold)
-    student = StudentsInfo.objects.filter(password_changed=False)
-    for row_no, x in enumerate(student):
-        credentials.write(row_no + 1, 0, x.user.username)
-        credentials.write(row_no + 1, 1, x.first_password)
-    wb.close()
-    output.seek(0)
-    response = HttpResponse(
-        output.read(),
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
-    response[
-        "Content-Disposition"
-    ] = "attachment; filename=Student Login Credentials.xlsx"
+    ] = "attachment; filename=Parents and Students Data.xlsx"
     return response
 
 
@@ -924,14 +1117,14 @@ def edit_coordinator_profile(request):
                 else:
                     x = coordinator.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = coordinator.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = "/default.svg"
 

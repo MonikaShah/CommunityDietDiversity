@@ -51,9 +51,9 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="my-nav-link nav-link" href="{% url 'accounts:coordinators_login_credentials_download'%}">
+                <a class="my-nav-link nav-link" href="{% url 'accounts:coordinators_data_download'%}">
                     <i class="fa fa-download" aria-hidden="true"></i>
-                    <span>Coordinators Login Credentials</span>
+                    <span>Coordinators Data</span>
                 </a>
             </li>
 
@@ -89,23 +89,17 @@
                 </a>
             </li>
             <hr class="sidebar-divider" style="color:white; margin:10px 0 0 0;">
-            <p class="mt-3"style="color: white;text-align: center;">Download Login Credentials</p>
+            <p class="mt-3"style="color: white;text-align: center;">Download Data</p>
             <li class="nav-item">
-                <a class="my-nav-link nav-link" href="{% url 'accounts:teachers_login_credentials_download'%}">
+                <a class="my-nav-link nav-link" href="{% url 'accounts:teachers_data_download'%}">
                     <i class="fa fa-download" aria-hidden="true"></i>
                     <span>Teachers</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="my-nav-link nav-link" href="{% url 'accounts:parents_login_credentials_download'%}">
+                <a class="my-nav-link nav-link" href="{% url 'accounts:parents_and_students_data_download'%}">
                     <i class="fa fa-download" aria-hidden="true"></i>
-                    <span>Parents</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="my-nav-link nav-link" href="{% url 'accounts:students_login_credentials_download'%}">
-                    <i class="fa fa-download" aria-hidden="true"></i>
-                    <span>Students</span>
+                    <span>Parents & Students</span>
                 </a>
             </li>
 
@@ -128,6 +122,12 @@
                 <a class="my-nav-link nav-link" href="{% url 'accounts:bulk_register'%}">
                     <i class="fas fa-fw fa-user-plus"></i>
                     <span>Bulk Register</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="my-nav-link nav-link" href="{% url 'accounts:parents_and_students_data_download'%}">
+                    <i class="fa fa-download" aria-hidden="true"></i>
+                    <span>Parents & Students Data</span>
                 </a>
             </li>
 

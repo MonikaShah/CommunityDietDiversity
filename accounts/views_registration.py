@@ -285,12 +285,6 @@ def students_info(request, is_adult=False):
                 parent.dob = encryptionHelper.encrypt(previousPOST["dob"])
                 parent.mobile_no = encryptionHelper.encrypt(previousPOST["mobile_no"])
                 parent.gender = encryptionHelper.encrypt(previousPOST["gender"])
-                parent.state = State.objects.get(
-                    state__icontains=previousPOST["state"].strip()
-                )
-                parent.city = City.objects.get(
-                    city__icontains=previousPOST["city"].strip()
-                )
                 parent.profile_pic = "/default.svg"
                 parent.save()
 

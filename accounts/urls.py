@@ -155,9 +155,9 @@ urlpatterns = [
         name="supercoordinator_reset_password",
     ),
     path(
-        "coordinators_login_credentials_download/",
-        views_supercoordinator.coordinators_login_credentials_download,
-        name="coordinators_login_credentials_download",
+        "coordinators_data_download/",
+        views_supercoordinator.coordinators_data_download,
+        name="coordinators_data_download",
     ),
     path(
         "coordinator_dashboard/",
@@ -213,19 +213,14 @@ urlpatterns = [
         name="coordinator_reset_password",
     ),
     path(
-        "teachers_login_credentials_download/",
-        views_coordinator.teachers_login_credentials_download,
-        name="teachers_login_credentials_download",
+        "teachers_data_download/",
+        views_coordinator.teachers_data_download,
+        name="teachers_data_download",
     ),
     path(
-        "parents_login_credentials_download/",
-        views_coordinator.parents_login_credentials_download,
-        name="parents_login_credentials_download",
-    ),
-    path(
-        "students_login_credentials_download/",
-        views_coordinator.students_login_credentials_download,
-        name="students_login_credentials_download",
+        "parents_and_students_data_download/",
+        views_coordinator.parents_and_students_data_download,
+        name="parents_and_students_data_download",
     ),
     path(
         "teacher_all_sessions/",

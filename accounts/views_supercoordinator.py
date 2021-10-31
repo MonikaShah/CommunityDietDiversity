@@ -290,7 +290,7 @@ def supercoordinator_reset_password(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
-def coordinators_login_credentials_download(request):
+def coordinators_data_download(request):
     output = io.BytesIO()
     wb = xlsxwriter.Workbook(output)
     bold = wb.add_format({"bold": True})
@@ -301,11 +301,11 @@ def coordinators_login_credentials_download(request):
             "valign": "vcenter",
         }
     )
-    credentials = wb.add_worksheet("Credentials")
+    credentials = wb.add_worksheet("Coordinators Data")
     credentials.set_row(0, 40)
     credentials.merge_range(
         "A1:K1",
-        "This sheet contains only the data of the coordinators who haven't changed their password.",
+        '"***" indicates password changed by the user. (MAKE SURE THAT THE FOLLOWING SHEET CANNOT BE ACCESSED BY UNAUTHORIZED USERS SINCE IT CONTAINS SENSITIVE DATA)',
         merge_format,
     )
     columns = [
@@ -324,10 +324,13 @@ def coordinators_login_credentials_download(request):
     credentials.set_column(0, len(columns) - 1, 18)
     for col_num in range(len(columns)):
         credentials.write(1, col_num, columns[col_num], bold)
-    coord = CoordinatorInCharge.objects.filter(password_changed=False)
+    coord = CoordinatorInCharge.objects.filter()
     for row_no, x in enumerate(coord):
         credentials.write(row_no + 2, 0, x.user.username)
-        credentials.write(row_no + 2, 1, x.first_password)
+        if x.password_changed:
+            credentials.write(row_no + 2, 1, "***")
+        else:
+            credentials.write(row_no + 2, 1, x.first_password)
         credentials.write(row_no + 2, 2, encryptionHelper.decrypt(x.fname))
         if x.mname:
             x.mname = encryptionHelper.decrypt(x.mname)
@@ -359,7 +362,10 @@ def coordinators_login_credentials_download(request):
         else:
             x.mobile_no = "-"
         credentials.write(row_no + 2, 8, x.mobile_no)
-        credentials.write(row_no + 2, 9, encryptionHelper.decrypt(x.dob))
+        dob = encryptionHelper.decrypt(x.dob).split("/")
+        dob[1], dob[0] = dob[0], dob[1]
+        dob = "/".join(dob)
+        credentials.write(row_no + 2, 9, dob)
         credentials.write(row_no + 2, 10, encryptionHelper.decrypt(x.gender))
     wb.close()
     output.seek(0)
@@ -369,7 +375,7 @@ def coordinators_login_credentials_download(request):
     )
     response[
         "Content-Disposition"
-    ] = "attachment; filename=Coordinators Login Credentials.xlsx"
+    ] = "attachment; filename=Coordinators Data.xlsx"
     return response
 
 
@@ -498,9 +504,7 @@ def edit_supercoordinator_profile(request):
 
             if request.FILES:
                 if request.FILES["profile_pic"].size > 5 * 1024 * 1024:
-                    form.add_error(
-                        "profile_pic", "File size must be less than 5MB."
-                    )
+                    form.add_error("profile_pic", "File size must be less than 5MB.")
 
                     return render(
                         request,
@@ -512,14 +516,14 @@ def edit_supercoordinator_profile(request):
                 else:
                     x = supercoordinator.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     supercoordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = supercoordinator.profile_pic.url.split("/account/media/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     supercoordinator.profile_pic = "/default.svg"
 
@@ -532,11 +536,12 @@ def edit_supercoordinator_profile(request):
                 {"form": form},
             )
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
 @password_change_required
 def switchCoordinatorsList(request, coord_id, page_id):
-    og_coordinator = CoordinatorInCharge.objects.filter(id = coord_id).first()
+    og_coordinator = CoordinatorInCharge.objects.filter(id=coord_id).first()
     organization = og_coordinator.organization
     if request.method == "GET":
         coordinators = organization.coordinatorincharge_set.all()
@@ -552,13 +557,18 @@ def switchCoordinatorsList(request, coord_id, page_id):
         return render(
             request,
             "supercoordinator/switch_coordinators_list.html",
-            {"page_type": "switch_coordinators_list", "coordinators": coordinators_without_og},
+            {
+                "page_type": "switch_coordinators_list",
+                "coordinators": coordinators_without_og,
+            },
         )
     else:
         new_coordinator_id = request.POST.get("new_coordinator")
-        new_coordinator = CoordinatorInCharge.objects.filter(id=new_coordinator_id).first()
-        sessions = Session.objects.filter(coordinator = og_coordinator)
-        teachers = TeacherInCharge.objects.filter(coordinator = og_coordinator)
+        new_coordinator = CoordinatorInCharge.objects.filter(
+            id=new_coordinator_id
+        ).first()
+        sessions = Session.objects.filter(coordinator=og_coordinator)
+        teachers = TeacherInCharge.objects.filter(coordinator=og_coordinator)
         for session in sessions:
             session.coordinator = new_coordinator
             session.save()
@@ -574,36 +584,33 @@ def switchCoordinatorsList(request, coord_id, page_id):
         elif page_id == 2:
             return redirect("accounts:all_coordinators")
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_supercoordinator, login_url="accounts:forbidden")
 @password_change_required
 def removeCoordinator(request, coord_id, page_id):
-    coordinator = CoordinatorInCharge.objects.filter(id = coord_id).first()
+    coordinator = CoordinatorInCharge.objects.filter(id=coord_id).first()
     coordinator_user = coordinator.user
     organization = coordinator.organization
-    sessions = Session.objects.filter(coordinator = coordinator)
-    teachers = TeacherInCharge.objects.filter(coordinator = coordinator)
+    sessions = Session.objects.filter(coordinator=coordinator)
+    teachers = TeacherInCharge.objects.filter(coordinator=coordinator)
     teachers_user = []
     for teacher in teachers:
         teachers_user.append(teacher.user)
     for session in sessions:
         for teacher in teachers:
-            students = StudentsInfo.objects.filter(session=session, teacher = teacher)
+            students = StudentsInfo.objects.filter(session=session, teacher=teacher)
             for student in students:
                 student.teacher = None
                 student.session = None
                 student.save()
             Teacher_Session.objects.filter(teacher=teacher).delete()
-            Student_Session.objects.filter(
-                session=session, teacher=teacher
-            ).delete()
+            Student_Session.objects.filter(session=session, teacher=teacher).delete()
     sessions.delete()
     for teacher in teachers_user:
         teacher.delete()
     coordinator_user.delete()
-    request.session["my_messages"] = {
-        "success": "Coordinator deleted successfully"
-    }
+    request.session["my_messages"] = {"success": "Coordinator deleted successfully"}
     if page_id == 1:
         return redirect("accounts:view_coordinators", organization.id)
     elif page_id == 2:
