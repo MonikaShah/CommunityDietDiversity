@@ -25,108 +25,62 @@
     <div class="col-md-12 mb-4 p-0">
         <h6><b>Step 1:</b> Download Template</h6>
         <form action="{% url 'accounts:get_template'%}">
-            <button type="submit" class="btn btn-warning btnmedium"><i class="fa fa-download mr-1" aria-hidden="true"></i> Template</button>
+            <button type="submit" class="btn btn-warning btnmedium"><i class="fa fa-download mr-1"
+                    aria-hidden="true"></i> Template</button>
         </form>
     </div>
     <div class="col-md-12 mb-4 p-0">
         <h6><b>Step 2:</b> Upload Filled Excel File</h6>
         <p class="m-0"><b>INSTRUCTIONS:-</b></p>
         <ul>
-            <li>Do not edit the column heading row.</li>
+            <li>Do not edit the heading rows.</li>
             <li>Do not change the column order.</li>
-            <li>Do not edit the pre filled parentId column.</li>
-            <li>Fill both the sheets in the template file provided above.</li>
-            <li>If the parent already has an existing account, then just enter their username in the parent username column and leave rest of the columns empty.</li>
-            <li>For the parents whose account has to be created for them leave the parent username column empty.</li>
+            <li>Do not edit the pre-filled “Ref ID” column in the “Parents Data” sheet.</li>
+            <li>Fill both the sheets (Parents Data & Students Data) in the template file provided above.</li>
+            <li>If the parent already has an existing account, then just enter their username in the “Username” column
+                and leave the rest of the columns empty.</li>
+            <li>For the parents whose account has to be created for them, leave the parent username column empty.</li>
+            <li>Do not fill multiple rows for the same person. (Example:- If one parent has two or more students, there
+                will be only one row of data filled for that particular parent and then that parent’s “Ref ID” can be
+                added to multiple children.)</li>
             <li>Data provided after an empty row will not be considered.</li>
-            <li>Email id and phone number are not mandatory fields. (We highly recommend to provide email id since it will be used for password reset.)</li>
-            <li>For Parent/Student name numbers and special characters are not allowed except apostrophe.</li>
-            <li>Format for Date of birth will be MM/DD/YYYY.</li>
-            <li>Only a 10 digit mobile number needs to be provided.</li>
-            <li>State and City are case sensitive, For example: Dadra & Nagar Haveli.</li>
-            <li>Make sure to add correct "parentId" in student's "parentId" column.</li>
-            <li>For students of age 18 and above the "parentId" column can be kept empty.</li>
-            <li>Use only the option given bellow for their respective columns. (The options are case sensitive, we recommend to copy paste them.)
-                <ul>
-                    <li>Gender:-
-                        <ul>
-                            <li>Male</li>
-                            <li>Female</li>
-                            <li>Other</li>
-                        </ul>
-                    </li>
-                    <li>Religion:-
-                        <ul>
-                            <li>Hinduism</li>
-                            <li>Islam</li>
-                            <li>Christianity</li>
-                            <li>Sikhism</li>
-                            <li>Jainism</li>
-                            <li>Buddhism</li>
-                        </ul>
-                    </li>
-                    <li>Type of family:-
-                        <ul>
-                            <li>Nuclear</li>
-                            <li>Joint</li>
-                            <li>Extended</li>
-                        </ul>
-                    </li>
-                    <li>Education:-
-                        <ul>
-                            <li>Professional degree (Post graduate)</li>
-                            <li>Graduate (Bachelors)</li>
-                            <li>Higher Secondary certificate (12th Std)</li>
-                            <li>Secondary school certificate (SSC - 10th Std)</li>
-                            <li>Middle school (5th to 10th std)</li>
-                            <li>Primary school (1st to 4th std)</li>
-                            <li>Illiterate (No education)</li>
-                        </ul>
-                    </li>
-                    <li>Occupation:-
-                        <ul>
-                            <li>Professional</li>
-                            <li>Business person</li>
-                            <li>Service industry</li>
-                            <li>Homemaker</li>
-                            <li>Retired</li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
+            <li>Aadhar Number and Email are not mandatory fields. (We highly recommend providing them since they will be
+                used for password reset.)</li>
+            <li>For Parent/Student name numbers and special characters are not allowed except apostrophes.</li>
+            <li>Format for Date of birth can be DD-MM-YYYY or DD/MM/YYYY.</li>
+            <li>Make sure to add the correct "Ref ID" in the student's "Parent’s Ref ID" column.</li>
+            <li>For students of age 18 and above the "Parent’s Ref ID" column can be kept empty.</li>
+            <li>Once Registration is successful do not register using the same sheet since it will generate fresh new
+                accounts for the same data.</li>
         </ul>
         <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row">
                 <div class="col-md-8">
                     <div class="my-2">
-                        <input type="file" class="form-control" title="Upload Filled Excel File" name="excel_file" required accept=".xlsx">
+                        <input type="file" class="form-control" title="Upload Filled Excel File" name="excel_file"
+                            required accept=".xlsx">
                         <small class="form-text text-muted">Only .xlsx file format is accepted.</small>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-info btnmedium"><i class="fa fa-upload mr-1" aria-hidden="true"></i> Upload</button>
+            <button type="submit" class="btn btn-info btnmedium"><i class="fa fa-upload mr-1" aria-hidden="true"></i>
+                Upload</button>
         </form>
         <div id="message">
             {% if my_messages %}
-                {% if my_messages.error %}
-                    <div class="mb-0 mt-2 alert alert-danger" role="alert">
-                        {{ my_messages.error }}
-                    </div>
-                {% endif %}
-                {% if my_messages.success %}
-                    <div class="mb-0 mt-2 alert alert-success" role="alert">
-                        {{ my_messages.success }}
-                    </div>
-                {% endif %}
+            {% if my_messages.error %}
+            <div class="mb-0 mt-2 alert alert-danger" role="alert">
+                {{ my_messages.error }}
+            </div>
+            {% endif %}
+            {% if my_messages.success %}
+            <div class="mb-0 mt-2 alert alert-success" role="alert">
+                {{ my_messages.success }}
+            </div>
+            {% endif %}
             {% endif %}
         </div>
-    </div>
-    <div class="col-md-12 p-0">
-        <h6><b>Step 3:</b> Download Student Data</h6>
-        <form action="{% url 'accounts:download_data'%}">
-            <button type="submit" class="btn btn-primary btnmedium"><i class="fa fa-download mr-1" aria-hidden="true"></i> Student Data</button>
-        </form>
     </div>
 </div>
 {% endblock %}

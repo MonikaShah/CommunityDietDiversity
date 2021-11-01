@@ -1,9 +1,10 @@
 import io
+import os
 import openpyxl
 import xlsxwriter
 from datetime import datetime
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -230,7 +231,7 @@ def addSessionStudents(request, id):
         student_added = 0
         student_exists = 0
         for student_user in student_data:
-            if student_user.session !=None:
+            if student_user.session != None:
                 student_exists += 1
             else:
                 teacher = TeacherInCharge.objects.filter(user=request.user).first()
@@ -447,15 +448,27 @@ def getFormDetails(request, id):
                     ).first()
 
                     if draftForm.draft:
-                        temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                        temp.append(
+                            encryptionHelper.decrypt(student.fname)
+                            + " "
+                            + encryptionHelper.decrypt(student.lname)
+                        )
                         temp.append("-")
                         not_filled_students.append(temp)
                     else:
-                        temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                        temp.append(
+                            encryptionHelper.decrypt(student.fname)
+                            + " "
+                            + encryptionHelper.decrypt(student.lname)
+                        )
                         temp.append(draftForm.submission_timestamp)
                         filled_students.append(temp)
                 else:
-                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                    temp.append(
+                        encryptionHelper.decrypt(student.fname)
+                        + " "
+                        + encryptionHelper.decrypt(student.lname)
+                    )
                     temp.append("-")
                     not_filled_students.append(temp)
 
@@ -468,11 +481,19 @@ def getFormDetails(request, id):
                     submitted_form = ModuleOne.objects.filter(
                         student=student, submission_timestamp__gte=form.start_timestamp
                     ).first()
-                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                    temp.append(
+                        encryptionHelper.decrypt(student.fname)
+                        + " "
+                        + encryptionHelper.decrypt(student.lname)
+                    )
                     temp.append(submitted_form.submission_timestamp)
                     filled_students.append(temp)
                 else:
-                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                    temp.append(
+                        encryptionHelper.decrypt(student.fname)
+                        + " "
+                        + encryptionHelper.decrypt(student.lname)
+                    )
                     temp.append("-")
                     not_filled_students.append(temp)
 
@@ -488,15 +509,27 @@ def getFormDetails(request, id):
                     ).first()
 
                     if draftForm.draft:
-                        temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                        temp.append(
+                            encryptionHelper.decrypt(student.fname)
+                            + " "
+                            + encryptionHelper.decrypt(student.lname)
+                        )
                         temp.append("-")
                         not_filled_students.append(temp)
                     else:
-                        temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                        temp.append(
+                            encryptionHelper.decrypt(student.fname)
+                            + " "
+                            + encryptionHelper.decrypt(student.lname)
+                        )
                         temp.append(draftForm.submission_timestamp)
                         filled_students.append(temp)
                 else:
-                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                    temp.append(
+                        encryptionHelper.decrypt(student.fname)
+                        + " "
+                        + encryptionHelper.decrypt(student.lname)
+                    )
                     temp.append("-")
                     not_filled_students.append(temp)
 
@@ -509,11 +542,19 @@ def getFormDetails(request, id):
                     submitted_form = Activity.objects.filter(
                         student=student, submission_timestamp__gte=form.start_timestamp
                     ).first()
-                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                    temp.append(
+                        encryptionHelper.decrypt(student.fname)
+                        + " "
+                        + encryptionHelper.decrypt(student.lname)
+                    )
                     temp.append(submitted_form.submission_timestamp)
                     filled_students.append(temp)
                 else:
-                    temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                    temp.append(
+                        encryptionHelper.decrypt(student.fname)
+                        + " "
+                        + encryptionHelper.decrypt(student.lname)
+                    )
                     temp.append("-")
                     not_filled_students.append(temp)
 
@@ -817,67 +858,20 @@ def manageForms(request, id):
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 @password_change_required
 def getTemplate(request):
-    output = io.BytesIO()
-    wb = xlsxwriter.Workbook(output)
-    align = wb.add_format()
-    align.set_align("center")
-    bold = wb.add_format({"bold": True})
-    ws = wb.add_worksheet("Parents Data")
-    ws2 = wb.add_worksheet("Students Data")
-
-    columns = [
-        "parentId",
-        "Parent Username",
-        "Parent Name",
-        "Email id",
-        "Phone Number",
-        "Gender",
-        "Date of Birth",
-        "Pincode",
-        "State",
-        "City",
-        "Address",
-        "Religion",
-        "Type of family",
-        "No of family members",
-        "Children Count",
-        "Education",
-        "Occupation",
-    ]
-    columns2 = [
-        "Student Name",
-        "Email id",
-        "Phone Number",
-        "Gender",
-        "Date of Birth",
-        "Pincode",
-        "State",
-        "City",
-        "Address",
-        "Roll Number",
-        "parentId",
-    ]
-    for col_num in range(len(columns)):
-        ws.write(0, col_num, columns[col_num], bold)
-    for col_num in range(len(columns2)):
-        ws2.write(0, col_num, columns2[col_num], bold)
-    for row_num in range(1, 1000):
-        ws.write(row_num, 0, row_num)
-        ws.write(row_num, 1, "-", align)
-
-    wb.close()
-
-    output.seek(0)
-    response = HttpResponse(
-        output.read(),
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    file_path = os.path.join(
+        settings.BASE_DIR, "accounts/Bulk Registration Template.xlsx"
     )
-    response[
-        "Content-Disposition"
-    ] = "attachment; filename=bulkRegistrationTemplate.xlsx"
-    return response
+    if os.path.exists(file_path):
+        with open(file_path, "rb") as fh:
+            response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+            response["Content-Disposition"] = "inline; filename=" + os.path.basename(
+                file_path
+            )
+            return response
+    raise Http404
 
 
+# Work in progress
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 @password_change_required
@@ -1723,6 +1717,7 @@ def downloadData(request):
     ] = "attachment; filename=Parent and Student list.xlsx"
     return response
 
+
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
     lambda user: is_teacher(user),
@@ -1740,36 +1735,41 @@ def view_teacher_profile(request):
 
             if teacher.mname:
                 teacher.mname = encryptionHelper.decrypt(teacher.mname)
-                if teacher.mname == '':
+                if teacher.mname == "":
                     teacher.mname = ""
             else:
                 teacher.mname = ""
-            
+
             if teacher.aadhar:
                 teacher.aadhar = encryptionHelper.decrypt(teacher.aadhar)
-                if teacher.aadhar == '':
+                if teacher.aadhar == "":
                     teacher.aadhar = "-"
             else:
                 teacher.aadhar = "-"
-            
+
             if teacher.email:
                 teacher.email = encryptionHelper.decrypt(teacher.email)
-                if teacher.email == '':
+                if teacher.email == "":
                     teacher.email = "-"
             else:
                 teacher.email = "-"
-            
+
             if teacher.mobile_no:
                 teacher.mobile_no = encryptionHelper.decrypt(teacher.mobile_no)
-                if teacher.mobile_no == '':
+                if teacher.mobile_no == "":
                     teacher.mobile_no = "-"
             else:
                 teacher.mobile_no = "-"
 
             teacher.dob = encryptionHelper.decrypt(teacher.dob)
             teacher.gender = encryptionHelper.decrypt(teacher.gender)
-            
-            return render( request, "teacher/view_teacher_profile.html", {"page_type": "view_teacher_profile", "teacher": teacher})
+
+            return render(
+                request,
+                "teacher/view_teacher_profile.html",
+                {"page_type": "view_teacher_profile", "teacher": teacher},
+            )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
@@ -1786,7 +1786,7 @@ def edit_teacher_profile(request):
             "profile_pic": teacher.profile_pic,
             "dob": encryptionHelper.decrypt(teacher.dob),
             "gender": encryptionHelper.decrypt(teacher.gender),
-            "organization": teacher.organization
+            "organization": teacher.organization,
         }
 
         if teacher.mname:
@@ -1798,10 +1798,11 @@ def edit_teacher_profile(request):
         if teacher.mobile_no:
             initial_dict["mobile_no"] = encryptionHelper.decrypt(teacher.mobile_no)
 
-        form = TeachersInfoForm(request.POST or None, initial = initial_dict)
+        form = TeachersInfoForm(request.POST or None, initial=initial_dict)
         form.fields["organization"].disabled = True
         return render(
-            request, "teacher/update_teachers_info.html",
+            request,
+            "teacher/update_teachers_info.html",
             {
                 "form": form,
             },
@@ -1829,9 +1830,7 @@ def edit_teacher_profile(request):
 
             if request.FILES:
                 if request.FILES["profile_pic"].size > 5 * 1024 * 1024:
-                    form.add_error(
-                        "profile_pic", "File size must be less than 5MB."
-                    )
+                    form.add_error("profile_pic", "File size must be less than 5MB.")
 
                     return render(
                         request,
@@ -1841,16 +1840,16 @@ def edit_teacher_profile(request):
                         },
                     )
                 else:
-                    x = teacher.profile_pic.url.split('/account/media/')
-                    if x[1] != 'default.svg':
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                    x = teacher.profile_pic.url.split("/account/media/")
+                    if x[1] != "default.svg":
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     teacher.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = teacher.profile_pic.url.split('/account/media/')
-                    if x[1] != 'default.svg':
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                    x = teacher.profile_pic.url.split("/account/media/")
+                    if x[1] != "default.svg":
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     teacher.profile_pic = "/default.svg"
 
@@ -1862,7 +1861,5 @@ def edit_teacher_profile(request):
             return render(
                 request,
                 "teacher/update_teachers_info.html",
-                {
-                    "form": form
-                },
+                {"form": form},
             )
