@@ -273,6 +273,11 @@ urlpatterns = [
         views_teacher.getFormDetails,
         name="get_form_details",
     ),
+     path(
+        "teacher_dashboard/<int:id>/",
+        views_teacher.getInfoFormDetails,
+        name="get_info_form_details",
+    ),
     path("manage-forms/<int:id>/", views_teacher.manageForms, name="manage_forms"),
     path("getTemplate/", views_teacher.getTemplate, name="get_template"),
     path("bulkRegister/", views_teacher.bulkRegister, name="bulk_register"),

@@ -72,7 +72,7 @@ def viewSessionStudents(request, id, open_id, my_messages=None):
     for student in students:
         student.fname = encryptionHelper.decrypt(student.fname)
         student.lname = encryptionHelper.decrypt(student.lname)
-        student.rollno = encryptionHelper.decrypt(student.rollno)
+        student.unique_no = encryptionHelper.decrypt(student.unique_no)
     if my_messages != None:
         return render(
             request,
@@ -277,7 +277,7 @@ def addSessionStudentsList(request, id):
         for student in students:
             student.fname = encryptionHelper.decrypt(student.fname)
             student.lname = encryptionHelper.decrypt(student.lname)
-            student.rollno = encryptionHelper.decrypt(student.rollno)
+            student.unique_no = encryptionHelper.decrypt(student.unique_no)
         return render(
             request,
             "teacher/add_session_students_list.html",
@@ -497,11 +497,78 @@ def getFormDetails(request, id):
                     temp.append("-")
                     not_filled_students.append(temp)
 
-    elif form.form.name == "activity":
+    # elif form.form.name == "activity":
+    #     for student in total_students:
+    #         temp = []
+    #         # if form.open:
+    #         if Activity.objects.filter(
+    #                 student=student, submission_timestamp__gte=form.start_timestamp
+    #             ).exists():
+    #                 draftForm = Activity.objects.filter(
+    #                     student=student, submission_timestamp__gte=form.start_timestamp
+    #                 ).first()
+
+    #                 if draftForm.draft:
+    #                     temp.append(
+    #                         encryptionHelper.decrypt(student.fname)
+    #                         + " "
+    #                         + encryptionHelper.decrypt(student.lname)
+    #                     )
+    #                     temp.append("-")
+    #                     not_filled_students.append(temp)
+    #                 else:
+    #                     temp.append(
+    #                         encryptionHelper.decrypt(student.fname)
+    #                         + " "
+    #                         + encryptionHelper.decrypt(student.lname)
+    #                     )
+    #                     temp.append(draftForm.submission_timestamp)
+    #                     filled_students.append(temp)
+    #         else:
+    #             temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+    #             temp.append("-")
+    #             not_filled_students.append(temp)
+
+
+    return render(
+        request,
+        "teacher/teacher_dashboard_getDetails.html",
+        {
+            "result": temp_list,
+            "filled_students": filled_students,
+            "not_filled_students": not_filled_students,
+            "open": form_open,
+        },
+    )
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_teacher, login_url="accounts:forbidden")
+@password_change_required
+def getInfoFormDetails(request, id):
+    form = FormDetails.objects.get(pk=id)
+    teacher = form.teacher
+    total_students = teacher.studentsinfo_set.all()
+
+    filled_students = []
+    not_filled_students = []
+    if not form.open:
+        form_open = False
+        temp_list = [form.form, form.start_timestamp, form.end_timestamp]
+    else:
+        form_open = True
+        temp_list = [form.form, form.start_timestamp]
+
+    if form.pre:
+        temp_list.append("Pre Test")
+    else:
+        temp_list.append("Post Test")
+
+    if form.form.name == "activity":
         for student in total_students:
             temp = []
-            if form.open:
-                if Activity.objects.filter(
+            # if form.open:
+            if Activity.objects.filter(
                     student=student, submission_timestamp__gte=form.start_timestamp
                 ).exists():
                     draftForm = Activity.objects.filter(
@@ -524,43 +591,31 @@ def getFormDetails(request, id):
                         )
                         temp.append(draftForm.submission_timestamp)
                         filled_students.append(temp)
-                else:
-                    temp.append(
-                        encryptionHelper.decrypt(student.fname)
-                        + " "
-                        + encryptionHelper.decrypt(student.lname)
-                    )
-                    temp.append("-")
-                    not_filled_students.append(temp)
-
             else:
-                if Activity.objects.filter(
-                    student=student,
-                    submission_timestamp__gte=form.start_timestamp,
-                    submission_timestamp__lte=form.end_timestamp,
-                ).exists():
-                    submitted_form = Activity.objects.filter(
-                        student=student, submission_timestamp__gte=form.start_timestamp
-                    ).first()
-                    temp.append(
-                        encryptionHelper.decrypt(student.fname)
-                        + " "
-                        + encryptionHelper.decrypt(student.lname)
-                    )
-                    temp.append(submitted_form.submission_timestamp)
-                    filled_students.append(temp)
-                else:
-                    temp.append(
-                        encryptionHelper.decrypt(student.fname)
-                        + " "
-                        + encryptionHelper.decrypt(student.lname)
-                    )
-                    temp.append("-")
-                    not_filled_students.append(temp)
+                temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                temp.append("-")
+                not_filled_students.append(temp)
+
+            # else:
+            #     if Activity.objects.filter(
+            #         student=student,
+            #         submission_timestamp__gte=form.start_timestamp,
+            #         submission_timestamp__lte=form.end_timestamp,
+            #     ).exists():
+            #         submitted_form = Activity.objects.filter(
+            #             student=student, submission_timestamp__gte=form.start_timestamp
+            #         ).first()
+            #         temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+            #         temp.append(submitted_form.submission_timestamp)
+            #         filled_students.append(temp)
+            #     else:
+            #         temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+            #         temp.append("-")
+            #         not_filled_students.append(temp)
 
     return render(
         request,
-        "teacher/teacher_dashboard_getDetails.html",
+        "teacher/teacher_dashboard_getDetails_InfoForm.html",
         {
             "result": temp_list,
             "filled_students": filled_students,
@@ -612,14 +667,14 @@ def manageForms(request, id):
                 .order_by("-start_timestamp")
                 .first()
             )
-            if form2:
-                if form2.pre:
-                    activity["pre"] = True
-                    activity["post"] = False
+            # if form2:
+            #     if form2.pre:
+            #         activity["pre"] = True
+            #         activity["post"] = False
 
-                else:
-                    activity["post"] = True
-                    activity["pre"] = False
+            #     else:
+            #         activity["post"] = True
+            #         activity["pre"] = False
 
         return render(
             request,
@@ -740,10 +795,10 @@ def manageForms(request, id):
 
         elif "activity" in request.POST:
             activity_pre = request.POST.get("activity_pre", False)
-            activity_post = request.POST.get("activity_post", False)
-            if activity_pre == "on" and activity_post == "on":
-                messages.error(request, "Cannot select both PreTest and PostTest")
-                return redirect("accounts:manage_forms")
+            # activity_post = request.POST.get("activity_post", False)
+            # if activity_pre == "on" and activity_post == "on":
+            #     messages.error(request, "Cannot select both PreTest and PostTest")
+            #     return redirect("accounts:manage_forms")
 
             form = Form.objects.get(name="activity")
             teacher = TeacherInCharge.objects.get(user=request.user)
@@ -752,8 +807,8 @@ def manageForms(request, id):
                 session=session, teacher=teacher
             )
 
-            if activity_pre == "on":
-                if not FormDetails.objects.filter(
+            # if activity_pre == "on":
+            if not FormDetails.objects.filter(
                     form=form, teacher=teacher, session=session, pre=True, open=True
                 ).exists():
                     update = FormDetails(
@@ -797,54 +852,54 @@ def manageForms(request, id):
                             draftForm.delete()
                     update.save()
 
-            if activity_post == "on":
-                if not FormDetails.objects.filter(
-                    form=form, teacher=teacher, session=session, pre=False, open=True
-                ).exists():
-                    update = FormDetails(
-                        form=form,
-                        teacher=teacher,
-                        session=session,
-                        pre=False,
-                        open=True,
-                        start_timestamp=datetime.now(),
-                    )
-                    update.save()
-            else:
-                if FormDetails.objects.filter(
-                    form=form, teacher=teacher, session=session, pre=False, open=True
-                ).exists():
-                    update = FormDetails.objects.filter(
-                        form=form,
-                        teacher=teacher,
-                        session=session,
-                        pre=False,
-                        open=True,
-                    ).first()
-                    update.open = False
-                    update.end_timestamp = datetime.now()
-                    teacher = TeacherInCharge.objects.get(user=request.user)
-                    session = Session.objects.filter(id=id).first()
-                    total_students = StudentsInfo.objects.filter(
-                        session=session, teacher=teacher
-                    )
-                    for student in total_students:
-                        if Activity.objects.filter(
-                            student=student,
-                            submission_timestamp__gte=update.start_timestamp,
-                            submission_timestamp__lte=update.end_timestamp,
-                            draft=True,
-                            pre=False,
-                        ).exists():
-                            draftForm = Activity.objects.filter(
-                                student=student,
-                                submission_timestamp__gte=update.start_timestamp,
-                                submission_timestamp__lte=update.end_timestamp,
-                                draft=True,
-                                pre=False,
-                            ).first()
-                            draftForm.delete()
-                    update.save()
+            # if activity_post == "on":
+            #     if not FormDetails.objects.filter(
+            #         form=form, teacher=teacher, session=session, pre=False, open=True
+            #     ).exists():
+            #         update = FormDetails(
+            #             form=form,
+            #             teacher=teacher,
+            #             session=session,
+            #             pre=False,
+            #             open=True,
+            #             start_timestamp=datetime.now(),
+            #         )
+            #         update.save()
+            # else:
+            #     if FormDetails.objects.filter(
+            #         form=form, teacher=teacher, session=session, pre=False, open=True
+            #     ).exists():
+            #         update = FormDetails.objects.filter(
+            #             form=form,
+            #             teacher=teacher,
+            #             session=session,
+            #             pre=False,
+            #             open=True,
+            #         ).first()
+            #         update.open = False
+            #         update.end_timestamp = datetime.now()
+            #         teacher = TeacherInCharge.objects.get(user=request.user)
+            #         session = Session.objects.filter(id=id).first()
+            #         total_students = StudentsInfo.objects.filter(
+            #             session=session, teacher=teacher
+            #         )
+            #         for student in total_students:
+            #             if Activity.objects.filter(
+            #                 student=student,
+            #                 submission_timestamp__gte=update.start_timestamp,
+            #                 submission_timestamp__lte=update.end_timestamp,
+            #                 draft=True,
+            #                 pre=False,
+            #             ).exists():
+            #                 draftForm = Activity.objects.filter(
+            #                     student=student,
+            #                     submission_timestamp__gte=update.start_timestamp,
+            #                     submission_timestamp__lte=update.end_timestamp,
+            #                     draft=True,
+            #                     pre=False,
+            #                 ).first()
+            #                 draftForm.delete()
+            #         update.save()
 
         module_two_pre = request.POST.get("module_two_pre", False)
         module_two_post = request.POST.get("module_two_post", False)

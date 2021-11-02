@@ -8,6 +8,17 @@ from .forms import *
 from .helper_functions import *
 
 
+
+def createTempDict(postData):
+    temp = {}
+    for key in postData:
+        if key == "source_fruits_vegetables" or key == "grow_own_food":
+            temp[key] = postData.getlist(key)
+        else:
+            temp[key] = postData[key]
+    del temp["csrfmiddlewaretoken"]
+    return temp
+    
 def creatingOrUpdatingDraftsActivity(temp, user, formName):
     student = StudentsInfo.objects.get(user=user)
     startdate = FormDetails.objects.get(
@@ -70,7 +81,7 @@ def activityDraft(request):
         form.student = StudentsInfo.objects.get(user=user)
         form.draft = True
         formType = getFormType("activity", StudentsInfo.objects.get(user=user).teacher)
-        form.pre = 1 if formType == "PreTest" else 0
+        # form.pre = 1 if formType == "PreTest" else 0
         form.submission_timestamp = datetime.now()
         if form.waist == "":
             form.waist = 0
