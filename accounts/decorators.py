@@ -134,7 +134,7 @@ def consent(func):
             student = StudentsInfo.objects.filter(user=request.user).first()
             if not student.consent:
                 return redirect("accounts:give_consent")
-        else:
+        elif is_parent(request.user):
             parent = ParentsInfo.objects.filter(user=request.user).first()
             if not parent.consent:
                 return redirect("accounts:give_consent")

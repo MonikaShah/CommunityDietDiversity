@@ -29,7 +29,6 @@
                 <tr>
                     <th scope="col"></th>
                     <th scope="col">Teacher Name</th>
-                    <th scope="col">Organization</th>
                     <th scope="col">Username</th>
                 </tr>
             </thead>
@@ -38,7 +37,6 @@
                     <tr>
                         <td align="center"><input type="radio" name="new_teacher" value={{teacher.id}}></td>
                         <td>{{teacher.fname}} {{ teacher.lname }}</td>
-                        <td>{{teacher.organization}}</td>
                         <td>{{teacher.user.username}}</td>
                     </tr>
                 {% endfor %}

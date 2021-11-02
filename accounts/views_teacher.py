@@ -1779,6 +1779,7 @@ def view_teacher_profile(request):
 @password_change_required
 def edit_teacher_profile(request):
     teacher = TeacherInCharge.objects.filter(user=request.user).first()
+    organization = teacher.organization
     if request.method == "GET":
         initial_dict = {
             "fname": encryptionHelper.decrypt(teacher.fname),
@@ -1786,7 +1787,6 @@ def edit_teacher_profile(request):
             "profile_pic": teacher.profile_pic,
             "dob": encryptionHelper.decrypt(teacher.dob),
             "gender": encryptionHelper.decrypt(teacher.gender),
-            "organization": teacher.organization,
         }
 
         if teacher.mname:
@@ -1799,18 +1799,17 @@ def edit_teacher_profile(request):
             initial_dict["mobile_no"] = encryptionHelper.decrypt(teacher.mobile_no)
 
         form = TeachersInfoForm(request.POST or None, initial=initial_dict)
-        form.fields["organization"].disabled = True
         return render(
             request,
             "teacher/update_teachers_info.html",
             {
                 "form": form,
+                "organization": organization,
             },
         )
     else:
         form = TeachersInfoForm(request.POST, request.FILES)
-        form.fields["organization"].disabled = True
-        form.fields["organization"].initial = teacher.organization
+
         if form.is_valid():
             teacher = TeacherInCharge.objects.filter(user=request.user).first()
 
@@ -1837,17 +1836,18 @@ def edit_teacher_profile(request):
                         "teacher/update_teachers_info.html",
                         {
                             "form": form,
+                            "organization": organization,
                         },
                     )
                 else:
-                    x = teacher.profile_pic.url.split("/account/media/")
+                    x = teacher.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
                         file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     teacher.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = teacher.profile_pic.url.split("/account/media/")
+                    x = teacher.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
                         file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
@@ -1861,5 +1861,5 @@ def edit_teacher_profile(request):
             return render(
                 request,
                 "teacher/update_teachers_info.html",
-                {"form": form},
+                {"form": form, "organization": organization},
             )

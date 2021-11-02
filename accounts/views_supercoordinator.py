@@ -514,14 +514,14 @@ def edit_supercoordinator_profile(request):
                         },
                     )
                 else:
-                    x = supercoordinator.profile_pic.url.split("/account/media/")
+                    x = supercoordinator.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
                         file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     supercoordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = supercoordinator.profile_pic.url.split("/account/media/")
+                    x = supercoordinator.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
                         file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
@@ -542,6 +542,7 @@ def edit_supercoordinator_profile(request):
 @password_change_required
 def switchCoordinatorsList(request, coord_id, page_id):
     og_coordinator = CoordinatorInCharge.objects.filter(id=coord_id).first()
+    og_coordinator_user = og_coordinator.user
     organization = og_coordinator.organization
     if request.method == "GET":
         coordinators = organization.coordinatorincharge_set.all()
@@ -577,7 +578,7 @@ def switchCoordinatorsList(request, coord_id, page_id):
             teacher.coordinator = new_coordinator
             teacher.save()
 
-        og_coordinator.delete()
+        og_coordinator_user.delete()
 
         if page_id == 1:
             return redirect("accounts:view_coordinators", organization.id)

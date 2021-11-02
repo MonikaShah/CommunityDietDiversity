@@ -64,7 +64,8 @@
                         {{ form.gender|as_crispy_field }}
                     </div>
                     <div class="col-md-6">
-                        {{ form.organization|as_crispy_field }}
+                        <label for="id_org" class="requiredField">Organization<span class="asteriskField">*</span></label>
+                        <input type="text" name="org" value="{{ organization }}" class="textInput textinput form-control" required disabled id="id_org">
                     </div>
                 </div>
             </div>

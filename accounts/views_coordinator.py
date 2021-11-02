@@ -46,7 +46,7 @@ def coordinator_dashboard(request):
         del request.session["my_messages"]
         return render(
             request,
-            "coordinator/coordinator_dashboard.html",
+            "coordinator/all_teachers.html",
             {
                 "teachers": teachers,
                 "page_type": "coordinator_dashboard",
@@ -55,7 +55,7 @@ def coordinator_dashboard(request):
         )
     return render(
         request,
-        "coordinator/coordinator_dashboard.html",
+        "coordinator/all_teachers.html",
         {"teachers": teachers, "page_type": "coordinator_dashboard"},
     )
 
@@ -148,6 +148,8 @@ def addTeacherForm(request):
                 user=request.user
             ).first()
             teacher.profile_pic = "/default.svg"
+            teacher.password_changed = False
+            teacher.first_password = password
             teacher.save()
             request.session["my_messages"] = {
                 "success": "Registration Successful. Download the Login Credentials from the sidebar on the left."
@@ -1053,6 +1055,7 @@ def view_coordinator_profile(request):
 @password_change_required
 def edit_coordinator_profile(request):
     coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
+    organization = coordinator.organization
     if request.method == "GET":
         initial_dict = {
             "fname": encryptionHelper.decrypt(coordinator.fname),
@@ -1060,7 +1063,6 @@ def edit_coordinator_profile(request):
             "profile_pic": coordinator.profile_pic,
             "dob": encryptionHelper.decrypt(coordinator.dob),
             "gender": encryptionHelper.decrypt(coordinator.gender),
-            "organization": coordinator.organization,
         }
 
         if coordinator.mname:
@@ -1073,17 +1075,15 @@ def edit_coordinator_profile(request):
             initial_dict["mobile_no"] = encryptionHelper.decrypt(coordinator.mobile_no)
 
         form = CoordinatorsInfoForm(request.POST or None, initial=initial_dict)
-        form.fields["organization"].disabled = True
-        form.fields["organization"].initial = coordinator.organization
+
         return render(
             request,
             "coordinator/update_coordinators_info.html",
-            {"form": form},
+            {"form": form,"organization": organization},
         )
     else:
         form = CoordinatorsInfoForm(request.POST, request.FILES)
-        form.fields["organization"].disabled = True
-        form.fields["organization"].initial = coordinator.organization
+
         if form.is_valid():
             coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
 
@@ -1112,17 +1112,18 @@ def edit_coordinator_profile(request):
                         "coordinator/update_coordinators_info.html",
                         {
                             "form": form,
+                            "organization": organization,
                         },
                     )
                 else:
-                    x = coordinator.profile_pic.url.split("/account/media/")
+                    x = coordinator.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
                         file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = coordinator.profile_pic.url.split("/account/media/")
+                    x = coordinator.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
                         file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
@@ -1132,5 +1133,89 @@ def edit_coordinator_profile(request):
             return redirect("accounts:view_coordinator_profile")
         else:
             return render(
-                request, "coordinator/update_coordinators_info.html", {"form": form}
+                request, "coordinator/update_coordinators_info.html", {"form": form, "organization": organization,}
             )
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
+def switchTeachersUserList(request, teacher_id):
+    og_teacher = TeacherInCharge.objects.filter(id=teacher_id).first()
+    og_teacher_user = og_teacher.user
+    organization = og_teacher.organization
+    if request.method == "GET":
+        teachers = organization.teacherincharge_set.all()
+        teachers_without_og = []
+
+        for teacher in teachers:
+            if teacher != og_teacher:
+                teachers_without_og.append(teacher)
+
+        for teacher in teachers_without_og:
+            teacher.fname = encryptionHelper.decrypt(teacher.fname)
+            teacher.lname = encryptionHelper.decrypt(teacher.lname)
+        return render(
+            request,
+            "coordinator/switch_teachers_list.html",
+            {
+                "page_type": "switch_teachers_list",
+                "teachers": teachers_without_og,
+            },
+        )
+    else:
+        new_teacher_id = request.POST.get("new_teacher")
+        new_teacher = TeacherInCharge.objects.filter(
+            id=new_teacher_id
+        ).first()
+        
+        teacher_sessions = Teacher_Session.objects.filter(teacher=og_teacher)
+        for teacher_session in teacher_sessions:
+            session = teacher_session.session
+            students = StudentsInfo.objects.filter(session=session, teacher=og_teacher)
+            for student in students:
+                student.teacher = new_teacher
+                student_session = Student_Session.objects.filter(
+                    session=session, student=student, teacher=og_teacher
+                ).first()
+                student_session.teacher = new_teacher
+                student.save()
+                student_session.save()
+            teacher_session.teacher = new_teacher
+            teacher_session.save()
+
+        og_teacher_user.delete()
+        request.session["my_messages"] = {
+            "success": "Teacher switched successfully"
+        }
+
+        return redirect("accounts:coordinator_dashboard")
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(is_coordinator, login_url="accounts:forbidden")
+@password_change_required
+def removeTeacher(request, teacher_id):
+    teacher = TeacherInCharge.objects.filter(id=teacher_id).first()
+    teacher_user = teacher.user
+    organization = teacher.organization
+
+    teacher_sessions = Teacher_Session.objects.filter(teacher=teacher)
+
+    for teacher_session in teacher_sessions:
+        session = teacher_session.session
+        students = StudentsInfo.objects.filter(teacher=teacher, session=session)
+        for student in students:
+            student.teacher = None
+            student.session = None
+            student.save()
+        teacher_session.delete()
+        Student_Session.objects.filter(
+            session=session, teacher=teacher
+        ).delete()
+
+    teacher_user.delete()
+
+    request.session["my_messages"] = {
+        "success": "Teacher user deleted successfully"
+    }
+    return redirect("accounts:coordinator_dashboard")
