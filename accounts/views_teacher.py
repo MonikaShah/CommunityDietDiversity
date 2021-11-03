@@ -420,7 +420,10 @@ def viewSessionForms(request, id):
 def getFormDetails(request, id):
     form = FormDetails.objects.get(pk=id)
     teacher = form.teacher
-    total_students = teacher.studentsinfo_set.all()
+    session_students = Student_Session.objects.filter(teacher = teacher, session = form.session)
+    total_students = []
+    for session_student in session_students:
+        total_students.append(session_student.student)
 
     filled_students = []
     not_filled_students = []
@@ -497,37 +500,37 @@ def getFormDetails(request, id):
                     temp.append("-")
                     not_filled_students.append(temp)
 
-    # elif form.form.name == "activity":
-    #     for student in total_students:
-    #         temp = []
-    #         # if form.open:
-    #         if Activity.objects.filter(
-    #                 student=student, submission_timestamp__gte=form.start_timestamp
-    #             ).exists():
-    #                 draftForm = Activity.objects.filter(
-    #                     student=student, submission_timestamp__gte=form.start_timestamp
-    #                 ).first()
+    elif form.form.name == "activity":
+        for student in total_students:
+            temp = []
+            # if form.open:
+            if Activity.objects.filter(
+                    student=student, submission_timestamp__gte=form.start_timestamp
+                ).exists():
+                    draftForm = Activity.objects.filter(
+                        student=student, submission_timestamp__gte=form.start_timestamp
+                    ).first()
 
-    #                 if draftForm.draft:
-    #                     temp.append(
-    #                         encryptionHelper.decrypt(student.fname)
-    #                         + " "
-    #                         + encryptionHelper.decrypt(student.lname)
-    #                     )
-    #                     temp.append("-")
-    #                     not_filled_students.append(temp)
-    #                 else:
-    #                     temp.append(
-    #                         encryptionHelper.decrypt(student.fname)
-    #                         + " "
-    #                         + encryptionHelper.decrypt(student.lname)
-    #                     )
-    #                     temp.append(draftForm.submission_timestamp)
-    #                     filled_students.append(temp)
-    #         else:
-    #             temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
-    #             temp.append("-")
-    #             not_filled_students.append(temp)
+                    if draftForm.draft:
+                        temp.append(
+                            encryptionHelper.decrypt(student.fname)
+                            + " "
+                            + encryptionHelper.decrypt(student.lname)
+                        )
+                        temp.append("-")
+                        not_filled_students.append(temp)
+                    else:
+                        temp.append(
+                            encryptionHelper.decrypt(student.fname)
+                            + " "
+                            + encryptionHelper.decrypt(student.lname)
+                        )
+                        temp.append(draftForm.submission_timestamp)
+                        filled_students.append(temp)
+            else:
+                temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                temp.append("-")
+                not_filled_students.append(temp)
 
 
     return render(

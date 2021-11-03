@@ -31,19 +31,11 @@
     </ul>
 </div>
 
-{% comment %} {% if results or results2 %}
-  {% if results2 %}
-  <div class="d-flex justify-content-end mb-4">
-      <a href="{% url 'accounts:get_info_form_details' session.id %}" class="btn btn-info btnmedium">Information Forms Details</a>
-  </div>
-  {% endif %}
-{% endif %} {% endcomment %}
-
 <div class="d-flex justify-content-end mb-4">
     <a href="{% url 'accounts:manage_forms' session.id %}" class="btn btn-info btnmedium">Manage Forms</a>
 </div>
 
-{% comment %} {% if results or results2 %}
+{% if results or results2 %}
   {% if results2 %}
     <h3 class="mb-3 text-center" style="font-weight: bolder;">OPEN FORMS</h3>
     <div class="item-container d-flex">
@@ -56,25 +48,6 @@
             <p class="card-text"><b>No. of submissions:</b> {{result.3}}</p>
             <p class="card-text"><b>Total Students:</b> {{result.4}}</p>
             <a href="{% url 'accounts:get_form_details' result.5 %}" class="btn btn-primary btnmedium">View Info</a>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %} {% endcomment %}
-
-  {% if results or results2 %}
-  {% if results2 %}
-    <h3 class="mb-3 text-center" style="font-weight: bolder;">INFO FORMS</h3>
-    <div class="item-container d-flex">
-      {% for result in results2 %}
-        <div class="my-card card shadow border rounded">
-          <h5 class="card-header">{{result.2}}</h5>
-          <div class="card-body">
-            <h5 class="card-title">{{result.0}}</h5>
-            <p class="card-text"><b>Start Date:</b> {{result.1}}</p>
-            <p class="card-text"><b>No. of submissions:</b> {{result.3}}</p>
-            <p class="card-text"><b>Total Students:</b> {{result.4}}</p>
-            <a href="{% url 'accounts:get_info_form_details' result.5 %}" class="btn btn-primary btnmedium">View Info</a>
           </div>
         </div>
       {% endfor %}
