@@ -262,7 +262,7 @@ def edit_student_profile(request):
             secondary_reg.save()
             student.secondary_reg = secondary_reg
             student.save()
-            return redirect("accounts:student_dashboard")
+            return redirect("accounts:view_student_profile")
 
         else:
             return render(

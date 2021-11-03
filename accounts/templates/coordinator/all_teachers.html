@@ -38,7 +38,7 @@
                 </b>
             </center>
             <h6 class="card-text"><b>Mobile Number: </b> {{ teacher.mobile_no }}</h6>
-            <h6 class="card-text"><b>Email: </b> {{ teacher.email }}</h6>
+            <h6 class="card-text mb-3"><b>Email: </b> {{ teacher.email }}</h6>
             <center><a class="btn btnmedium btn-danger" href="{% url 'accounts:coordinator_dashboard' %}" data-toggle="modal" data-target="{{"#logoutModal"|addstr:teacher.id}}">Delete User</a></center>
         </div>
     </div>

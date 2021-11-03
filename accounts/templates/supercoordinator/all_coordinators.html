@@ -32,7 +32,7 @@
         <div class="card-body">
             <center><b><h3 class="card-title mb-3">{{ coordinator.fname }} {{ coordinator.lname }}</h3></b></center>
             <h6 class="card-text"><b>Mobile Number: </b> {{ coordinator.mobile_no }}</h6>
-            <h6 class="card-text"><b>Email: </b> {{ coordinator.email }}</h6>
+            <h6 class="card-text mb-3"><b>Email: </b> {{ coordinator.email }}</h6>
             <center><a class="btn btnmedium btn-danger" href="{% url 'accounts:all_coordinators' %}" data-toggle="modal" data-target="{{"#logoutModal"|addstr:coordinator.id}}">Delete User</a></center>
         </div>
     </div>
