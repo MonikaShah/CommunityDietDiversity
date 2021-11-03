@@ -5,11 +5,14 @@ from crispy_forms.helper import FormHelper
 from django import forms
 from .helper_functions import *
 from .models import *
+from django.conf import settings
 
 
 class RegistrationForm(forms.Form):
     dob = forms.DateField(
-        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label=""
+        widget=DatePickerInput(format="%d/%m/%Y"),
+        input_formats=settings.DATE_INPUT_FORMATS,
+        label="",
     )
 
     def clean(self):
@@ -45,7 +48,9 @@ class ParentsInfoForm(forms.ModelForm):
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     dob = forms.DateField(
-        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date of Birth"
+        widget=DatePickerInput(format="%d/%m/%Y"),
+        input_formats=settings.DATE_INPUT_FORMATS,
+        label="Date of Birth",
     )
     mobile_no = forms.CharField(
         required=False,
@@ -130,7 +135,9 @@ class StudentsInfoForm(forms.ModelForm):
         label="Last Name",
     )
     dob = forms.DateField(
-        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date Of Birth"
+        widget=DatePickerInput(format="%d/%m/%Y"),
+        input_formats=settings.DATE_INPUT_FORMATS,
+        label="Date of Birth",
     )
     mobile_no = forms.CharField(
         required=False,
@@ -203,7 +210,9 @@ class TeachersInfoForm(forms.ModelForm):
         label="Last Name",
     )
     dob = forms.DateField(
-        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date of Birth"
+        widget=DatePickerInput(format="%d/%m/%Y"),
+        input_formats=settings.DATE_INPUT_FORMATS,
+        label="Date of Birth",
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
@@ -270,7 +279,9 @@ class SuperCoordinatorsInfoForm(forms.ModelForm):
         label="Last Name",
     )
     dob = forms.DateField(
-        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date of Birth"
+        widget=DatePickerInput(format="%d/%m/%Y"),
+        input_formats=settings.DATE_INPUT_FORMATS,
+        label="Date of Birth",
     )
     mobile_no = forms.CharField(
         required=False,
@@ -337,7 +348,9 @@ class CoordinatorsInfoForm(forms.ModelForm):
         label="Last Name",
     )
     dob = forms.DateField(
-        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date of Birth"
+        widget=DatePickerInput(format="%d/%m/%Y"),
+        input_formats=settings.DATE_INPUT_FORMATS,
+        label="Date of Birth",
     )
     mobile_no = forms.CharField(
         required=False,
