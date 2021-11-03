@@ -22,7 +22,7 @@ def createTempDict(postData):
 def creatingOrUpdatingDraftsActivity(temp, user, formName):
     student = StudentsInfo.objects.get(user=user)
     startdate = FormDetails.objects.get(
-        form=Form.objects.get(name=formName), teacher=student.teacher, open=True
+        form=Form.objects.get(name=formName), teacher=student.teacher, open=True, session= student.session
     ).start_timestamp
     if Activity.objects.filter(
         student=student, submission_timestamp__gte=startdate
@@ -110,7 +110,7 @@ def activity(request, user=None):
 
         student = StudentsInfo.objects.get(user=user)
         startdate = FormDetails.objects.get(
-            form=Form.objects.get(name="activity"), teacher=student.teacher, open=True
+            form=Form.objects.get(name="activity"), teacher=student.teacher, open=True, session = student.session
         ).start_timestamp
         if Activity.objects.filter(
             student=student, submission_timestamp__gte=startdate
@@ -142,7 +142,7 @@ def activity(request, user=None):
             return render(
                 request,
                 "activity/activity.html",
-                {"form": form, "formPre": formPre, "page_type": "student_activity"},
+                {"form": form, "page_type": "student_activity"},
             )
     # POST
     else:
@@ -160,6 +160,7 @@ def activity(request, user=None):
                 form=Form.objects.get(name="activity"),
                 teacher=student.teacher,
                 open=True,
+                session = student.session
             ).start_timestamp
             activityDraft(request)
             draftForm = Activity.objects.get(
@@ -192,7 +193,7 @@ def activity(request, user=None):
             return render(
                 request,
                 "activity/activity.html",
-                {"form": form, "formPre": formPre, "page_type": "student_activity"},
+                {"form": form, "page_type": "student_activity"},
             )
 
 
