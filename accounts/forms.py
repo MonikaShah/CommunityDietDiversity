@@ -8,7 +8,9 @@ from .models import *
 
 
 class RegistrationForm(forms.Form):
-    dob = forms.DateField(widget=DatePickerInput(), label="")
+    dob = forms.DateField(
+        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label=""
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -42,9 +44,14 @@ class ParentsInfoForm(forms.ModelForm):
         label="Last Name",
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
-    dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
+    dob = forms.DateField(
+        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date of Birth"
+    )
     mobile_no = forms.CharField(
-        required=False, help_text="Enter 10 digit mobile number.", max_length=10
+        required=False,
+        help_text="Enter 10 digit mobile number.",
+        max_length=10,
+        label="Mobile Number",
     )
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
@@ -93,7 +100,7 @@ class SecondaryRegForm(forms.ModelForm):
         labels = {
             "occupation": "Parent's Occupation",
             "edu": "Parent's Education",
-            "no_of_family_member": "Total No of Family Members",
+            "no_of_family_members": "Total Number of Family Members",
             "type_of_family": "Type of Family",
             "religion": "Religious Belief",
             "family_income": "Total Family Income",
@@ -122,9 +129,14 @@ class StudentsInfoForm(forms.ModelForm):
         max_length=50,
         label="Last Name",
     )
-    dob = forms.DateField(widget=DatePickerInput(), label="Date Of Birth")
+    dob = forms.DateField(
+        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date Of Birth"
+    )
     mobile_no = forms.CharField(
-        required=False, help_text="Enter 10 digit mobile number.", max_length=10
+        required=False,
+        help_text="Enter 10 digit mobile number.",
+        max_length=10,
+        label="Mobile Number",
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
@@ -190,12 +202,17 @@ class TeachersInfoForm(forms.ModelForm):
         max_length=50,
         label="Last Name",
     )
-    dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
+    dob = forms.DateField(
+        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date of Birth"
+    )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
     gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.RadioSelect)
     mobile_no = forms.CharField(
-        required=False, help_text="Enter 10 digit mobile number.", max_length=10
+        required=False,
+        help_text="Enter 10 digit mobile number.",
+        max_length=10,
+        label="Mobile Number",
     )
     aadhar = forms.CharField(
         max_length=14,
@@ -252,9 +269,14 @@ class SuperCoordinatorsInfoForm(forms.ModelForm):
         max_length=50,
         label="Last Name",
     )
-    dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
+    dob = forms.DateField(
+        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date of Birth"
+    )
     mobile_no = forms.CharField(
-        required=False, help_text="Enter 10 digit mobile number.", max_length=10
+        required=False,
+        help_text="Enter 10 digit mobile number.",
+        max_length=10,
+        label="Mobile Number",
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
@@ -314,9 +336,14 @@ class CoordinatorsInfoForm(forms.ModelForm):
         max_length=50,
         label="Last Name",
     )
-    dob = forms.DateField(widget=DatePickerInput(), label="Date of Birth")
+    dob = forms.DateField(
+        widget=DatePickerInput(options={"format": "DD/MM/YYYY"}), label="Date of Birth"
+    )
     mobile_no = forms.CharField(
-        required=False, help_text="Enter 10 digit mobile number.", max_length=10
+        required=False,
+        help_text="Enter 10 digit mobile number.",
+        max_length=10,
+        label="Mobile Number",
     )
     profile_pic = forms.ImageField(required=False, label="Choose Profile Picture")
     GENDER_CHOICES = [("Male", "Male"), ("Female", "Female"), ("Other", "Other")]
