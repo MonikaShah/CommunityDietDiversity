@@ -28,12 +28,6 @@ def student_dashboard(request):
 @consent
 @password_change_required
 @secondary_reg
-def information_forms(request):
-    return render(
-        request,
-        "student/info_forms.html",
-        {"page_type": "info_forms"},
-    )
 
 
 @login_required(login_url="accounts:loginlink")

@@ -288,7 +288,6 @@ urlpatterns = [
     path(
         "student_dashboard/", views_student.student_dashboard, name="student_dashboard"
     ),
-    path("info_forms/", views_student.information_forms, name="info_forms"),
     path(
         "secondary_registration/",
         views_student.secondary_registration,
