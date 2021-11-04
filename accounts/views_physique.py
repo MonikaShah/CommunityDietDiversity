@@ -19,21 +19,21 @@ def createTempDict(postData):
     del temp["csrfmiddlewaretoken"]
     return temp
     
-def creatingOrUpdatingDraftsActivity(temp, user, formName):
+def creatingOrUpdatingDraftsPhysique(temp, user, formName):
     student = StudentsInfo.objects.get(user=user)
-    startdate = FormDetails.objects.get(
-        form=Form.objects.get(name=formName), teacher=student.teacher, open=True, session= student.session
+    startdate = InfoFormDetails.objects.get(
+        form=Form.objects.get(name=formName), open=True,
     ).start_timestamp
-    if Activity.objects.filter(
+    if Physique.objects.filter(
         student=student, submission_timestamp__gte=startdate
     ).exists():
-        draftForm = Activity.objects.get(
+        draftForm = Physique.objects.get(
             student=StudentsInfo.objects.get(user=user),
             submission_timestamp__gte=startdate,
         )
         if draftForm.draft:
             # updating drafts
-            for name in Activity._meta.get_fields():
+            for name in Physique._meta.get_fields():
                 name = name.column
                 if name == "id" or name == "student_id" or name == "draft":
                     continue
@@ -64,7 +64,7 @@ def creatingOrUpdatingDraftsActivity(temp, user, formName):
 @consent
 @password_change_required
 @secondary_reg
-def activityDraft(request):
+def physiqueDraft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
         module = request.META.get("HTTP_REFERER").split("/")[-1]
         id = request.META.get("HTTP_REFERER").split("/")[-2]
@@ -75,12 +75,11 @@ def activityDraft(request):
     # for removing csrf field
     temp = createTempDict(request.POST)
     # checking if draft exists
-    if not creatingOrUpdatingDraftsActivity(temp, user, "activity"):
+    if not creatingOrUpdatingDraftsPhysique(temp, user, "physique"):
         # creating new record
-        form = Activity(**temp)
+        form = Physique(**temp)
         form.student = StudentsInfo.objects.get(user=user)
         form.draft = True
-        formType = getFormType("activity", StudentsInfo.objects.get(user=user).teacher)
         form.submission_timestamp = datetime.now()
         if form.waist == "":
             form.waist = 0
@@ -101,73 +100,73 @@ def activityDraft(request):
 @consent
 @password_change_required
 @secondary_reg
-@isActive("activity", "student")
-def activity(request, user=None):
+@isInfoActive("physique", "student")
+def physique(request, user=None):
     if request.method == "GET":
         if user == None:
             user = request.user
 
         student = StudentsInfo.objects.get(user=user)
-        startdate = FormDetails.objects.get(
-            form=Form.objects.get(name="activity"), teacher=student.teacher, open=True, session = student.session
-        ).start_timestamp
-        if Activity.objects.filter(
-            student=student, submission_timestamp__gte=startdate
-        ).exists():
-            draftForm = Activity.objects.get(
-                student=StudentsInfo.objects.get(user=user),
-                submission_timestamp__gte=startdate,
-            )
-            if draftForm.draft:
-                mod = ActivityForm()
-                temp = {}
-                for name in Activity._meta.get_fields():
-                    name = name.column
-                    if name in mod.fields:
-                        temp[name] = getattr(draftForm, name) or None
-                form = ActivityForm(temp)
-                formPre = getFormType("activity", student.teacher)
+        if student.session != None:
+            startdate = InfoFormDetails.objects.get(
+                form=Form.objects.get(name="physique"), open=True
+            ).start_timestamp
+            if Physique.objects.filter(
+                student=student, submission_timestamp__gte=startdate
+            ).exists():
+                draftForm = Physique.objects.get(
+                    student=StudentsInfo.objects.get(user=user),
+                    submission_timestamp__gte=startdate,
+                )
+                if draftForm.draft:
+                    mod = PhysiqueForm()
+                    temp = {}
+                    for name in Physique._meta.get_fields():
+                        name = name.column
+                        if name in mod.fields:
+                            temp[name] = getattr(draftForm, name) or None
+                    form = PhysiqueForm(temp)
+                    return render(
+                        request,
+                        "physique/physique.html",
+                        {"form": form, "page_type": "student_physique"},
+                    )
+                else:
+                    return redirect("accounts:already_filled")
+            # new form
+            else:
+                form = PhysiqueForm()
                 return render(
                     request,
-                    "activity/activity.html",
-                    {"form": form, "formPre": formPre, "page_type": "student_activity"},
+                    "physique/physique.html",
+                    {"form": form, "page_type": "student_physique"},
                 )
-            else:
-                return redirect("accounts:already_filled")
-        # new form
         else:
-            form = ActivityForm()
-            formPre = getFormType("activity", student.teacher)
-            return render(
-                request,
-                "activity/activity.html",
-                {"form": form, "page_type": "student_activity"},
-            )
+            return redirect("accounts:forbidden")
+
     # POST
     else:
         flag = False
         if user == None:
             flag = True
             user = request.user
-        form = ActivityForm(request.POST)
+        form = PhysiqueForm(request.POST)
 
         # valid form
         if form.is_valid():
             temp = createTempDict(request.POST)
             student = StudentsInfo.objects.get(user=user)
-            startdate = FormDetails.objects.get(
-                form=Form.objects.get(name="activity"),
-                teacher=student.teacher,
+            startdate = InfoFormDetails.objects.get(
+                form=Form.objects.get(name="physique"),
                 open=True,
-                session = student.session
             ).start_timestamp
-            activityDraft(request)
-            draftForm = Activity.objects.get(
+            physiqueDraft(request)
+            draftForm = Physique.objects.get(
                 student=StudentsInfo.objects.get(user=user),
                 submission_timestamp__gte=startdate,
             )
             if draftForm.draft:
-                for name in Activity._meta.get_fields():
+                for name in Physique._meta.get_fields():
                     name = name.column
                     if name == "id" or name == "student_id" or name == "draft":
                         continue
@@ -186,13 +185,10 @@ def activity(request, user=None):
                 return redirect("accounts:parent_dashboard")
         # invalid form
         else:
-            formPre = getFormType(
-                "activity", StudentsInfo.objects.get(user=user).teacher
-            )
             return render(
                 request,
-                "activity/activity.html",
-                {"form": form, "page_type": "student_activity"},
+                "physique/physique.html",
+                {"form": form, "page_type": "student_physique"},
             )
 
 
@@ -200,7 +196,7 @@ def activity(request, user=None):
 @user_passes_test(is_parent, login_url="accounts:forbidden")
 @consent
 @password_change_required
-@isActive("activity", "parent")
-def parentActivity(request, id):
+@isActive("physique", "parent")
+def parentPhysique(request, id):
     user = StudentsInfo.objects.get(pk=id).user
-    return activity(request, user)
+    return physique(request, user)

@@ -3,7 +3,7 @@ from accounts import views_other
 from accounts import views_registration
 from accounts import views_password
 from accounts import views_moduleOne
-from accounts import views_activity
+from accounts import views_physique
 from accounts import views_supercoordinator
 from accounts import views_coordinator
 from accounts import views_teacher
@@ -118,12 +118,12 @@ urlpatterns = [
         views_moduleOne.parentModuleOne3,
         name="parentsModuleOne3",
     ),
-    path("activitydraft/", views_activity.activityDraft, name="activitydraft"),
-    path("activity/", views_activity.activity, name="activity"),
+    path("physiquedraft/", views_physique.physiqueDraft, name="physiquedraft"),
+    path("physique/", views_physique.physique, name="physique"),
     path(
-        "parent_dashboard/<int:id>/activity",
-        views_activity.parentActivity,
-        name="parentActivity",
+        "parent_dashboard/<int:id>/physique",
+        views_physique.parentPhysique,
+        name="parentPhysique",
     ),
     path(
         "supercoordinator_dashboard/",

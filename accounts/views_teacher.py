@@ -351,12 +351,12 @@ def viewSessionForms(request, id):
                 ).first()
                 if not draftForm.draft:
                     count += 1
-            elif Activity.objects.filter(
+            elif Physique.objects.filter(
                 student=student,
                 submission_timestamp__gte=session.start_timestamp,
                 submission_timestamp__lte=session.end_timestamp,
             ).exists():
-                draftForm = Activity.objects.filter(
+                draftForm = Physique.objects.filter(
                     student=student,
                     submission_timestamp__gte=session.start_timestamp,
                     submission_timestamp__lte=session.end_timestamp,
@@ -388,10 +388,10 @@ def viewSessionForms(request, id):
                 ).first()
                 if not draftForm.draft:
                     count += 1
-            elif Activity.objects.filter(
+            elif Physique.objects.filter(
                 student=student, submission_timestamp__gte=session.start_timestamp
             ).exists():
-                draftForm = Activity.objects.filter(
+                draftForm = Physique.objects.filter(
                     student=student, submission_timestamp__gte=session.start_timestamp
                 ).first()
                 if not draftForm.draft:
@@ -500,13 +500,13 @@ def getFormDetails(request, id):
                     temp.append("-")
                     not_filled_students.append(temp)
 
-    elif form.form.name == "activity":
+    elif form.form.name == "physique":
         for student in total_students:
             temp = []
-            if Activity.objects.filter(
+            if Physique.objects.filter(
                     student=student, submission_timestamp__gte=form.start_timestamp
                 ).exists():
-                    draftForm = Activity.objects.filter(
+                    draftForm = Physique.objects.filter(
                         student=student, submission_timestamp__gte=form.start_timestamp
                     ).first()
 
@@ -549,7 +549,7 @@ def getFormDetails(request, id):
 @password_change_required
 def manageForms(request, id):
     if request.method == "GET":
-        activity = {}
+        physique = {}
         moduleOne = {}
         moduleTwo = {}
         moduleThree = {}
@@ -575,13 +575,13 @@ def manageForms(request, id):
                     moduleOne["post"] = True
                     moduleOne["pre"] = False
 
-        activity_form = Form.objects.get(name="activity")
+        physique_form = Form.objects.get(name="physique")
         if FormDetails.objects.filter(
-            form=activity_form, teacher=teacher, session=session
+            form=physique_form, teacher=teacher, session=session
         ).exists():
             form2 = (
                 FormDetails.objects.filter(
-                    form=activity_form, teacher=teacher, session=session, open=True
+                    form=physique_form, teacher=teacher, session=session, open=True
                 )
                 .order_by("-start_timestamp")
                 .first()
@@ -591,7 +591,7 @@ def manageForms(request, id):
             request,
             "teacher/manage_forms_teacher.html",
             {
-                "activity": activity,
+                "physique": physique,
                 "moduleOne": moduleOne,
                 "moduleTwo": moduleTwo,
                 "moduleThree": moduleThree,
@@ -704,16 +704,16 @@ def manageForms(request, id):
                             draftForm.delete()
                     update.save()
 
-        elif "activity" in request.POST:
-            activity_pre = request.POST.get("activity_pre", False) 
-            form = Form.objects.get(name="activity")
+        elif "physique" in request.POST:
+            physique_pre = request.POST.get("physique_pre", False) 
+            form = Form.objects.get(name="physique")
             teacher = TeacherInCharge.objects.get(user=request.user)
             session = Session.objects.filter(id=id).first()
             total_students = StudentsInfo.objects.filter(
                 session=session, teacher=teacher
             )
 
-            # if activity_pre == "on":
+            # if physique_pre == "on":
             if not FormDetails.objects.filter(
                     form=form, teacher=teacher, session=session, pre=True, open=True
                 ).exists():
@@ -741,14 +741,14 @@ def manageForms(request, id):
                         session=session, teacher=teacher
                     )
                     for student in total_students:
-                        if Activity.objects.filter(
+                        if Physique.objects.filter(
                             student=student,
                             submission_timestamp__gte=update.start_timestamp,
                             submission_timestamp__lte=update.end_timestamp,
                             draft=True,
                             pre=True,
                         ).exists():
-                            draftForm = Activity.objects.filter(
+                            draftForm = Physique.objects.filter(
                                 student=student,
                                 submission_timestamp__gte=update.start_timestamp,
                                 submission_timestamp__lte=update.end_timestamp,
@@ -758,7 +758,7 @@ def manageForms(request, id):
                             draftForm.delete()
                     update.save()
 
-            # if activity_post == "on":
+            # if physique_post == "on":
             #     if not FormDetails.objects.filter(
             #         form=form, teacher=teacher, session=session, pre=False, open=True
             #     ).exists():
@@ -790,14 +790,14 @@ def manageForms(request, id):
             #             session=session, teacher=teacher
             #         )
             #         for student in total_students:
-            #             if Activity.objects.filter(
+            #             if Physique.objects.filter(
             #                 student=student,
             #                 submission_timestamp__gte=update.start_timestamp,
             #                 submission_timestamp__lte=update.end_timestamp,
             #                 draft=True,
             #                 pre=False,
             #             ).exists():
-            #                 draftForm = Activity.objects.filter(
+            #                 draftForm = Physique.objects.filter(
             #                     student=student,
             #                     submission_timestamp__gte=update.start_timestamp,
             #                     submission_timestamp__lte=update.end_timestamp,

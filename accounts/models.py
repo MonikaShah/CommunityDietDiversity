@@ -11,20 +11,17 @@ def rename(instance, filename):
     filename = instance.user.username + ext
     return os.path.join(upload_to, filename)
 
-
 class Occupation(models.Model):
     occupation = models.CharField(max_length=1000)
 
     def __str__(self):
         return self.occupation
 
-
 class State(models.Model):
     state = models.CharField(max_length=255)
 
     def __str__(self):
         return self.state
-
 
 class City(models.Model):
     city = models.CharField(max_length=255)
@@ -33,13 +30,11 @@ class City(models.Model):
     def __str__(self):
         return self.city
 
-
 class FamilyType(models.Model):
     family = models.CharField(max_length=255)
 
     def __str__(self):
         return self.family
-
 
 class ReligiousBelief(models.Model):
     religion = models.CharField(max_length=255)
@@ -47,13 +42,11 @@ class ReligiousBelief(models.Model):
     def __str__(self):
         return self.religion
 
-
 class Education(models.Model):
     education = models.CharField(max_length=255)
 
     def __str__(self):
         return self.education
-
 
 class FamilyIncome(models.Model):
     family_income = models.CharField(max_length=255)
@@ -61,20 +54,17 @@ class FamilyIncome(models.Model):
     def __str__(self):
         return self.family_income
 
-
 class RationCardColor(models.Model):
     ration_card_color = models.CharField(max_length=255)
 
     def __str__(self):
         return self.ration_card_color
 
-
 class OrganizationTypes(models.Model):
     type = models.CharField(max_length=255)
 
     def __str__(self):
         return self.type
-
 
 class Organization(models.Model):
     name = models.CharField(max_length=255)
@@ -86,7 +76,6 @@ class Organization(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class ParentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -107,7 +96,6 @@ class ParentsInfo(models.Model):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.fname)
 
-
 class SuperCoordinator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
@@ -123,7 +111,6 @@ class SuperCoordinator(models.Model):
     def __str__(self):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.fname)
-
 
 class CoordinatorInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -145,7 +132,6 @@ class CoordinatorInCharge(models.Model):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.fname)
 
-
 class TeacherInCharge(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(null=True, blank=True, upload_to=rename)
@@ -166,7 +152,6 @@ class TeacherInCharge(models.Model):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.fname)
 
-
 class Session(models.Model):
     name = models.CharField(max_length=255)
     start_date = models.DateTimeField()
@@ -176,11 +161,9 @@ class Session(models.Model):
     def __str__(self):
         return str(self.start_date)
 
-
 class Teacher_Session(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
-
 
 class SecondaryReg(models.Model):
     occupation = models.ForeignKey(Occupation, on_delete=SET_NULL, null=True)
@@ -192,7 +175,6 @@ class SecondaryReg(models.Model):
     ration_card_color = models.ForeignKey(
         RationCardColor, on_delete=SET_NULL, null=True
     )
-
 
 class StudentsInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -223,19 +205,16 @@ class StudentsInfo(models.Model):
         encryptionHelper = EncryptionHelper()
         return encryptionHelper.decrypt(self.fname)
 
-
 class Student_Session(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     student = models.ForeignKey(StudentsInfo, on_delete=models.CASCADE)
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
-
 
 class Form(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name.capitalize()
-
 
 class FormDetails(models.Model):
     form = models.ForeignKey(Form, on_delete=models.CASCADE)
@@ -246,6 +225,11 @@ class FormDetails(models.Model):
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE)
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
 
+class InfoFormDetails(models.Model):
+    form = models.ForeignKey(Form, on_delete=models.CASCADE)
+    open = models.BooleanField()
+    start_timestamp = models.DateTimeField()
+    end_timestamp = models.DateTimeField(null=True)
 
 class ModuleOne(models.Model):
     student = models.ForeignKey(StudentsInfo, on_delete=models.CASCADE)
@@ -280,10 +264,8 @@ class ModuleOne(models.Model):
     microgreen_use = models.CharField(max_length=255, null=True)
     submission_timestamp = models.DateTimeField(null=True)
 
-
-class Activity(models.Model):
+class Physique(models.Model):
     student = models.ForeignKey(StudentsInfo, on_delete=models.CASCADE)
-    pre = models.BooleanField(null=True)
     draft = models.BooleanField()
     weight = models.FloatField(
         null=True, default=None, validators=[MinValueValidator(0)]

@@ -891,9 +891,9 @@ class change_password_form(forms.ModelForm):
         fields = ["password"]
 
 
-class ActivityForm(forms.ModelForm):
+class PhysiqueForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(ActivityForm, self).__init__(*args, **kwargs)
+        super(PhysiqueForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_show_labels = False
 
@@ -915,7 +915,7 @@ class ActivityForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Activity
+        model = Physique
         fields = [
             "weight",
             "height",

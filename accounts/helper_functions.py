@@ -61,7 +61,7 @@ def random_password_generator():
     return "".join(random.choices(string.ascii_lowercase + string.digits, k=8))
 
 
-# Module and activity form functions
+# Module and physique form functions
 def getFormType(moduleType, teacher):
     module = Form.objects.get(name=moduleType)
     formType = FormDetails.objects.filter(
