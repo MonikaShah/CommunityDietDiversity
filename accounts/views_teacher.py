@@ -1322,6 +1322,16 @@ def bulkRegister(request):
                 },
             )
 
+        if len(student_data) == 0:
+            return render(
+                request,
+                "teacher/bulkregistration.html",
+                {
+                    "page_type": "bulk_register",
+                    "my_messages": {"error": "No student data found!"},
+                },
+            )
+
         our_user = TeacherInCharge.objects.filter(user=request.user).first()
         organization = our_user.organization
         parent_created = {}
