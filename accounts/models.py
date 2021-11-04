@@ -13,7 +13,7 @@ def rename(instance, filename):
 
 
 class Occupation(models.Model):
-    occupation = models.CharField(max_length=255)
+    occupation = models.CharField(max_length=1000)
 
     def __str__(self):
         return self.occupation
@@ -216,8 +216,8 @@ class StudentsInfo(models.Model):
     parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE, null=True)
     first_password = models.CharField(max_length=225, default="")
     password_changed = models.BooleanField(default=True)
-    teacher = models.ForeignKey(TeacherInCharge, on_delete=models.CASCADE, null=True)
-    session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
+    teacher = models.ForeignKey(TeacherInCharge, on_delete=models.SET_NULL, null=True)
+    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         encryptionHelper = EncryptionHelper()

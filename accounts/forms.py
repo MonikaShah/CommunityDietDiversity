@@ -108,7 +108,7 @@ class SecondaryRegForm(forms.ModelForm):
             "no_of_family_members": "Total Number of Family Members",
             "type_of_family": "Type of Family",
             "religion": "Religious Belief",
-            "family_income": "Total Family Income",
+            "family_income": "Total Family Income (In Rs)",
             "ration_card_color": "Ration Card Color",
         }
 
