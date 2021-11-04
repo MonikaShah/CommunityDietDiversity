@@ -853,21 +853,9 @@ def bulkRegister(request):
         try:
             excel_file = request.FILES["excel_file"]
             if excel_file.name[-4:] == "xlsx":
-                try:
-                    wb = openpyxl.load_workbook(excel_file)
-                    parentSheet = wb["Parents Data"]
-                    studentSheet = wb["Students Data"]
-                except:
-                    return render(
-                        request,
-                        "teacher/bulkregistration.html",
-                        {
-                            "page_type": "bulk_register",
-                            "my_messages": {
-                                "error": "Incorrect file uploaded, please use the template provided above."
-                            },
-                        },
-                    )
+                wb = openpyxl.load_workbook(excel_file)
+                parentSheet = wb["Parents Data"]
+                studentSheet = wb["Students Data"]
             else:
                 return render(
                     request,
@@ -885,7 +873,9 @@ def bulkRegister(request):
                 "teacher/bulkregistration.html",
                 {
                     "page_type": "bulk_register",
-                    "my_messages": {"error": "Sorry something went wrong!"},
+                    "my_messages": {
+                        "error": "Sorry something went wrong! Please check if the file uploaded is the correct file with proper inputs."
+                    },
                 },
             )
 
@@ -998,7 +988,7 @@ def bulkRegister(request):
                 elif cell.column_letter == "H":
                     if cell.value == None:
                         row_data.append(None)
-                    if not valid_mobile_no(cell.value):
+                    elif not valid_mobile_no(cell.value):
                         breaking = error = True
                         error_message = (
                             "Invalid parent's 'Mobile Number' at row number "
@@ -1034,12 +1024,19 @@ def bulkRegister(request):
                         )
                         break
                     else:
+                        dob = (
+                            str(cell.value)[8:10]
+                            + "/"
+                            + str(cell.value)[5:7]
+                            + "/"
+                            + str(cell.value)[:4]
+                        )
                         if (
-                            re.match("^[0-9]{2}/[0-9]{2}/[0-9]{4}$", str(cell.value))
-                            or re.match("^[0-9]{2}-[0-9]{2}-[0-9]{4}$", str(cell.value))
-                        ) and valid_date(str(cell.value)):
-                            if is_adult_func(str(cell.value)) == "True":
-                                row_data.append(str(cell.value))
+                            re.match("^[0-9]{2}/[0-9]{2}/[0-9]{4}$", dob)
+                            or re.match("^[0-9]{2}-[0-9]{2}-[0-9]{4}$", dob)
+                        ) and valid_date(dob):
+                            if is_adult_func(dob) == "True":
+                                row_data.append(dob)
                             else:
                                 breaking = error = True
                                 error_message = (
@@ -1094,7 +1091,7 @@ def bulkRegister(request):
                 elif cell.column_letter == "B":
                     if cell.value == None:
                         row_data.append(None)
-                    if not valid_name(cell.value):
+                    elif not valid_name(cell.value):
                         breaking = error = True
                         error_message = (
                             "Invalid student's 'Middle Name' at row number "
@@ -1152,7 +1149,7 @@ def bulkRegister(request):
                 elif cell.column_letter == "F":
                     if cell.value == None:
                         row_data.append(None)
-                    if not valid_mobile_no(cell.value):
+                    elif not valid_mobile_no(cell.value):
                         breaking = error = True
                         error_message = (
                             "Invalid student's 'Mobile Number' at row number "
@@ -1189,13 +1186,19 @@ def bulkRegister(request):
                         )
                         break
                     else:
+                        dob = (
+                            str(cell.value)[8:10]
+                            + "/"
+                            + str(cell.value)[5:7]
+                            + "/"
+                            + str(cell.value)[:4]
+                        )
                         if (
-                            re.match("^[0-9]{2}/[0-9]{2}/[0-9]{4}$", str(cell.value))
-                            or re.match("^[0-9]{2}-[0-9]{2}-[0-9]{4}$", str(cell.value))
-                        ) and valid_date(str(cell.value)):
-                            dob = cell.value[6:] + cell.value[:2] + cell.value[3:5]
-                            if valid_dob(dob):
-                                row_data.append(str(cell.value))
+                            re.match("^[0-9]{2}/[0-9]{2}/[0-9]{4}$", dob)
+                            or re.match("^[0-9]{2}-[0-9]{2}-[0-9]{4}$", dob)
+                        ) and valid_date(dob):
+                            if valid_dob(str(cell.value)[:10]):
+                                row_data.append(dob)
                             else:
                                 breaking = error = True
                                 error_message = (
@@ -1330,6 +1333,8 @@ def bulkRegister(request):
                 },
             )
 
+        parent_data.pop()
+        student_data.pop()
         if len(student_data) == 0:
             return render(
                 request,
@@ -1369,7 +1374,7 @@ def bulkRegister(request):
                     organization=organization,
                     adult=encryptionHelper.encrypt("True"),
                     first_password=password,
-                    pasword_changed=False,
+                    password_changed=False,
                 )
             else:
                 if i[-1] in parent_created:
@@ -1392,7 +1397,7 @@ def bulkRegister(request):
                         adult=encryptionHelper.encrypt("False"),
                         parent=parent_created[i[-1]],
                         first_password=password,
-                        pasword_changed=False,
+                        password_changed=False,
                     )
                 else:
                     this_parent_data = parent_data[int(i[-1]) - 1]
@@ -1453,7 +1458,7 @@ def bulkRegister(request):
                         adult=encryptionHelper.encrypt("False"),
                         parent=parent,
                         first_password=password,
-                        pasword_changed=False,
+                        password_changed=False,
                     )
 
         return render(
