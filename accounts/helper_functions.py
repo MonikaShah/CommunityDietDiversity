@@ -188,8 +188,8 @@ def valid_pincode(pincode):
 # views validations
 def valid_date(date):
     date_year = int(date[6:])
-    date_month = int(date[:2])
-    date_date = int(date[3:5])
+    date_month = int(date[3:5])
+    date_date = int(date[:2])
     try:
         datetime(date_year, date_month, date_date)
         return True
@@ -200,8 +200,8 @@ def valid_date(date):
 def is_adult_func(dob):
     today = str(date.today())
     user_dob_year = int(dob[6:])
-    user_dob_month = int(dob[:2])
-    user_dob_date = int(dob[3:5])
+    user_dob_month = int(dob[3:5])
+    user_dob_date = int(dob[:2])
     today_year = int(today[:4])
     today_month = int(today[5:7])
     today_date = int(today[8:])

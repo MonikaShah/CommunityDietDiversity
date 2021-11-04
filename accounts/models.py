@@ -213,7 +213,7 @@ class StudentsInfo(models.Model):
     unique_no = models.BinaryField()
     secondary_reg = models.ForeignKey(SecondaryReg, on_delete=SET_NULL, null=True)
     adult = models.BinaryField()
-    parent = models.ForeignKey(ParentsInfo, on_delete=models.CASCADE, null=True)
+    parent = models.ForeignKey(ParentsInfo, on_delete=models.SET_NULL, null=True)
     first_password = models.CharField(max_length=225, default="")
     password_changed = models.BooleanField(default=True)
     teacher = models.ForeignKey(TeacherInCharge, on_delete=models.SET_NULL, null=True)
