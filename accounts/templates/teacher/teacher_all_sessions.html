@@ -24,8 +24,7 @@
         <div class="my-card card shadow border rounded">
             <div class="card-body">
                 <center><b><h3 class="card-title mb-3">{{ session.name }}</h3></b></center>
-                <h6 class="card-text"><b>Start Date: </b> {{ session.start_date}}</h6>
-                <h6 class="card-text"><b>End Date: </b> Ongoing </h6>
+                <h6 class="card-text mb-3"><b>Start Date: </b> {{ session.start_date}}</h6>
                 <div class="d-flex justify-content-around">
                 <a href="{% url 'accounts:view_session_students' session.id 1 %}" class="btn btn-primary btnmedium">View Students</a>
                 </div>
@@ -42,8 +41,7 @@
         <div class="my-card card shadow border rounded">
             <div class="card-body">
                 <center><b><h3 class="card-title mb-3">{{ session.name }}</h3></b></center>
-                <h6 class="card-text"><b>Start Date: </b> {{ session.start_date}}</h6>
-                <h6 class="card-text"><b>End Date: </b> Ongoing </h6>
+                <h6 class="card-text mb-3"><b>Start Date: </b> {{ session.start_date}}</h6>
                 <div class="d-flex justify-content-around">
                 <a href="{% url 'accounts:view_session_students' session.id 1 %}" class="btn btn-primary btnmedium">View Students</a>
                 <a href="{% url 'accounts:view_session_forms' session.id %}" class="btn btn-primary btnmedium">View Forms</a>
