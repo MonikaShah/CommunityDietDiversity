@@ -1,5 +1,7 @@
+from enum import unique
 import io
 import os
+from django.http.response import FileResponse
 import openpyxl
 import xlsxwriter
 from datetime import datetime
@@ -420,7 +422,9 @@ def viewSessionForms(request, id):
 def getFormDetails(request, id):
     form = FormDetails.objects.get(pk=id)
     teacher = form.teacher
-    session_students = Student_Session.objects.filter(teacher = teacher, session = form.session)
+    session_students = Student_Session.objects.filter(
+        teacher=teacher, session=form.session
+    )
     total_students = []
     for session_student in session_students:
         total_students.append(session_student.student)
@@ -504,33 +508,36 @@ def getFormDetails(request, id):
         for student in total_students:
             temp = []
             if Physique.objects.filter(
+                student=student, submission_timestamp__gte=form.start_timestamp
+            ).exists():
+                draftForm = Physique.objects.filter(
                     student=student, submission_timestamp__gte=form.start_timestamp
-                ).exists():
-                    draftForm = Physique.objects.filter(
-                        student=student, submission_timestamp__gte=form.start_timestamp
-                    ).first()
+                ).first()
 
-                    if draftForm.draft:
-                        temp.append(
-                            encryptionHelper.decrypt(student.fname)
-                            + " "
-                            + encryptionHelper.decrypt(student.lname)
-                        )
-                        temp.append("-")
-                        not_filled_students.append(temp)
-                    else:
-                        temp.append(
-                            encryptionHelper.decrypt(student.fname)
-                            + " "
-                            + encryptionHelper.decrypt(student.lname)
-                        )
-                        temp.append(draftForm.submission_timestamp)
-                        filled_students.append(temp)
+                if draftForm.draft:
+                    temp.append(
+                        encryptionHelper.decrypt(student.fname)
+                        + " "
+                        + encryptionHelper.decrypt(student.lname)
+                    )
+                    temp.append("-")
+                    not_filled_students.append(temp)
+                else:
+                    temp.append(
+                        encryptionHelper.decrypt(student.fname)
+                        + " "
+                        + encryptionHelper.decrypt(student.lname)
+                    )
+                    temp.append(draftForm.submission_timestamp)
+                    filled_students.append(temp)
             else:
-                temp.append(encryptionHelper.decrypt(student.fname) + " " + encryptionHelper.decrypt(student.lname))
+                temp.append(
+                    encryptionHelper.decrypt(student.fname)
+                    + " "
+                    + encryptionHelper.decrypt(student.lname)
+                )
                 temp.append("-")
                 not_filled_students.append(temp)
-
 
     return render(
         request,
@@ -705,7 +712,7 @@ def manageForms(request, id):
                     update.save()
 
         elif "physique" in request.POST:
-            physique_pre = request.POST.get("physique_pre", False) 
+            physique_pre = request.POST.get("physique_pre", False)
             form = Form.objects.get(name="physique")
             teacher = TeacherInCharge.objects.get(user=request.user)
             session = Session.objects.filter(id=id).first()
@@ -715,17 +722,17 @@ def manageForms(request, id):
 
             # if physique_pre == "on":
             if not FormDetails.objects.filter(
-                    form=form, teacher=teacher, session=session, pre=True, open=True
-                ).exists():
-                    update = FormDetails(
-                        form=form,
-                        teacher=teacher,
-                        session=session,
-                        pre=True,
-                        open=True,
-                        start_timestamp=datetime.now(),
-                    )
-                    update.save()
+                form=form, teacher=teacher, session=session, pre=True, open=True
+            ).exists():
+                update = FormDetails(
+                    form=form,
+                    teacher=teacher,
+                    session=session,
+                    pre=True,
+                    open=True,
+                    start_timestamp=datetime.now(),
+                )
+                update.save()
             else:
                 if FormDetails.objects.filter(
                     form=form, teacher=teacher, session=session, pre=True, open=True
@@ -832,7 +839,6 @@ def getTemplate(request):
     raise Http404
 
 
-# Work in progress
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 @password_change_required
@@ -889,7 +895,7 @@ def bulkRegister(request):
         for row_no, row in enumerate(parentSheet.iter_rows()):
             if breaking == True:
                 break
-            if row_no == 0:
+            if row_no == 0 or row_no == 1:
                 continue
             row_data = []
             for cell in row:
@@ -897,10 +903,10 @@ def bulkRegister(request):
                     if cell.value == None:
                         breaking = True
                         break
-                    elif cell.value != row_no:
+                    elif cell.value != row_no - 1:
                         breaking = error = True
                         error_message = (
-                            "There something wrong in the parentId column in parent data sheet at row number "
+                            "There something wrong in the 'Ref ID' column in 'Parents Data' sheet at row number "
                             + str(row_no + 1)
                         )
                         break
@@ -909,12 +915,11 @@ def bulkRegister(request):
                         row_data.append(None)
                     else:
                         if User.objects.filter(username=str(cell.value)).exists():
-                            row_data.append(cell.value)
-                            break
+                            row_data.append(str(cell.value))
                         else:
                             breaking = error = True
                             error_message = (
-                                "Parent user with the following username at row number "
+                                "Parent user with the given 'Username' at row number "
                                 + str(row_no + 1)
                                 + " does not exist"
                             )
@@ -925,63 +930,116 @@ def bulkRegister(request):
                         break
                     if not valid_name(cell.value):
                         breaking = error = True
-                        error_message = "Invalid parent name at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    else:
-                        row_data.append(cell.value)
-                elif cell.column_letter == "D":
-                    if cell.value != None and not valid_email(cell.value):
-                        breaking = error = True
-                        error_message = "Invalid parent email at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    else:
-                        row_data.append(cell.value)
-                elif cell.column_letter == "E":
-                    if cell.value != None and not valid_mobile_no(cell.value):
-                        breaking = error = True
                         error_message = (
-                            "Invalid parent mobile number at row number "
+                            "Invalid parent's 'First Name' at row number "
                             + str(row_no + 1)
                         )
                         break
                     else:
-                        row_data.append(cell.value)
-                elif cell.column_letter == "F":
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "D":
+                    if cell.value == None:
+                        row_data.append(None)
+                    elif not valid_name(cell.value):
+                        breaking = error = True
+                        error_message = (
+                            "Invalid parent's 'Middle Name' at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "E":
                     if cell.value == None:
                         breaking = error = True
-                        error_message = "Parent's gender missing at row number " + str(
+                        error_message = (
+                            "Parent's 'Last Name' missing at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    elif not valid_name(cell.value):
+                        breaking = error = True
+                        error_message = (
+                            "Invalid parent's 'Last Name' at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "F":
+                    if cell.value == None:
+                        row_data.append(None)
+                    elif not valid_aadhar(str(cell.value)):
+                        breaking = error = True
+                        error_message = (
+                            "Invalid parent's 'Aadhar number' at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        row_data.append(
+                            str(cell.value)[:4]
+                            + " "
+                            + str(cell.value)[4:8]
+                            + " "
+                            + str(cell.value)[8:]
+                        )
+                elif cell.column_letter == "G":
+                    if cell.value == None:
+                        row_data.append(None)
+                    elif not valid_email(cell.value):
+                        breaking = error = True
+                        error_message = "Invalid parent's 'Email' at row number " + str(
                             row_no + 1
                         )
                         break
                     else:
-                        if check_gender(str(cell.value)):
-                            row_data.append(cell.value)
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "H":
+                    if cell.value == None:
+                        row_data.append(None)
+                    if not valid_mobile_no(cell.value):
+                        breaking = error = True
+                        error_message = (
+                            "Invalid parent's 'Mobile Number' at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "I":
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Parent's 'Gender' missing at row number " + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        if check_gender(str(cell.value).capitalize()):
+                            row_data.append(str(cell.value).capitalize())
                         else:
                             breaking = error = True
                             error_message = (
-                                "Invalid gender input for parents data at row number  "
+                                "Invalid 'Gender' input for 'Parents Data' at row number  "
                                 + str(row_no + 1)
-                                + ", please read the instructions"
+                                + ", please select an option from the dropdown menu"
                             )
                             break
-                elif cell.column_letter == "G":
+                elif cell.column_letter == "J":
                     if cell.value == None:
                         breaking = error = True
                         error_message = (
-                            "Parent's date of birth missing at row number "
+                            "Parent's 'Date of Birth' missing at row number "
                             + str(row_no + 1)
                         )
                         break
                     else:
-                        if re.match(
-                            "^[0-9]{2}/[0-9]{2}/[0-9]{4}$", str(cell.value)
+                        if (
+                            re.match("^[0-9]{2}/[0-9]{2}/[0-9]{4}$", str(cell.value))
+                            or re.match("^[0-9]{2}-[0-9]{2}-[0-9]{4}$", str(cell.value))
                         ) and valid_date(str(cell.value)):
                             if is_adult_func(str(cell.value)) == "True":
-                                row_data.append(cell.value)
+                                row_data.append(str(cell.value))
                             else:
                                 breaking = error = True
                                 error_message = (
@@ -993,179 +1051,9 @@ def bulkRegister(request):
                         else:
                             breaking = error = True
                             error_message = (
-                                "Invalid parent's date of birth at row number "
+                                "Invalid parent's 'Date of Birth' at row number "
                                 + str(row_no + 1)
-                            )
-                            break
-                elif cell.column_letter == "H":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = "Parent's pincode missing at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    else:
-                        if not valid_pincode(cell.value):
-                            breaking = error = True
-                            error_message = (
-                                "Invalid parent's pincode at row number "
-                                + str(row_no + 1)
-                            )
-                            break
-                        else:
-                            row_data.append(cell.value)
-                elif cell.column_letter == "I":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = "Parent's state missing at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    else:
-                        temp = check_state_city(True, 0, str(cell.value))
-                        if temp[0]:
-                            row_data.append(cell.value)
-                            row_data.append(temp[1])
-                        else:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid parent's state at row number "
-                                + str(row_no + 1)
-                            )
-                            break
-                elif cell.column_letter == "J":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = "Parent's city missing at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    else:
-                        if check_state_city(False, row_data[-1], str(cell.value)):
-                            row_data.pop()
-                            row_data.append(cell.value)
-                        else:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid parent's city at row number " + str(row_no + 1)
-                            )
-                            break
-                elif cell.column_letter == "K":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = "Parent's address missing at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    else:
-                        row_data.append(cell.value)
-                elif cell.column_letter == "L":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = (
-                            "Parent's religion missing at row number " + str(row_no + 1)
-                        )
-                        break
-                    else:
-                        if check_religion(str(cell.value)):
-                            row_data.append(cell.value)
-                        else:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid parent's religion at row number "
-                                + str(row_no + 1)
-                            )
-                            break
-                elif cell.column_letter == "M":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = (
-                            "Parent's type of family missing at row number "
-                            + str(row_no + 1)
-                        )
-                        break
-                    else:
-                        if check_type_of_fam(str(cell.value)):
-                            row_data.append(cell.value)
-                        else:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid parent's type of family at row number "
-                                + str(row_no + 1)
-                            )
-                            break
-                elif cell.column_letter == "N":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = (
-                            "Parent's no of family members missing at row number "
-                            + str(row_no + 1)
-                        )
-                        break
-                    else:
-                        try:
-                            int(cell.value)
-                        except:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid parent's no of family members at row number "
-                                + str(row_no + 1)
-                            )
-                            break
-                        row_data.append(cell.value)
-                elif cell.column_letter == "O":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = (
-                            "Parent's children count missing at row number "
-                            + str(row_no + 1)
-                        )
-                        break
-                    else:
-                        try:
-                            int(cell.value)
-                        except:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid parent's children count at row number "
-                                + str(row_no + 1)
-                            )
-                            break
-                        row_data.append(cell.value)
-                elif cell.column_letter == "P":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = (
-                            "Parent's education missing at row number "
-                            + str(row_no + 1)
-                        )
-                        break
-                    else:
-                        if check_education(str(cell.value)):
-                            row_data.append(cell.value)
-                        else:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid parent's education at row number "
-                                + str(row_no + 1)
-                            )
-                            break
-                elif cell.column_letter == "Q":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = (
-                            "Parent's occupation missing at row number "
-                            + str(row_no + 1)
-                        )
-                        break
-                    else:
-                        if check_occupation(str(cell.value)):
-                            row_data.append(cell.value)
-                        else:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid parent's occupation at row number "
-                                + str(row_no + 1)
+                                + ", please enter the input in the format given in the instructions"
                             )
                             break
             parent_data.append(row_data)
@@ -1186,7 +1074,7 @@ def bulkRegister(request):
         for row_no, row in enumerate(studentSheet.iter_rows()):
             if breaking == True:
                 break
-            if row_no == 0:
+            if row_no == 0 or row_no == 1:
                 continue
             row_data = []
             for cell in row:
@@ -1196,62 +1084,118 @@ def bulkRegister(request):
                         break
                     if not valid_name(cell.value):
                         breaking = error = True
-                        error_message = "Invalid student name at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    else:
-                        row_data.append(cell.value)
-                elif cell.column_letter == "B":
-                    if cell.value != None and not valid_email(cell.value):
-                        breaking = error = True
-                        error_message = "Invalid student email at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    row_data.append(cell.value)
-                elif cell.column_letter == "C":
-                    if cell.value != None and not valid_mobile_no(cell.value):
-                        breaking = error = True
                         error_message = (
-                            "Invalid student mobile number at row number "
+                            "Invalid student's 'First Name' at row number "
                             + str(row_no + 1)
                         )
                         break
-                    row_data.append(cell.value)
-                elif cell.column_letter == "D":
+                    else:
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "B":
                     if cell.value == None:
+                        row_data.append(None)
+                    if not valid_name(cell.value):
                         breaking = error = True
-                        error_message = "Student's gender missing at row number " + str(
-                            row_no + 1
+                        error_message = (
+                            "Invalid student's 'Middle Name' at row number "
+                            + str(row_no + 1)
                         )
                         break
                     else:
-                        if check_gender(str(cell.value)):
-                            row_data.append(cell.value)
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "C":
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Student's 'Last Name' missing at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    elif not valid_name(cell.value):
+                        breaking = error = True
+                        error_message = (
+                            "Invalid student's 'Last Name' at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "D":
+                    if cell.value == None:
+                        row_data.append(None)
+                    elif not valid_aadhar(str(cell.value)):
+                        breaking = error = True
+                        error_message = (
+                            "Invalid student's 'Aadhar number' at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        row_data.append(
+                            str(cell.value)[:4]
+                            + " "
+                            + str(cell.value)[4:8]
+                            + " "
+                            + str(cell.value)[8:]
+                        )
+                elif cell.column_letter == "E":
+                    if cell.value == None:
+                        row_data.append(None)
+                    elif not valid_email(cell.value):
+                        breaking = error = True
+                        error_message = (
+                            "Invalid student's 'Email' at row number " + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "F":
+                    if cell.value == None:
+                        row_data.append(None)
+                    if not valid_mobile_no(cell.value):
+                        breaking = error = True
+                        error_message = (
+                            "Invalid student's 'Mobile Number' at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "G":
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Student's 'Gender' missing at row number "
+                            + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        if check_gender(str(cell.value).capitalize()):
+                            row_data.append(str(cell.value).capitalize())
                         else:
                             breaking = error = True
                             error_message = (
-                                "Invalid gender input for students data at row number  "
+                                "Invalid 'Gender' input for 'Students Data' at row number  "
                                 + str(row_no + 1)
-                                + ", please read the instructions"
+                                + ", please select an option from the dropdown menu"
                             )
                             break
-                elif cell.column_letter == "E":
+                elif cell.column_letter == "H":
                     if cell.value == None:
                         breaking = error = True
                         error_message = (
-                            "Student's date of birth missing at row number "
+                            "Student's 'Date of Birth' missing at row number "
                             + str(row_no + 1)
                         )
                         break
                     else:
-                        if re.match(
-                            "^[0-9]{2}/[0-9]{2}/[0-9]{4}$", str(cell.value)
+                        if (
+                            re.match("^[0-9]{2}/[0-9]{2}/[0-9]{4}$", str(cell.value))
+                            or re.match("^[0-9]{2}-[0-9]{2}-[0-9]{4}$", str(cell.value))
                         ) and valid_date(str(cell.value)):
                             dob = cell.value[6:] + cell.value[:2] + cell.value[3:5]
                             if valid_dob(dob):
-                                row_data.append(cell.value)
+                                row_data.append(str(cell.value))
                             else:
                                 breaking = error = True
                                 error_message = (
@@ -1259,15 +1203,55 @@ def bulkRegister(request):
                                     + str(row_no + 1)
                                     + " is not above the age of 5"
                                 )
-                            break
+                                break
                         else:
                             breaking = error = True
                             error_message = (
-                                "Invalid student's date of birth at row number "
+                                "Invalid student's 'Date of Birth' at row number "
+                                + str(row_no + 1)
+                                + ", please enter the input in the format given in the instructions"
+                            )
+                            break
+                elif cell.column_letter == "I":
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = (
+                            "Student's 'State' missing at row number " + str(row_no + 1)
+                        )
+                        break
+                    else:
+                        temp = check_state_city(True, 0, str(cell.value).capitalize())
+                        if temp[0]:
+                            row_data.append(str(cell.value).capitalize())
+                            row_data.append(temp[1])
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid student's 'State' at row number "
                                 + str(row_no + 1)
                             )
                             break
-                elif cell.column_letter == "F":
+                elif cell.column_letter == "J":
+                    if cell.value == None:
+                        breaking = error = True
+                        error_message = "Student's 'City' missing at row number " + str(
+                            row_no + 1
+                        )
+                        break
+                    else:
+                        if check_state_city(
+                            False, row_data[-1], str(cell.value).capitalize()
+                        ):
+                            row_data.pop()
+                            row_data.append(str(cell.value).capitalize())
+                        else:
+                            breaking = error = True
+                            error_message = (
+                                "Invalid student's 'City' at row number "
+                                + str(row_no + 1)
+                            )
+                            break
+                elif cell.column_letter == "K":
                     if cell.value == None:
                         breaking = error = True
                         error_message = (
@@ -1283,66 +1267,20 @@ def bulkRegister(request):
                             )
                             break
                         else:
-                            row_data.append(cell.value)
-                elif cell.column_letter == "G":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = "Student's state missing at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    else:
-                        temp = check_state_city(True, 0, str(cell.value))
-                        if temp[0]:
-                            row_data.append(cell.value)
-                            row_data.append(temp[1])
-                        else:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid student's state at row number "
-                                + str(row_no + 1)
-                            )
-                            break
-                elif cell.column_letter == "H":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = "Student's city missing at row number " + str(
-                            row_no + 1
-                        )
-                        break
-                    else:
-                        if check_state_city(False, row_data[-1], str(cell.value)):
-                            row_data.pop()
-                            row_data.append(cell.value)
-                        else:
-                            breaking = error = True
-                            error_message = (
-                                "Invalid student's city at row number "
-                                + str(row_no + 1)
-                            )
-                            break
-                elif cell.column_letter == "I":
+                            row_data.append(str(cell.value))
+                elif cell.column_letter == "L":
                     if cell.value == None:
                         breaking = error = True
                         error_message = (
-                            "Student's address missing at row number " + str(row_no + 1)
-                        )
-                        break
-                    else:
-                        row_data.append(cell.value)
-                elif cell.column_letter == "J":
-                    if cell.value == None:
-                        breaking = error = True
-                        error_message = (
-                            "Student's registration no missing at row number "
+                            "Student's 'Unique Number' missing at row number "
                             + str(row_no + 1)
                         )
                         break
                     else:
-                        row_data.append(cell.value)
-                elif cell.column_letter == "K":
+                        row_data.append(str(cell.value))
+                elif cell.column_letter == "M":
                     if cell.value == None:
-                        dob = row_data[-6]
+                        dob = row_data[-5]
                         if is_adult_func(dob) == "True":
                             row_data.append("ADULT")
                         else:
@@ -1350,25 +1288,25 @@ def bulkRegister(request):
                             error_message = (
                                 "Student at row number "
                                 + str(row_no + 1)
-                                + " is not an adult, please provide parentId for the student"
+                                + " is not an adult, please provide 'Parent's Ref ID' for the student"
                             )
                             break
                     else:
                         try:
-                            parentId = int(cell.value)
-                            if parentId <= len(parent_data):
-                                row_data.append(cell.value)
+                            parent_ref_id = int(cell.value)
+                            if parent_ref_id <= len(parent_data):
+                                row_data.append(str(cell.value))
                             else:
                                 breaking = error = True
                                 error_message = (
-                                    "Invalid parentId for student data at row number "
+                                    "Invalid 'Parent's Ref ID' for student data at row number "
                                     + str(row_no + 1)
                                 )
                                 break
                         except:
                             breaking = error = True
                             error_message = (
-                                "Invalid parentId for student data at row number "
+                                "Invalid 'Parent's Ref ID' for student data at row number "
                                 + str(row_no + 1)
                             )
                             break
@@ -1384,299 +1322,132 @@ def bulkRegister(request):
                 },
             )
 
-        # for index, row in enumerate(parent_data):
-        #     if index == 0:
-        #         continue
-        #     # creating parent user
-        #     skipparent = False
-        #     parentData = ParentsInfo.objects.all()
-        #     for parent in parentData:
-        #         if encryptionHelper.decrypt(parent.email) == encryptionHelper.decrypt(
-        #             row[0]
-        #         ):
-        #             skipparent = True
-        #             break
-
-        #     if not skipparent:
-        #         password = "".join(
-        #             random.choices(string.ascii_lowercase + string.digits, k=8)
-        #         )
-        #         parentUser = User(username=row[2])
-        #         parentUser.set_password(password)
-        #         parentUser.save()
-        #         parent_group = Group.objects.get(name="Parents")
-        #         parentUser.groups.add(parent_group)
-        #         parentUser.save()
-
-        #         # getting data from db for foreign keys
-        #         city = City.objects.filter(city__icontains=row[9]).first()
-        #         state = State.objects.filter(state__icontains=row[10]).first()
-        #         education = Education.objects.filter(
-        #             education__icontains=row[11]
-        #         ).first()
-        #         occupation = Occupation.objects.filter(
-        #             occupation__icontains=row[12]
-        #         ).first()
-        #         religion = ReligiousBelief.objects.filter(
-        #             religion__icontains=row[13]
-        #         ).first()
-        #         familyType = FamilyType.objects.filter(
-        #             family__icontains=row[14]
-        #         ).first()
-        #         # creating parent
-        #         parent = ParentsInfo(
-        #             email=row[0],
-        #             name=row[1],
-        #             gender=row[3],
-        #             age=row[4],
-        #             address=row[5],
-        #             pincode=row[6],
-        #             no_of_family_members=row[7],
-        #             children_count=row[8],
-        #             city=city,
-        #             state=state,
-        #             edu=education,
-        #             occupation=occupation,
-        #             religion=religion,
-        #             type_of_family=familyType,
-        #             first_password=password,
-        #         )
-        #         parent.user = parentUser
-        #         parent.save()
-
-        # for index, row in enumerate(student_data):
-        #     if index == 0:
-        #         continue
-        #     # creating student user
-        #     skipstudent = StudentsInfo.objects.filter(rollno=row[3]).first()
-        #     if not skipstudent:
-        #         password = "".join(
-        #             random.choices(string.ascii_lowercase + string.digits, k=8)
-        #         )
-        #         studentUser = User(username=row[1])
-        #         studentUser.set_password(password)
-        #         studentUser.save()
-        #         student_group = Group.objects.get(name="Students")
-        #         studentUser.groups.add(student_group)
-        #         studentUser.save()
-
-        #         # getting data from db for foreign keys
-        #         parentData = ParentsInfo.objects.all()
-        #         for tempparent in parentData:
-        #             if encryptionHelper.decrypt(tempparent.email) == row[7]:
-        #                 parent = tempparent
-
-        #         organization = Organization.objects.filter(
-        #             name__icontains=row[6]
-        #         ).first()
-        #         teacher = TeacherInCharge.objects.filter(user=request.user).first()
-        #         # creating student
-        #         dob = datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S").strftime(
-        #             "%Y-%m-%d"
-        #         )
-        #         student = StudentsInfo(
-        #             name=row[0],
-        #             address=row[2],
-        #             rollno=row[3],
-        #             gender=row[4],
-        #             dob=dob,
-        #             organization=organization,
-        #             first_password=password,
-        #             teacher=teacher,
-        #         )
-        #         student.parent = parent
-        #         student.user = studentUser
-        #         student.save()
-
-        # messages.success(request, "Registration Completed")
-        # return redirect("accounts:bulk_register")
-
-
-@login_required(login_url="accounts:loginlink")
-@user_passes_test(is_teacher, login_url="accounts:forbidden")
-@password_change_required
-def downloadData(request):
-
-    output = io.BytesIO()
-    wb = xlsxwriter.Workbook(output)
-    parentSheet = wb.add_worksheet("Parents Data")
-    studentSheet = wb.add_worksheet("Students Data")
-
-    # student sheet
-    row_num = 0
-    studentColumns = [
-        "Name",
-        "Roll No",
-        "DOB",
-        "Gender",
-        "Address",
-        "Organization",
-        "Parent's Email",
-        "Username",
-        "Password",
-    ]
-    for col_num in range(len(studentColumns)):
-        studentSheet.write(
-            row_num, col_num, studentColumns[col_num]
-        )  # at 0 row 0 column
-
-    teacher = TeacherInCharge.objects.filter(user=request.user).first()
-    rows = StudentsInfo.objects.filter(teacher=teacher).values_list(
-        "name",
-        "rollno",
-        "dob",
-        "gender",
-        "address",
-        "organization",
-        "parent",
-        "user",
-        "first_password",
-        "password_changed",
-    )
-    parentEmail = []
-    for row in rows:
-        row_num += 1
-        for col_num in range(len(studentColumns)):
-            if col_num == 0:
-                studentSheet.write(
-                    row_num, col_num, encryptionHelper.decrypt(row[col_num])
+        our_user = TeacherInCharge.objects.filter(user=request.user).first()
+        organization = our_user[0].organization
+        parent_created = {}
+        for i in student_data:
+            password = random_password_generator()
+            student_user = User.objects.create_user(
+                username=username_generator(i[0], i[2]),
+                password=password,
+            )
+            student_user.save()
+            if i[-1] == "ADULT":
+                StudentsInfo.objects.create(
+                    user=student_user,
+                    profile_pic="/default.svg",
+                    fname=encryptionHelper.encrypt(i[0]),
+                    mname=encryptionHelper.encrypt(i[1]) if i[1] else None,
+                    lname=encryptionHelper.encrypt(i[2]),
+                    aadhar=encryptionHelper.encrypt(i[3]) if i[3] else None,
+                    email=encryptionHelper.encrypt(i[4]) if i[4] else None,
+                    mobile_no=encryptionHelper.encrypt(i[5]) if i[5] else None,
+                    gender=encryptionHelper.encrypt(i[6]),
+                    dob=encryptionHelper.encrypt(i[7]),
+                    state=State.objects.get(state__icontains=i[8].strip()),
+                    city=City.objects.get(city__icontains=i[9].strip()),
+                    pincode=encryptionHelper.encrypt(i[10]),
+                    unique_no=encryptionHelper.encrypt(i[11]),
+                    organization=organization,
+                    adult=encryptionHelper.encrypt("True"),
+                    first_password=password,
+                    pasword_changed=False,
                 )
-
-            elif col_num == 2:
-                studentSheet.write(row_num, col_num, row[col_num].strftime("%d/%b/%Y"))
-
-            elif col_num == 5:
-                organization = Organization.objects.get(pk=row[col_num])
-                studentSheet.write(row_num, col_num, organization.name)
-
-            elif col_num == 6:
-                parent = ParentsInfo.objects.get(pk=row[col_num])
-                email = encryptionHelper.decrypt(parent.email)
-                if email not in parentEmail:
-                    parentEmail.append(email)
-                studentSheet.write(row_num, col_num, email)
-
-            elif col_num == 7:
-                user = User.objects.get(pk=row[col_num])
-                studentSheet.write(row_num, col_num, user.username)
-
-            elif col_num == 8:
-                msg = row[col_num]
-                if row[col_num + 1]:
-                    msg = "Already Changed"
-                studentSheet.write(row_num, col_num, msg)
-
-            elif col_num == 9:
-                continue
-
             else:
-                studentSheet.write(row_num, col_num, row[col_num])
-
-    # Sheet header, first row
-    row_num = 0
-
-    # parent sheet
-    parentColumns = [
-        "Name",
-        "Email",
-        "Age",
-        "Gender",
-        "Address",
-        "City",
-        "State",
-        "Pincode",
-        "Education",
-        "Occupation",
-        "Religion",
-        "Family count",
-        "Children count",
-        "Family Type",
-        "Username",
-        "Password",
-    ]
-    for col_num in range(len(parentColumns)):
-        parentSheet.write(row_num, col_num, parentColumns[col_num])  # at 0 row 0 column
-
-    rows = ParentsInfo.objects.all().values_list(
-        "name",
-        "email",
-        "age",
-        "gender",
-        "address",
-        "city",
-        "state",
-        "pincode",
-        "edu",
-        "occupation",
-        "religion",
-        "no_of_family_members",
-        "children_count",
-        "type_of_family",
-        "user",
-        "first_password",
-        "password_changed",
-    )
-    for row in rows:
-        if encryptionHelper.decrypt(row[1]) in parentEmail:
-            row_num += 1
-            for col_num in range(len(parentColumns)):
-
-                if col_num == 0 or col_num == 1:
-                    parentSheet.write(
-                        row_num, col_num, encryptionHelper.decrypt(row[col_num])
+                if i[-1] in parent_created:
+                    StudentsInfo.objects.create(
+                        user=student_user,
+                        profile_pic="/default.svg",
+                        fname=encryptionHelper.encrypt(i[0]),
+                        mname=encryptionHelper.encrypt(i[1]) if i[1] else None,
+                        lname=encryptionHelper.encrypt(i[2]),
+                        aadhar=encryptionHelper.encrypt(i[3]) if i[3] else None,
+                        email=encryptionHelper.encrypt(i[4]) if i[4] else None,
+                        mobile_no=encryptionHelper.encrypt(i[5]) if i[5] else None,
+                        gender=encryptionHelper.encrypt(i[6]),
+                        dob=encryptionHelper.encrypt(i[7]),
+                        state=State.objects.get(state__icontains=i[8].strip()),
+                        city=City.objects.get(city__icontains=i[9].strip()),
+                        pincode=encryptionHelper.encrypt(i[10]),
+                        unique_no=encryptionHelper.encrypt(i[11]),
+                        organization=organization,
+                        adult=encryptionHelper.encrypt("False"),
+                        parent=parent_created[i[-1]],
+                        first_password=password,
+                        pasword_changed=False,
+                    )
+                else:
+                    this_parent_data = parent_data[int(i[-1]) - 1]
+                    if this_parent_data[0]:
+                        parent_user = User.objects.filter(
+                            username=this_parent_data[0]
+                        ).first()
+                        parent = ParentsInfo.objects.filter(user=parent_user).first()
+                        parent_created[i[-1]] = parent
+                    else:
+                        parent_password = random_password_generator()
+                        parent_user = User.objects.create_user(
+                            username=username_generator(
+                                this_parent_data[1], this_parent_data[3]
+                            ),
+                            password=parent_password,
+                        )
+                        parent_user.save()
+                        parent = ParentsInfo.objects.create(
+                            user=parent_user,
+                            profile_pic="/default.svg",
+                            fname=encryptionHelper.encrypt(this_parent_data[1]),
+                            mname=encryptionHelper.encrypt(this_parent_data[2])
+                            if this_parent_data[2]
+                            else None,
+                            lname=encryptionHelper.encrypt(this_parent_data[3]),
+                            aadhar=encryptionHelper.encrypt(this_parent_data[4])
+                            if this_parent_data[4]
+                            else None,
+                            email=encryptionHelper.encrypt(this_parent_data[5])
+                            if this_parent_data[5]
+                            else None,
+                            mobile_no=encryptionHelper.encrypt(this_parent_data[6])
+                            if this_parent_data[6]
+                            else None,
+                            gender=encryptionHelper.encrypt(this_parent_data[7]),
+                            dob=encryptionHelper.encrypt(this_parent_data[8]),
+                            first_password=parent_password,
+                            password_changed=False,
+                        )
+                        parent_created[i[-1]] = parent
+                    StudentsInfo.objects.create(
+                        user=student_user,
+                        profile_pic="/default.svg",
+                        fname=encryptionHelper.encrypt(i[0]),
+                        mname=encryptionHelper.encrypt(i[1]) if i[1] else None,
+                        lname=encryptionHelper.encrypt(i[2]),
+                        aadhar=encryptionHelper.encrypt(i[3]) if i[3] else None,
+                        email=encryptionHelper.encrypt(i[4]) if i[4] else None,
+                        mobile_no=encryptionHelper.encrypt(i[5]) if i[5] else None,
+                        gender=encryptionHelper.encrypt(i[6]),
+                        dob=encryptionHelper.encrypt(i[7]),
+                        state=State.objects.get(state__icontains=i[8].strip()),
+                        city=City.objects.get(city__icontains=i[9].strip()),
+                        pincode=encryptionHelper.encrypt(i[10]),
+                        unique_no=encryptionHelper.encrypt(i[11]),
+                        organization=organization,
+                        adult=encryptionHelper.encrypt("False"),
+                        parent=parent,
+                        first_password=password,
+                        pasword_changed=False,
                     )
 
-                elif col_num == 5:
-                    city = City.objects.get(pk=row[col_num])
-                    parentSheet.write(row_num, col_num, city.city)
-
-                elif col_num == 6:
-                    state = State.objects.get(pk=row[col_num])
-                    parentSheet.write(row_num, col_num, state.state)
-
-                elif col_num == 8:
-                    education = Education.objects.get(pk=row[col_num])
-                    parentSheet.write(row_num, col_num, education.education)
-
-                elif col_num == 9:
-                    occupation = Occupation.objects.get(pk=row[col_num])
-                    parentSheet.write(row_num, col_num, occupation.occupation)
-
-                elif col_num == 10:
-                    religion = ReligiousBelief.objects.get(pk=row[col_num])
-                    parentSheet.write(row_num, col_num, religion.religion)
-
-                elif col_num == 13:
-                    familyType = FamilyType.objects.get(pk=row[col_num])
-                    parentSheet.write(row_num, col_num, familyType.family)
-
-                elif col_num == 14:
-                    user = User.objects.get(pk=row[col_num])
-                    parentSheet.write(row_num, col_num, user.username)
-
-                elif col_num == 15:
-                    msg = row[col_num]
-                    if row[col_num + 1]:
-                        msg = "Already Changed"
-                    parentSheet.write(row_num, col_num, msg)
-
-                elif col_num == 16:
-                    continue
-
-                else:
-                    parentSheet.write(row_num, col_num, row[col_num])
-
-    wb.close()
-    # construct response
-    output.seek(0)
-    response = HttpResponse(
-        output.read(),
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
-    response[
-        "Content-Disposition"
-    ] = "attachment; filename=Parent and Student list.xlsx"
-    return response
+        return render(
+            request,
+            "teacher/bulkregistration.html",
+            {
+                "page_type": "bulk_register",
+                "my_messages": {
+                    "success": "Bulk Registration Successful. Download the Login Credentials from the sidebar on the left."
+                },
+            },
+        )
 
 
 @login_required(login_url="accounts:loginlink")

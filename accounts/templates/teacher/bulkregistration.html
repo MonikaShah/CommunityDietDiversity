@@ -43,10 +43,13 @@
             <li>Do not fill multiple rows for the same person. (Example:- If one parent has two or more students, there
                 will be only one row of data filled for that particular parent and then that parent’s “Ref ID” can be
                 added to multiple children.)</li>
+            <li>If data for a particular parent is provided and it's Ref ID is not used in students data then that
+                particular parent won't be registered.</li>
             <li>Data provided after an empty row will not be considered.</li>
             <li>Aadhar Number and Email are not mandatory fields. (We highly recommend providing them since they will be
                 used for password reset.)</li>
-            <li>For Parent/Student name numbers and special characters are not allowed except apostrophes.</li>
+            <li>If no data is to be provided for non mandatory fields then leave them empty.</li>
+            <li>For Parent/Student name, numbers and special characters are not allowed except apostrophes.</li>
             <li>Format for Date of birth can be DD-MM-YYYY or DD/MM/YYYY.</li>
             <li>Make sure to add the correct "Ref ID" in the student's "Parent’s Ref ID" column.</li>
             <li>For students of age 18 and above the "Parent’s Ref ID" column can be kept empty.</li>

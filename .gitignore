@@ -1,5 +1,8 @@
 # Ignoring everyones personal vscode setting
 .vscode 
 
+# Ignoring __pycache__
+*__pycache__
+
 # Ignoring environment files containg project key, db credentials and encryption key
 .env
