@@ -317,7 +317,7 @@ class SuperCoordinatorsInfoForm(forms.ModelForm):
             raise forms.ValidationError({"aadhar": "Invalid Aadhar Number."})
         if dob != None and not valid_adult(str(dob)):
             raise forms.ValidationError({"dob": "User isn't an adult."})
-        if (email != "") or (not valid_email(email)):
+        if (email != "") and (not valid_email(email)):
             raise forms.ValidationError({"email": "Invalid Email."})
         if (fname == None) or (not valid_name(fname)):
             raise forms.ValidationError({"fname": "Invalid First Name."})
