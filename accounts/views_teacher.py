@@ -1279,8 +1279,8 @@ def bulkRegister(request):
                     else:
                         row_data.append(str(cell.value))
                 elif cell.column_letter == "M":
+                    dob = row_data[-5]
                     if cell.value == None:
-                        dob = row_data[-5]
                         if is_adult_func(dob) == "True":
                             row_data.append("ADULT")
                         else:
@@ -1292,6 +1292,14 @@ def bulkRegister(request):
                             )
                             break
                     else:
+                        if is_adult_func(dob) == "True":
+                            breaking = error = True
+                            error_message = (
+                                "Student at row number "
+                                + str(row_no + 1)
+                                + " is an adult, please remove 'Parent's Ref ID' for the student"
+                            )
+                            break
                         try:
                             parent_ref_id = int(cell.value)
                             if parent_ref_id <= len(parent_data):
