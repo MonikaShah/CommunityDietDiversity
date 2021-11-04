@@ -1323,7 +1323,7 @@ def bulkRegister(request):
             )
 
         our_user = TeacherInCharge.objects.filter(user=request.user).first()
-        organization = our_user[0].organization
+        organization = our_user.organization
         parent_created = {}
         for i in student_data:
             password = random_password_generator()
