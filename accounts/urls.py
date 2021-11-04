@@ -277,7 +277,6 @@ urlpatterns = [
     path("manage-forms/<int:id>/", views_teacher.manageForms, name="manage_forms"),
     path("getTemplate/", views_teacher.getTemplate, name="get_template"),
     path("bulkRegister/", views_teacher.bulkRegister, name="bulk_register"),
-    path("downloadData/", views_teacher.downloadData, name="download_data"),
     path("parent_dashboard/", views_parent.parent_dashboard, name="parent_dashboard"),
     path("addStudentForm/", views_parent.addStudentForm, name="add_student_form"),
     path(
