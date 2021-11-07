@@ -1075,6 +1075,7 @@ def edit_coordinator_profile(request):
             initial_dict["mobile_no"] = encryptionHelper.decrypt(coordinator.mobile_no)
 
         form = CoordinatorsInfoForm(request.POST or None, initial=initial_dict)
+        form.fields["dob"].disabled = True
 
         return render(
             request,
@@ -1083,6 +1084,8 @@ def edit_coordinator_profile(request):
         )
     else:
         form = CoordinatorsInfoForm(request.POST, request.FILES)
+        form.fields["dob"].disabled = True
+        form.fields["dob"].initial = encryptionHelper.decrypt(coordinator.dob)
 
         if form.is_valid():
             coordinator = CoordinatorInCharge.objects.filter(user=request.user).first()
@@ -1100,7 +1103,6 @@ def edit_coordinator_profile(request):
 
             coordinator.fname = encryptionHelper.encrypt(request.POST["fname"])
             coordinator.lname = encryptionHelper.encrypt(request.POST["lname"])
-            coordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
             coordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
 
             if request.FILES:

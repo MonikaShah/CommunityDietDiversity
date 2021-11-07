@@ -145,6 +145,8 @@ def edit_student_profile(request):
         form = StudentsInfoForm(request.POST or None, initial=initial_dict)
         form2 = SecondaryRegForm(initial=initial_dict_2)
         form.fields["organization"].disabled = True
+        form.fields["dob"].disabled = True
+
         return render(
             request,
             "student/update_students_info.html",
@@ -162,6 +164,8 @@ def edit_student_profile(request):
         form = StudentsInfoForm(request.POST, request.FILES)
         form.fields["organization"].disabled = True
         form.fields["organization"].initial = student.organization
+        form.fields["dob"].disabled = True
+        form.fields["dob"].initial = encryptionHelper.decrypt(student.dob)
 
         form2 = SecondaryRegForm(request.POST)
         if form.is_valid() and form2.is_valid():
@@ -210,7 +214,6 @@ def edit_student_profile(request):
             student.fname = encryptionHelper.encrypt(request.POST["fname"])
             student.lname = encryptionHelper.encrypt(request.POST["lname"])
             student.unique_no = encryptionHelper.encrypt(request.POST["unique_no"])
-            student.dob = encryptionHelper.encrypt(request.POST["dob"])
             student.gender = encryptionHelper.encrypt(request.POST["gender"])
 
             student.state = State.objects.get(

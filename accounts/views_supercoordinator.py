@@ -448,8 +448,8 @@ def view_supercoordinator_profile(request):
     login_url="accounts:forbidden",
 )
 def edit_supercoordinator_profile(request):
+    supercoordinator = SuperCoordinator.objects.filter(user=request.user).first()
     if request.method == "GET":
-        supercoordinator = SuperCoordinator.objects.filter(user=request.user).first()
         initial_dict = {
             "fname": encryptionHelper.decrypt(supercoordinator.fname),
             "lname": encryptionHelper.decrypt(supercoordinator.lname),
@@ -470,6 +470,7 @@ def edit_supercoordinator_profile(request):
             )
 
         form = SuperCoordinatorsInfoForm(request.POST or None, initial=initial_dict)
+        form.fields["dob"].disabled = True
 
         return render(
             request,
@@ -478,6 +479,8 @@ def edit_supercoordinator_profile(request):
         )
     else:
         form = SuperCoordinatorsInfoForm(request.POST, request.FILES)
+        form.fields["dob"].disabled = True
+        form.fields["dob"].initial = encryptionHelper.decrypt(supercoordinator.dob)
 
         if form.is_valid():
             supercoordinator = SuperCoordinator.objects.filter(
@@ -499,7 +502,6 @@ def edit_supercoordinator_profile(request):
 
             supercoordinator.fname = encryptionHelper.encrypt(request.POST["fname"])
             supercoordinator.lname = encryptionHelper.encrypt(request.POST["lname"])
-            supercoordinator.dob = encryptionHelper.encrypt(request.POST["dob"])
             supercoordinator.gender = encryptionHelper.encrypt(request.POST["gender"])
 
             if request.FILES:

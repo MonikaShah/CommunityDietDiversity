@@ -20,16 +20,41 @@
 
 
 <div class="d-flex flex-column align-items-center">
-    <div class="my-card card shadow border rounded">
+    <div class="my-profile-card card shadow border rounded">
         <img class="profile-pic mt-2" class="profile-pic" src={{request.user.teacherincharge.profile_pic.url}} >
         <div class="card-body">
-            <h6 class="card-text"><b>Name: </b>{{ teacher.fname }} {{ teacher.mname }} {{ teacher.lname }}</h6>
-            <h6 class="card-text"><b>Email: </b>{{ teacher.email }}</h6>
-            <h6 class="card-text"><b>Aadhar Card Number: </b>{{ teacher.aadhar }}</h6>
-            <h6 class="card-text"><b>Mobile No: </b>{{ teacher.mobile_no }}</h6>
-            <h6 class="card-text"><b>Date of Birth: </b>{{ teacher.dob }}</h6>
-            <h6 class="card-text"><b>Gender: </b>{{ teacher.gender }}</h6>
-            <h6 class="card-text"><b>Organization: </b>{{ teacher.organization }}</h6>
+            <table class="table table-striped"> 
+                <tbody>
+                  <tr>
+                    <th scope="row">Name</th>
+                    <td class="pl-5">{{ teacher.fname }} {{ teacher.mname }} {{ teacher.lname }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Email</th>
+                    <td class="pl-5">{{ teacher.email }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Mobile Number</th>
+                    <td class="pl-5">{{ teacher.mobile_no }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Aadhar Card Number</th>
+                    <td class="pl-5">{{ teacher.aadhar }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Date Of Birth</th>
+                    <td class="pl-5">{{ teacher.dob }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Gender</th>
+                    <td class="pl-5">{{ teacher.gender }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Organization</th>
+                    <td class="pl-5">{{ teacher.organization }}</td>
+                  </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <a href="{% url 'accounts:edit_teacher_profile' %}" class="btn btn-primary btnmedium">Edit</a>

@@ -274,6 +274,13 @@ body {
     font-size: 16px;
 }
 
+.my-profile-card {
+    width: 50%;
+    margin: 20px;
+    font-size: 16px;
+}
+
+
 .my-lower-links {
     display: flex;
     flex-direction: row;
@@ -299,7 +306,7 @@ body {
     .page-container {
         max-width: 94%;
     }
-    .my-card {
+    .my-card, .my-profile-card {
         margin: 20px 0;
     }
     .reset-password {

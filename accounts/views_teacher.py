@@ -1554,6 +1554,8 @@ def edit_teacher_profile(request):
             initial_dict["mobile_no"] = encryptionHelper.decrypt(teacher.mobile_no)
 
         form = TeachersInfoForm(request.POST or None, initial=initial_dict)
+        form.fields["dob"].disabled = True
+
         return render(
             request,
             "teacher/update_teachers_info.html",
@@ -1564,6 +1566,8 @@ def edit_teacher_profile(request):
         )
     else:
         form = TeachersInfoForm(request.POST, request.FILES)
+        form.fields["dob"].disabled = True
+        form.fields["dob"].initial = encryptionHelper.decrypt(teacher.dob)
 
         if form.is_valid():
             teacher = TeacherInCharge.objects.filter(user=request.user).first()
@@ -1579,7 +1583,6 @@ def edit_teacher_profile(request):
 
             teacher.fname = encryptionHelper.encrypt(request.POST["fname"])
             teacher.lname = encryptionHelper.encrypt(request.POST["lname"])
-            teacher.dob = encryptionHelper.encrypt(request.POST["dob"])
             teacher.gender = encryptionHelper.encrypt(request.POST["gender"])
 
             if request.FILES:

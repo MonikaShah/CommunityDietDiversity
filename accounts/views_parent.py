@@ -232,6 +232,7 @@ def edit_parent_profile(request):
             initial_dict["mobile_no"] = encryptionHelper.decrypt(parent.mobile_no)
 
         form = ParentsInfoForm(request.POST or None, initial=initial_dict)
+        form.fields["dob"].disabled = True
 
         return render(
             request,
@@ -242,6 +243,8 @@ def edit_parent_profile(request):
         )
     else:
         form = ParentsInfoForm(request.POST, request.FILES)
+        form.fields["dob"].disabled = True
+        form.fields["dob"].initial = encryptionHelper.decrypt(parent.dob)
 
         if form.is_valid():
             parent = ParentsInfo.objects.filter(user=request.user).first()
@@ -257,7 +260,6 @@ def edit_parent_profile(request):
 
             parent.fname = encryptionHelper.encrypt(request.POST["fname"])
             parent.lname = encryptionHelper.encrypt(request.POST["lname"])
-            parent.dob = encryptionHelper.encrypt(request.POST["dob"])
             parent.gender = encryptionHelper.encrypt(request.POST["gender"])
 
             if request.FILES:
