@@ -1615,7 +1615,6 @@ def edit_teacher_profile(request):
             return redirect("accounts:view_teacher_profile")
         else:
 
-            print(request.POST)
             return render(
                 request,
                 "teacher/update_teachers_info.html",

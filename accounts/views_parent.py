@@ -296,7 +296,6 @@ def edit_parent_profile(request):
                 "profile_pic": parent.profile_pic,
             }
             form = ParentsInfoForm(request.POST, request.FILES, initial=initial_dict)
-            print(request.FILES)
             return render(
                 request,
                 "parent/update_parents_info.html",
