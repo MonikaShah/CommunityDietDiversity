@@ -1120,14 +1120,14 @@ def edit_coordinator_profile(request):
                 else:
                     x = coordinator.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "\\" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = coordinator.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "\\" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = "/default.svg"
 

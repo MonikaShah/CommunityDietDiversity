@@ -20,38 +20,38 @@
 
 
 <div class="d-flex flex-column align-items-center">
-    <div class="my-profile-card card shadow border rounded">
+    <div class="my-profile-card card shadow border rounded mb-3">
         <img class="profile-pic mt-2" class="profile-pic" src={{request.user.coordinatorincharge.profile_pic.url}} >
         <div class="card-body">
             <table class="table table-striped"> 
                 <tbody>
                   <tr>
                     <th scope="row">Name</th>
-                    <td class="pl-5">{{ coordinator.fname }} {{ coordinator.mname }} {{ coordinator.lname }}</td>
+                    <td>{{ coordinator.fname }} {{ coordinator.mname }} {{ coordinator.lname }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Email</th>
-                    <td class="pl-5">{{ coordinator.email }}</td>
+                    <td>{{ coordinator.email }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Mobile Number</th>
-                    <td class="pl-5">{{ coordinator.mobile_no }}</td>
+                    <td>{{ coordinator.mobile_no }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Aadhar Card Number</th>
-                    <td class="pl-5">{{ coordinator.aadhar }}</td>
+                    <td>{{ coordinator.aadhar }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Date Of Birth</th>
-                    <td class="pl-5">{{ coordinator.dob }}</td>
+                    <td>{{ coordinator.dob }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Gender</th>
-                    <td class="pl-5">{{ coordinator.gender }}</td>
+                    <td>{{ coordinator.gender }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Organization</th>
-                    <td class="pl-5">{{ coordinator.organization }}</td>
+                    <td>{{ coordinator.organization }}</td>
                   </tr>
                 </tbody>
             </table>

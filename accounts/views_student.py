@@ -244,14 +244,14 @@ def edit_student_profile(request):
                 else:
                     x = student.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "\\" + x[1]
                         os.remove(file)
                     student.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = student.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "\\" + x[1]
                         os.remove(file)
                     student.profile_pic = "/default.svg"
 

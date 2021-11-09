@@ -20,82 +20,82 @@
 
 
 <div class="d-flex flex-column align-items-center">
-    <div class="my-profile-card card shadow border rounded">
+    <div class="my-profile-card card shadow border rounded mb-3">
         <img class="profile-pic mt-2" class="profile-pic" src={{request.user.studentsinfo.profile_pic.url}} >
         <div class="card-body">
             <table class="table table-striped"> 
                 <tbody>
                   <tr>
                     <th scope="row">Name</th>
-                    <td class="pl-5">{{ student.fname }} {{ student.mname }} {{ student.lname }}</td>
+                    <td>{{ student.fname }} {{ student.mname }} {{ student.lname }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Email</th>
-                    <td class="pl-5">{{ student.email }}</td>
+                    <td>{{ student.email }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Unique Number</th>
-                    <td class="pl-5"><h6 class="card-text">{{ student.unique_no }}</td>
+                    <td><h6 class="card-text">{{ student.unique_no }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Mobile Number</th>
-                    <td class="pl-5">{{ student.mobile_no }}</td>
+                    <td>{{ student.mobile_no }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Aadhar Card Number</th>
-                    <td class="pl-5">{{ student.aadhar }}</td>
+                    <td>{{ student.aadhar }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Date Of Birth</th>
-                    <td class="pl-5">{{ student.dob }}</td>
+                    <td>{{ student.dob }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Gender</th>
-                    <td class="pl-5">{{ student.gender }}</td>
+                    <td>{{ student.gender }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Pin Code</th>
-                    <td class="pl-5">{{ student.pincode }}</td>
+                    <td>{{ student.pincode }}</td>
                   </tr>
                   <tr>
                     <th scope="row">State</th>
-                    <td class="pl-5">{{ student.state }}</td>
+                    <td>{{ student.state }}</td>
                   </tr>
                   <tr>
                     <th scope="row">City</th>
-                    <td class="pl-5">{{ student.city }}</td>
+                    <td>{{ student.city }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Organization</th>
-                    <td class="pl-5">{{ student.organization }}</td>
+                    <td>{{ student.organization }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Parent's Education</th>
-                    <td class="pl-5">{{ student.secondary_reg.edu }}</td>
+                    <td>{{ student.secondary_reg.edu }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Parent's Occupation</th>
-                    <td class="pl-5">{{ student.secondary_reg.occupation }}</td>
+                    <td>{{ student.secondary_reg.occupation }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Religious Belief</th>
-                    <td class="pl-5">{{ student.secondary_reg.religion }}</td>
+                    <td>{{ student.secondary_reg.religion }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Type Of Family</th>
-                    <td class="pl-5">{{ student.secondary_reg.type_of_family }}</td>
+                    <td>{{ student.secondary_reg.type_of_family }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Number Of Family Members</th>
-                    <td class="pl-5">{{ student.secondary_reg.no_of_family_members }}</td>
+                    <td>{{ student.secondary_reg.no_of_family_members }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Family Income</th>
-                    <td class="pl-5">{{ student.secondary_reg.family_income }}</td>
+                    <td>{{ student.secondary_reg.family_income }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Ration Card Color</th>
-                    <td class="pl-5">{{ student.secondary_reg.ration_card_color }}</td>
+                    <td>{{ student.secondary_reg.ration_card_color }}</td>
                   </tr>
                 </tbody>
             </table>

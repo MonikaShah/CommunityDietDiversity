@@ -20,38 +20,38 @@
 
 
 <div class="d-flex flex-column align-items-center">
-    <div class="my-profile-card card shadow border rounded">
+    <div class="my-profile-card card shadow border rounded mb-3">
         <img class="profile-pic mt-2" class="profile-pic" src={{request.user.teacherincharge.profile_pic.url}} >
         <div class="card-body">
             <table class="table table-striped"> 
                 <tbody>
                   <tr>
                     <th scope="row">Name</th>
-                    <td class="pl-5">{{ teacher.fname }} {{ teacher.mname }} {{ teacher.lname }}</td>
+                    <td>{{ teacher.fname }} {{ teacher.mname }} {{ teacher.lname }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Email</th>
-                    <td class="pl-5">{{ teacher.email }}</td>
+                    <td>{{ teacher.email }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Mobile Number</th>
-                    <td class="pl-5">{{ teacher.mobile_no }}</td>
+                    <td>{{ teacher.mobile_no }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Aadhar Card Number</th>
-                    <td class="pl-5">{{ teacher.aadhar }}</td>
+                    <td>{{ teacher.aadhar }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Date Of Birth</th>
-                    <td class="pl-5">{{ teacher.dob }}</td>
+                    <td>{{ teacher.dob }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Gender</th>
-                    <td class="pl-5">{{ teacher.gender }}</td>
+                    <td>{{ teacher.gender }}</td>
                   </tr>
                   <tr>
                     <th scope="row">Organization</th>
-                    <td class="pl-5">{{ teacher.organization }}</td>
+                    <td>{{ teacher.organization }}</td>
                   </tr>
                 </tbody>
             </table>

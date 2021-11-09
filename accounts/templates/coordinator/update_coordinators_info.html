@@ -28,12 +28,6 @@
                 {{ form.profile_pic|as_crispy_field }}
             </div>
             <div class="col-md-12">
-                {{ form.email|as_crispy_field }}
-            </div>
-            <div class="col-md-12">
-                {{ form.aadhar|as_crispy_field }}
-            </div>
-            <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-4">
                         {{form.fname|as_crispy_field}}
@@ -46,6 +40,16 @@
                     </div>
                     <small class="form-text text-muted mb-3 mt-0">Numbers and special characters are not allowed except
                         apostrophe.</small>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.email|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.aadhar|as_crispy_field }}
+                    </div>
                 </div>
             </div>
             <div class="col-md-12">

@@ -306,9 +306,16 @@ body {
     .page-container {
         max-width: 94%;
     }
-    .my-card, .my-profile-card {
+    .my-card {
         margin: 20px 0;
     }
+
+    .my-profile-card {
+        width: unset;
+        margin: unset;
+        font-size: unset;
+    }
+
     .reset-password {
         width: 94%;
     }
