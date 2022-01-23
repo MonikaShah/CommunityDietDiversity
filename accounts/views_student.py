@@ -24,13 +24,6 @@ def student_dashboard(request):
 
 
 @login_required(login_url="accounts:loginlink")
-@user_passes_test(is_student, login_url="accounts:forbidden")
-@consent
-@password_change_required
-@secondary_reg
-
-
-@login_required(login_url="accounts:loginlink")
 @user_passes_test(
     lambda user: is_student(user),
     login_url="accounts:forbidden",
