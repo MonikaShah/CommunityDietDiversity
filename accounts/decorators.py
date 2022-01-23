@@ -38,6 +38,7 @@ def isActive(moduleType, userType):
 
     return decorator
 
+
 def isInfoActive(moduleType, userType):
     def decorator(view_func):
         def wrap(request, *args, **kwargs):
@@ -47,7 +48,8 @@ def isInfoActive(moduleType, userType):
                     return redirect("accounts:forbidden")
                 student = StudentsInfo.objects.get(user=request.user)
                 if InfoFormDetails.objects.filter(
-                    form=module, open=True,
+                    form=module,
+                    open=True,
                 ).exists():
                     return view_func(request, *args, **kwargs)
                 else:
@@ -62,7 +64,8 @@ def isInfoActive(moduleType, userType):
                 )
 
                 if InfoFormDetails.objects.filter(
-                    form=module, open=True,
+                    form=module,
+                    open=True,
                 ).exists():
                     return view_func(request, *args, **kwargs)
                 else:
@@ -167,7 +170,14 @@ def consent(func):
         if is_student(request.user):
             student = StudentsInfo.objects.filter(user=request.user).first()
             if not student.consent:
-                return redirect("accounts:give_consent")
+                if is_adult_student(request.user):
+                    return redirect("accounts:give_consent")
+                else:
+                    if student.parent.consent:
+                        student.consent = True
+                        student.save()
+                    else:
+                        return redirect("accounts:ask_to_give_consent")
         elif is_parent(request.user):
             parent = ParentsInfo.objects.filter(user=request.user).first()
             if not parent.consent:

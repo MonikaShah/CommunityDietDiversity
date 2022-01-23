@@ -4,6 +4,9 @@ from .models import *
 import string
 import random
 import re
+from shared.encryption import EncryptionHelper
+
+encryptionHelper = EncryptionHelper()
 
 # username and password auto generators
 def username_generator(fname, lname):
@@ -95,6 +98,11 @@ def custom_user_filter(user):
 
 def is_student(user):
     return user.groups.filter(name="Students").exists()
+
+
+def is_adult_student(user):
+    student = StudentsInfo.objects.filter(user=user).first()
+    return True if encryptionHelper.decrypt(student.adult) == "True" else False
 
 
 def is_parent(user):

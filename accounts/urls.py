@@ -30,6 +30,7 @@ urlpatterns = [
         name="students_info_adult",
     ),
     path("give_consent/", views_registration.give_consent, name="give_consent"),
+    path("ask_to_give_consent/", views_registration.ask_to_give_consent, name="ask_to_give_consent"),
     path(
         "addSuperCoordinatorForm/",
         views_registration.addSuperCoordinatorForm,

@@ -494,7 +494,8 @@ def addSuperCoordinatorForm(request):
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(
-    lambda user: is_parent(user) or is_student(user), login_url="accounts:forbidden"
+    lambda user: is_parent(user) or (is_student(user) and is_adult_student(user)),
+    login_url="accounts:forbidden",
 )
 def give_consent(request):
     if request.method == "GET":
@@ -513,14 +514,6 @@ def give_consent(request):
                 student = StudentsInfo.objects.filter(user=request.user).first()
                 student.consent = True
                 student.save()
-                if student.parent:
-                    parent = student.parent
-                    parent.consent = True
-                    parent.save()
-                    students = StudentsInfo.objects.filter(parent=parent)
-                    for i in students:
-                        i.consent = True
-                        i.save()
             else:
                 parent = ParentsInfo.objects.filter(user=request.user).first()
                 parent.consent = True
@@ -532,3 +525,12 @@ def give_consent(request):
             return redirect("accounts:loginlink")
         else:
             return render(request, "registration/give_consent.html", {"form": form})
+
+
+@login_required(login_url="accounts:loginlink")
+@user_passes_test(
+    lambda user: is_student(user) and not is_adult_student(user),
+    login_url="accounts:forbidden",
+)
+def ask_to_give_consent(request):
+    return render(request, "registration/ask_to_give_consent.html", {})
