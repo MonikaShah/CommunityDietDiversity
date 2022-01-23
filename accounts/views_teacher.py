@@ -1355,6 +1355,9 @@ def bulkRegister(request):
                 password=password,
             )
             student_user.save()
+            student_group = Group.objects.get(name="Students")
+            student_user.groups.add(student_group)
+            student_user.save()
             if i[-1] == "ADULT":
                 StudentsInfo.objects.create(
                     user=student_user,
@@ -1415,6 +1418,9 @@ def bulkRegister(request):
                             ),
                             password=parent_password,
                         )
+                        parent_user.save()
+                        parent_group = Group.objects.get(name="Parents")
+                        parent_user.groups.add(parent_group)
                         parent_user.save()
                         parent = ParentsInfo.objects.create(
                             user=parent_user,
