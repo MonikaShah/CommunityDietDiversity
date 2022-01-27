@@ -332,7 +332,7 @@ def viewSessionForms(request, id):
     closed_sessions = FormDetails.objects.filter(
         teacher=teacher, session=teachersession, open=False
     )
-
+    closed_info_sessions = InfoFormDetails.objects.filter(open=False)
     for session in closed_sessions:
         temp_list = [session.form, session.start_timestamp, session.end_timestamp]
         if session.pre:
@@ -370,9 +370,49 @@ def viewSessionForms(request, id):
         temp_list.append(len(total_students))
         temp_list.append(session.id)
         results.append(temp_list)
+
+
+
+
+    for session in closed_info_sessions:
+        temp_list = [session.form, session.start_timestamp, session.end_timestamp]
+        temp_list.append("None")
+        count = 0
+        for student in total_students:
+            if ModuleOne.objects.filter(
+                student=student,
+                submission_timestamp__gte=session.start_timestamp,
+                submission_timestamp__lte=session.end_timestamp,
+            ).exists():
+                draftForm = ModuleOne.objects.filter(
+                    student=student,
+                    submission_timestamp__gte=session.start_timestamp,
+                    submission_timestamp__lte=session.end_timestamp,
+                ).first()
+                if not draftForm.draft:
+                    count += 1
+            elif Physique.objects.filter(
+                student=student,
+                submission_timestamp__gte=session.start_timestamp,
+                submission_timestamp__lte=session.end_timestamp,
+            ).exists():
+                draftForm = Physique.objects.filter(
+                    student=student,
+                    submission_timestamp__gte=session.start_timestamp,
+                    submission_timestamp__lte=session.end_timestamp,
+                ).first()
+                if not draftForm.draft:
+                    count += 1
+
+        temp_list.append(count)
+        temp_list.append(len(total_students))
+        temp_list.append(session.id)
+        results.append(temp_list)
+
     open_sessions = FormDetails.objects.filter(
         teacher=teacher, session=teachersession, open=True
     )
+    open_info_sessions = InfoFormDetails.objects.filter(open=True)
     results2 = []
     for session in open_sessions:
         temp_list = [session.form, session.start_timestamp]
@@ -404,6 +444,35 @@ def viewSessionForms(request, id):
         temp_list.append(session.id)
         results2.append(temp_list)
 
+
+
+
+    for session in open_info_sessions:
+        temp_list = [session.form, session.start_timestamp]
+        temp_list.append("None")
+        count = 0
+        for student in total_students:
+            if ModuleOne.objects.filter(
+                student=student, submission_timestamp__gte=session.start_timestamp
+            ).exists():
+                draftForm = ModuleOne.objects.filter(
+                    student=student, submission_timestamp__gte=session.start_timestamp
+                ).first()
+                if not draftForm.draft:
+                    count += 1
+            elif Physique.objects.filter(
+                student=student, submission_timestamp__gte=session.start_timestamp
+            ).exists():
+                draftForm = Physique.objects.filter(
+                    student=student, submission_timestamp__gte=session.start_timestamp
+                ).first()
+                if not draftForm.draft:
+                    count += 1
+
+        temp_list.append(count)
+        temp_list.append(len(total_students))
+        temp_list.append(session.id)
+        results2.append(temp_list)
     return render(
         request,
         "teacher/view_session_forms.html",

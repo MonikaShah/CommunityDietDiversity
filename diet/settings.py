@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os  # Used for deployment on heroku
 from pathlib import Path
 from decouple import config  # Used to access environment variables
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     "accounts",
     "bootstrap_datepicker_plus",
     "six",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -157,3 +159,9 @@ EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD")
 PASSWORD_RESET_TIMEOUT = 600
 
 DATE_INPUT_FORMATS = ('%d/%m/%Y','%d-%m-%Y','%Y-%m-%d')
+CELERY_BEAT_SCHEDULE = {
+    "scheduled_task": {
+        "task": "accounts.tasks.new_physique_form",
+        "schedule": crontab(minute='*/1'),
+    }
+}
