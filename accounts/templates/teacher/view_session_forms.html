@@ -47,7 +47,11 @@
             <p class="card-text"><b>Start Date:</b> {{result.1}}</p>
             <p class="card-text"><b>No. of submissions:</b> {{result.3}}</p>
             <p class="card-text"><b>Total Students:</b> {{result.4}}</p>
-            <a href="{% url 'accounts:get_form_details' result.5 %}" class="btn btn-primary btnmedium">View Info</a>
+            {% if result.2 == "None" %}
+              <a href="{% url 'accounts:get_form_details' result.5 session.id 2 %}" class="btn btn-primary btnmedium">View Info</a>
+            {% else %}
+              <a href="{% url 'accounts:get_form_details' result.5 session.id 1 %}" class="btn btn-primary btnmedium">View Info</a>
+            {% endif %}
           </div>
         </div>
       {% endfor %}
@@ -66,7 +70,11 @@
             <p class="card-text"><b>End Date:</b> {{result.2}}</p>
             <p class="card-text"><b>No. of submissions:</b> {{result.4}}</p>
             <p class="card-text"><b>Total Students:</b> {{result.5}}</p>
-            <a href="{% url 'accounts:get_form_details' result.6 %}" class="btn btn-primary btnmedium">View Info</a>
+            {% if result.3 == "None" %}
+              <a href="{% url 'accounts:get_form_details' result.6 session.id 2 %}" class="btn btn-primary btnmedium">View Info</a>
+            {% else %}
+              <a href="{% url 'accounts:get_form_details' result.6 session.id 1 %}" class="btn btn-primary btnmedium">View Info</a>
+            {% endif %}
           </div>
         </div>
       {% endfor %}

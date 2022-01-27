@@ -162,6 +162,6 @@ DATE_INPUT_FORMATS = ('%d/%m/%Y','%d-%m-%Y','%Y-%m-%d')
 CELERY_BEAT_SCHEDULE = {
     "scheduled_task": {
         "task": "accounts.tasks.new_physique_form",
-        "schedule": crontab(minute='*/1'),
+        "schedule": crontab(hour="*/24"),
     }
 }

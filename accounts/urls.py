@@ -270,7 +270,7 @@ urlpatterns = [
         name="view_session_forms",
     ),
     path(
-        "teacher_dashboard/<int:id>/",
+        "teacher_dashboard/<int:id>/<int:session_id>/<int:form_type>/",
         views_teacher.getFormDetails,
         name="get_form_details",
     ),

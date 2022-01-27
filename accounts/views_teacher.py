@@ -353,45 +353,18 @@ def viewSessionForms(request, id):
                 ).first()
                 if not draftForm.draft:
                     count += 1
-            elif Physique.objects.filter(
-                student=student,
-                submission_timestamp__gte=session.start_timestamp,
-                submission_timestamp__lte=session.end_timestamp,
-            ).exists():
-                draftForm = Physique.objects.filter(
-                    student=student,
-                    submission_timestamp__gte=session.start_timestamp,
-                    submission_timestamp__lte=session.end_timestamp,
-                ).first()
-                if not draftForm.draft:
-                    count += 1
 
         temp_list.append(count)
         temp_list.append(len(total_students))
         temp_list.append(session.id)
         results.append(temp_list)
 
-
-
-
     for session in closed_info_sessions:
         temp_list = [session.form, session.start_timestamp, session.end_timestamp]
         temp_list.append("None")
         count = 0
         for student in total_students:
-            if ModuleOne.objects.filter(
-                student=student,
-                submission_timestamp__gte=session.start_timestamp,
-                submission_timestamp__lte=session.end_timestamp,
-            ).exists():
-                draftForm = ModuleOne.objects.filter(
-                    student=student,
-                    submission_timestamp__gte=session.start_timestamp,
-                    submission_timestamp__lte=session.end_timestamp,
-                ).first()
-                if not draftForm.draft:
-                    count += 1
-            elif Physique.objects.filter(
+            if Physique.objects.filter(
                 student=student,
                 submission_timestamp__gte=session.start_timestamp,
                 submission_timestamp__lte=session.end_timestamp,
@@ -430,37 +403,18 @@ def viewSessionForms(request, id):
                 ).first()
                 if not draftForm.draft:
                     count += 1
-            elif Physique.objects.filter(
-                student=student, submission_timestamp__gte=session.start_timestamp
-            ).exists():
-                draftForm = Physique.objects.filter(
-                    student=student, submission_timestamp__gte=session.start_timestamp
-                ).first()
-                if not draftForm.draft:
-                    count += 1
 
         temp_list.append(count)
         temp_list.append(len(total_students))
         temp_list.append(session.id)
         results2.append(temp_list)
 
-
-
-
     for session in open_info_sessions:
         temp_list = [session.form, session.start_timestamp]
         temp_list.append("None")
         count = 0
         for student in total_students:
-            if ModuleOne.objects.filter(
-                student=student, submission_timestamp__gte=session.start_timestamp
-            ).exists():
-                draftForm = ModuleOne.objects.filter(
-                    student=student, submission_timestamp__gte=session.start_timestamp
-                ).first()
-                if not draftForm.draft:
-                    count += 1
-            elif Physique.objects.filter(
+            if Physique.objects.filter(
                 student=student, submission_timestamp__gte=session.start_timestamp
             ).exists():
                 draftForm = Physique.objects.filter(
@@ -488,11 +442,15 @@ def viewSessionForms(request, id):
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_teacher, login_url="accounts:forbidden")
 @password_change_required
-def getFormDetails(request, id):
-    form = FormDetails.objects.get(pk=id)
-    teacher = form.teacher
+def getFormDetails(request, id, session_id, form_type):
+    if form_type == 1:
+        form = FormDetails.objects.get(pk=id)
+    else:
+        form = InfoFormDetails.objects.get(pk=id)
+    teacher = TeacherInCharge.objects.get(user=request.user)
+    session = Session.objects.filter(id=session_id).first()
     session_students = Student_Session.objects.filter(
-        teacher=teacher, session=form.session
+        teacher=teacher, session=session
     )
     total_students = []
     for session_student in session_students:
@@ -506,11 +464,14 @@ def getFormDetails(request, id):
     else:
         form_open = True
         temp_list = [form.form, form.start_timestamp]
-
-    if form.pre:
-        temp_list.append("Pre Test")
+    
+    if form_type == 1:
+        if form.pre:
+            temp_list.append("Pre Test")
+        else:
+            temp_list.append("Post Test")
     else:
-        temp_list.append("Post Test")
+        temp_list.append("None")
 
     if form.form.name == "moduleOne":
         for student in total_students:
