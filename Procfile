@@ -1,1 +1,1 @@
-web: gunicorn diet.wsgi --log-file -
+web: honcho start -f ProcfileHoncho
