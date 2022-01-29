@@ -166,10 +166,11 @@ CELERY_RESULT_BACKEND = config("REDIS_CREDENTIALS")
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
-CELERY_TIMEZONE = "Asia/Kolkata"
 CELERY_BEAT_SCHEDULE = {
     "scheduled_task": {
         "task": "accounts.tasks.new_physique_form",
-        "schedule": crontab(hour="*/24"),
+        "schedule": crontab(
+            minute=30, hour=18
+        ),  # Celery beat only works properly with UTC time. Hence 18:30 in UTC leads to 00:00 in IST
     }
 }
