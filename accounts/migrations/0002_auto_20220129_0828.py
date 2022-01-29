@@ -50,7 +50,7 @@ def load_data(apps, schema_editor):
     Form = apps.get_model("accounts", "Form")
     oc = Form(name="moduleOne")
     oc.save()
-    oc = Form(name="activity")
+    oc = Form(name="physique")
     oc.save()
 
     # education
