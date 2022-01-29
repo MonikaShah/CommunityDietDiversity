@@ -136,9 +136,9 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-MEDIA_URL = '/account/media/accounts/'
+MEDIA_URL = "/account/media/accounts/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/accounts/')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/accounts/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -158,7 +158,15 @@ EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD")
 
 PASSWORD_RESET_TIMEOUT = 600
 
-DATE_INPUT_FORMATS = ('%d/%m/%Y','%d-%m-%Y','%Y-%m-%d')
+DATE_INPUT_FORMATS = ("%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d")
+
+# Celery and Redis Setup
+CELERY_BROKER_URL = config("REDIS_CREDENTIALS")
+CELERY_RESULT_BACKEND = config("REDIS_CREDENTIALS")
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "Asia/Kolkata"
 CELERY_BEAT_SCHEDULE = {
     "scheduled_task": {
         "task": "accounts.tasks.new_physique_form",
