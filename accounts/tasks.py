@@ -6,21 +6,25 @@ from django.utils import timezone
 from shared.encryption import EncryptionHelper
 from .models import *
 from .helper_functions import *
+from datetime import date
 
 encryptionHelper = EncryptionHelper()
 
+
 @shared_task
 def new_physique_form():
-    oldform = InfoFormDetails.objects.get(open= True,)
-    oldform.open = False
-    oldform.end_timestamp = timezone.now()
-    oldform.save()
-    form= InfoFormDetails(start_timestamp = timezone.now())
-    form.open= True
-    form.form = Form.objects.get(name='physique')
+    physique_form_id = Form.objects.get(name="physique")
+    if InfoFormDetails.objects.filter(open=True, form=physique_form_id).exists():
+        oldform = InfoFormDetails.objects.get(open=True, form=physique_form_id)
+        oldform.open = False
+        oldform.end_timestamp = timezone.now()
+        oldform.save()
+    form = InfoFormDetails(start_timestamp=timezone.now())
+    form.open = True
+    form.form = physique_form_id
     form.save()
     students = StudentsInfo.objects.filter(session__isnull=False)
-    required_students=[]
+    required_students = []
     for student in students:
         if student.email:
             student.fname = encryptionHelper.decrypt(student.fname)
@@ -32,15 +36,23 @@ def new_physique_form():
             student.email = encryptionHelper.decrypt(student.email)
             required_students.append(student)
     for student in required_students:
-        print(student.fname)
-        send_review_email(student)
+        send_review_email(student, "Physique")
 
 
-def send_review_email(student):
-    token="abc"
-    message = get_template("student/email_template.html",).render({"user": student.fname,})
+def send_review_email(student, form_type):
+    todays_date = str(date.today())
+    message = get_template(
+        "student/email_template.html",
+    ).render({"user": student.fname, "form_type": form_type})
     msg = EmailMessage(
-        "Reminder to fill in your form" + str(token),
+        "Reminder to fill in your "
+        + form_type
+        + " Form, Dated: "
+        + todays_date[8:]
+        + "-"
+        + todays_date[5:7]
+        + "-"
+        + todays_date[:4],
         message,
         None,
         [str(student.email)],
