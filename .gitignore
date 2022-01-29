@@ -6,3 +6,7 @@
 
 # Ignoring environment files containg project key, db credentials and encryption key
 .env
+
+# Ignoring temp files created by celery
+celerybeat-schedule
+celerybeat-schedule.*
