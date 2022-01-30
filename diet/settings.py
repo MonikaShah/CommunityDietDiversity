@@ -163,7 +163,6 @@ DATE_INPUT_FORMATS = ("%d/%m/%Y", "%d-%m-%Y", "%Y-%m-%d")
 
 # Celery and Redis Setup
 CELERY_BROKER_URL = config("REDIS_CREDENTIALS")
-CELERY_RESULT_BACKEND = config("REDIS_CREDENTIALS")
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
