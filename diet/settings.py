@@ -155,6 +155,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config("EMAIL_ID")
 EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD")
+FROM_EMAIL_ID = "Community Diet Diversity No Reply <%s>" % config("EMAIL_ID")
 
 PASSWORD_RESET_TIMEOUT = 600
 

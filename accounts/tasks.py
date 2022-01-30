@@ -7,6 +7,7 @@ from shared.encryption import EncryptionHelper
 from .models import *
 from .helper_functions import *
 from datetime import date
+from django.conf import settings
 
 encryptionHelper = EncryptionHelper()
 
@@ -54,7 +55,7 @@ def send_review_email(student, form_type):
         + "-"
         + todays_date[:4],
         message,
-        None,
+        settings.FROM_EMAIL_ID,
         [str(student.email)],
     )
     msg.content_subtype = "html"

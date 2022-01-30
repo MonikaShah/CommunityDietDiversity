@@ -16,6 +16,7 @@ from .helper_functions import *
 from .token import password_reset_token
 from shared.encryption import EncryptionHelper
 import random
+from django.conf import settings
 
 encryptionHelper = EncryptionHelper()
 
@@ -41,9 +42,9 @@ def reset_password_emailer(request, user, user_email):
         }
     )
     msg = EmailMessage(
-        "Community Diet Diversity Reset Password, Ref Token:" + str(token),
+        "Community Diet Diversity Reset Password, Ref Token: " + str(token),
         message,
-        None,
+        settings.FROM_EMAIL_ID,
         [str(user_email)],
     )
     msg.content_subtype = "html"
