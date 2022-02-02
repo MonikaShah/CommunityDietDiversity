@@ -196,7 +196,7 @@ def physique(request, user=None):
 @user_passes_test(is_parent, login_url="accounts:forbidden")
 @consent
 @password_change_required
-@isActive("physique", "parent")
+@isInfoActive("physique", "parent")
 def parentPhysique(request, id):
     user = StudentsInfo.objects.get(pk=id).user
     return physique(request, user)
