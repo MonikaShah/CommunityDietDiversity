@@ -101,6 +101,11 @@ def switchTeachersList(request, id, teacher_id):
             student.save()
             student_session.save()
 
+        forms = FormDetails.objects.filter(teacher=teacher)
+        for form in forms:
+            form.teacher = new_teacher
+            form.save()
+
         return redirect("accounts:view_session_teachers", id, 1)
 
 
