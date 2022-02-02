@@ -1185,6 +1185,11 @@ def switchTeachersUserList(request, teacher_id):
             teacher_session.teacher = new_teacher
             teacher_session.save()
 
+        forms = FormDetails.objects.filter(teacher=og_teacher)
+        for form in forms:
+            form.teacher = new_teacher
+            form.save()
+
         og_teacher_user.delete()
         request.session["my_messages"] = {
             "success": "Teacher switched successfully"
