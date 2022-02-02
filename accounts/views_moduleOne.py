@@ -133,51 +133,51 @@ def moduleOne(request, user=None):
                 form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True, session=student.session
             ).start_timestamp
             if ModuleOne.objects.filter(
-            student=student, submission_timestamp__gte=startdate
-        ).exists():
-            draftForm = ModuleOne.objects.get(
-                student=StudentsInfo.objects.get(user=user),
-                submission_timestamp__gte=startdate,
-            )
-            if draftForm.draft:
-                mod = ModuleOneForm()
-                temp = {}
-                for name in ModuleOne._meta.get_fields():
-                    name = name.column
-                    if name in mod.fields:
-                        if (
-                            name == "source_fruits_vegetables"
-                            or name == "grow_own_food"
-                        ):
-                            temp[name] = ast.literal_eval(
-                                getattr(draftForm, name) or "[]"
-                            )
-                        else:
-                            temp[name] = getattr(draftForm, name)
+                student=student, submission_timestamp__gte=startdate
+            ).exists():
+                draftForm = ModuleOne.objects.get(
+                    student=StudentsInfo.objects.get(user=user),
+                    submission_timestamp__gte=startdate,
+                )
+                if draftForm.draft:
+                    mod = ModuleOneForm()
+                    temp = {}
+                    for name in ModuleOne._meta.get_fields():
+                        name = name.column
+                        if name in mod.fields:
+                            if (
+                                name == "source_fruits_vegetables"
+                                or name == "grow_own_food"
+                            ):
+                                temp[name] = ast.literal_eval(
+                                    getattr(draftForm, name) or "[]"
+                                )
+                            else:
+                                temp[name] = getattr(draftForm, name)
 
-                form = ModuleOneForm(temp)
+                    form = ModuleOneForm(temp)
+                    formPre = getFormType("moduleOne", student.teacher)
+                    return render(
+                        request,
+                        "moduleOne/module_one.html",
+                        {
+                            "form": form,
+                            "formPre": formPre,
+                            "page_type": "student_module_one",
+                        },
+                    )
+                else:
+                    return redirect("accounts:already_filled")
+
+            # new form
+            else:
+                form = ModuleOneForm()
                 formPre = getFormType("moduleOne", student.teacher)
                 return render(
                     request,
                     "moduleOne/module_one.html",
-                    {
-                        "form": form,
-                        "formPre": formPre,
-                        "page_type": "student_module_one",
-                    },
+                    {"form": form, "formPre": formPre, "page_type": "student_module_one"},
                 )
-            else:
-                return redirect("accounts:already_filled")
-
-        # new form
-        else:
-            form = ModuleOneForm()
-            formPre = getFormType("moduleOne", student.teacher)
-            return render(
-                request,
-                "moduleOne/module_one.html",
-                {"form": form, "formPre": formPre, "page_type": "student_module_one"},
-            )
         except:
             return redirect("accounts:form_closed")
 
