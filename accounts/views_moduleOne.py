@@ -21,31 +21,34 @@ def createTempDict(postData):
 
 def creatingOrUpdatingDrafts(temp, user, formName):
     student = StudentsInfo.objects.get(user=user)
-    startdate = FormDetails.objects.get(
-        form=Form.objects.get(name=formName), teacher=student.teacher, open=True
-    ).start_timestamp
-    if ModuleOne.objects.filter(
-        student=student, submission_timestamp__gte=startdate
-    ).exists():
-        draftForm = ModuleOne.objects.get(
-            student=StudentsInfo.objects.get(user=user),
-            submission_timestamp__gte=startdate,
-        )
-        if draftForm.draft:
-            # updating drafts
-            for name in ModuleOne._meta.get_fields():
-                name = name.column
-                if name == "id" or name == "student_id" or name == "draft":
-                    continue
-                if name in temp:
-                    setattr(draftForm, name, temp[name])
-                else:
-                    setattr(draftForm, name, getattr(draftForm, name) or None)
+    try:
+        startdate = FormDetails.objects.get(
+            form=Form.objects.get(name=formName), teacher=student.teacher, open=True, session=student.session
+        ).start_timestamp
+        if ModuleOne.objects.filter(
+            student=student, submission_timestamp__gte=startdate
+        ).exists():
+            draftForm = ModuleOne.objects.get(
+                student=StudentsInfo.objects.get(user=user),
+                submission_timestamp__gte=startdate,
+            )
+            if draftForm.draft:
+                # updating drafts
+                for name in ModuleOne._meta.get_fields():
+                    name = name.column
+                    if name == "id" or name == "student_id" or name == "draft":
+                        continue
+                    if name in temp:
+                        setattr(draftForm, name, temp[name])
+                    else:
+                        setattr(draftForm, name, getattr(draftForm, name) or None)
 
-            draftForm.submission_timestamp = datetime.now()
-            draftForm.save()
-            return True
-    else:
+                draftForm.submission_timestamp = datetime.now()
+                draftForm.save()
+                return True
+        else:
+            return False
+    except:
         return False
 
 
@@ -125,10 +128,11 @@ def moduleOne(request, user=None):
             user = request.user
 
         student = StudentsInfo.objects.get(user=user)
-        startdate = FormDetails.objects.get(
-            form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True, session=student.session
-        ).start_timestamp
-        if ModuleOne.objects.filter(
+        try:
+            startdate = FormDetails.objects.get(
+                form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True, session=student.session
+            ).start_timestamp
+            if ModuleOne.objects.filter(
             student=student, submission_timestamp__gte=startdate
         ).exists():
             draftForm = ModuleOne.objects.get(
@@ -174,6 +178,8 @@ def moduleOne(request, user=None):
                 "moduleOne/module_one.html",
                 {"form": form, "formPre": formPre, "page_type": "student_module_one"},
             )
+        except:
+            return redirect("accounts:form_closed")
 
     # POST
     else:
@@ -232,47 +238,51 @@ def moduleOne2(request, user=None):
             user = request.user
 
         student = StudentsInfo.objects.get(user=user)
-        startdate = FormDetails.objects.get(
-            form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True, session=student.session
-        ).start_timestamp
-        if ModuleOne.objects.filter(
-            student=student, submission_timestamp__gte=startdate
-        ).exists():
-            draftForm = ModuleOne.objects.get(
-                student=StudentsInfo.objects.get(user=user),
-                submission_timestamp__gte=startdate,
-            )
-            if draftForm.draft:
-                mod = ModuleOneForm2()
-                temp = {}
-                for name in ModuleOne._meta.get_fields():
-                    name = name.column
-                    if name in mod.fields:
-                        temp[name] = getattr(draftForm, name) or None
+        try:
+            startdate = FormDetails.objects.get(
+                form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True, session=student.session
+            ).start_timestamp
+            if ModuleOne.objects.filter(
+                student=student, submission_timestamp__gte=startdate
+            ).exists():
+                draftForm = ModuleOne.objects.get(
+                    student=StudentsInfo.objects.get(user=user),
+                    submission_timestamp__gte=startdate,
+                )
+                if draftForm.draft:
+                    mod = ModuleOneForm2()
+                    temp = {}
+                    for name in ModuleOne._meta.get_fields():
+                        name = name.column
+                        if name in mod.fields:
+                            temp[name] = getattr(draftForm, name) or None
 
-                form = ModuleOneForm2(temp)
+                    form = ModuleOneForm2(temp)
+                    formPre = getFormType("moduleOne", student.teacher)
+                    return render(
+                        request,
+                        "moduleOne/module_one2.html",
+                        {
+                            "form": form,
+                            "formPre": formPre,
+                            "page_type": "student_module_one",
+                        },
+                    )
+                else:
+                    return redirect("accounts:already_filled")
+
+            # new form
+            else:
+                form = ModuleOneForm2()
                 formPre = getFormType("moduleOne", student.teacher)
                 return render(
                     request,
                     "moduleOne/module_one2.html",
-                    {
-                        "form": form,
-                        "formPre": formPre,
-                        "page_type": "student_module_one",
-                    },
+                    {"form": form, "formPre": formPre, "page_type": "student_module_one"},
                 )
-            else:
-                return redirect("accounts:already_filled")
+        except:
+            return redirect("accounts:form_closed")
 
-        # new form
-        else:
-            form = ModuleOneForm2()
-            formPre = getFormType("moduleOne", student.teacher)
-            return render(
-                request,
-                "moduleOne/module_one2.html",
-                {"form": form, "formPre": formPre, "page_type": "student_module_one"},
-            )
     # POST
     else:
         flag = False
@@ -317,45 +327,48 @@ def moduleOne3(request, user=None):
             user = request.user
 
         student = StudentsInfo.objects.get(user=user)
-        startdate = FormDetails.objects.get(
-            form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True, session=student.session
-        ).start_timestamp
-        if ModuleOne.objects.filter(
-            student=student, submission_timestamp__gte=startdate
-        ).exists():
-            draftForm = ModuleOne.objects.get(
-                student=StudentsInfo.objects.get(user=user),
-                submission_timestamp__gte=startdate,
-            )
-            if draftForm.draft:
-                mod = ModuleOneForm3()
-                temp = {}
-                for name in ModuleOne._meta.get_fields():
-                    name = name.column
-                    if name in mod.fields:
-                        temp[name] = getattr(draftForm, name) or None
-                form = ModuleOneForm3(temp)
+        try:
+            startdate = FormDetails.objects.get(
+                form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True, session=student.session
+            ).start_timestamp
+            if ModuleOne.objects.filter(
+                student=student, submission_timestamp__gte=startdate
+            ).exists():
+                draftForm = ModuleOne.objects.get(
+                    student=StudentsInfo.objects.get(user=user),
+                    submission_timestamp__gte=startdate,
+                )
+                if draftForm.draft:
+                    mod = ModuleOneForm3()
+                    temp = {}
+                    for name in ModuleOne._meta.get_fields():
+                        name = name.column
+                        if name in mod.fields:
+                            temp[name] = getattr(draftForm, name) or None
+                    form = ModuleOneForm3(temp)
+                    formPre = getFormType("moduleOne", student.teacher)
+                    return render(
+                        request,
+                        "moduleOne/module_one3.html",
+                        {
+                            "form": form,
+                            "formPre": formPre,
+                            "page_type": "student_module_one",
+                        },
+                    )
+                else:
+                    return redirect("accounts:already_filled")
+            # new form
+            else:
+                form = ModuleOneForm3()
                 formPre = getFormType("moduleOne", student.teacher)
                 return render(
                     request,
                     "moduleOne/module_one3.html",
-                    {
-                        "form": form,
-                        "formPre": formPre,
-                        "page_type": "student_module_one",
-                    },
+                    {"form": form, "formPre": formPre, "page_type": "student_module_one"},
                 )
-            else:
-                return redirect("accounts:already_filled")
-        # new form
-        else:
-            form = ModuleOneForm3()
-            formPre = getFormType("moduleOne", student.teacher)
-            return render(
-                request,
-                "moduleOne/module_one3.html",
-                {"form": form, "formPre": formPre, "page_type": "student_module_one"},
-            )
+        except:
+            return redirect("accounts:form_closed")
     # POST
     else:
         flag = False
@@ -372,6 +385,7 @@ def moduleOne3(request, user=None):
                 form=Form.objects.get(name="moduleOne"),
                 teacher=student.teacher,
                 open=True,
+                session=student.session
             ).start_timestamp
             draftForm = ModuleOne.objects.get(
                 student=StudentsInfo.objects.get(user=user),
