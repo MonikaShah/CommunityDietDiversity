@@ -99,18 +99,36 @@ class ParentsInfoForm(forms.ModelForm):
 
 
 class SecondaryRegForm(forms.ModelForm):
+    no_of_family_members = forms.CharField(
+        label="Total Number of Family Members",
+        widget=forms.TextInput(attrs={"min": 1, "type": "number"}),
+    )
+
     class Meta:
         model = SecondaryReg
-        fields = "__all__"
+        fields = [
+            "occupation",
+            "edu",
+            "type_of_family",
+            "religion",
+            "family_income",
+            "ration_card_color",
+        ]
         labels = {
             "occupation": "Parent's Occupation",
             "edu": "Parent's Education",
-            "no_of_family_members": "Total Number of Family Members",
             "type_of_family": "Type of Family",
             "religion": "Religious Belief",
             "family_income": "Total Family Income (In Rs)",
             "ration_card_color": "Ration Card Color",
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        no_of_family_members = cleaned_data.get("no_of_family_memebers")
+        if no_of_family_members < 1:
+            raise forms.ValidationError({"no_of_family_members": "Invalid Input."})
+        return cleaned_data
 
 
 class StudentsInfoForm(forms.ModelForm):
