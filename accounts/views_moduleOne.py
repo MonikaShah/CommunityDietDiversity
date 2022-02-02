@@ -233,7 +233,7 @@ def moduleOne2(request, user=None):
 
         student = StudentsInfo.objects.get(user=user)
         startdate = FormDetails.objects.get(
-            form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True
+            form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True, session=student.session
         ).start_timestamp
         if ModuleOne.objects.filter(
             student=student, submission_timestamp__gte=startdate
@@ -318,7 +318,7 @@ def moduleOne3(request, user=None):
 
         student = StudentsInfo.objects.get(user=user)
         startdate = FormDetails.objects.get(
-            form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True
+            form=Form.objects.get(name="moduleOne"), teacher=student.teacher, open=True, session=student.session
         ).start_timestamp
         if ModuleOne.objects.filter(
             student=student, submission_timestamp__gte=startdate
