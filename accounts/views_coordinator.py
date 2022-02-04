@@ -744,9 +744,7 @@ def teachers_data_download(request):
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    response[
-        "Content-Disposition"
-    ] = "attachment; filename=Teachers Data.xlsx"
+    response["Content-Disposition"] = "attachment; filename=Teachers Data.xlsx"
     return response
 
 
@@ -1085,7 +1083,7 @@ def edit_coordinator_profile(request):
         return render(
             request,
             "coordinator/update_coordinators_info.html",
-            {"form": form,"organization": organization},
+            {"form": form, "organization": organization},
         )
     else:
         form = CoordinatorsInfoForm(request.POST, request.FILES)
@@ -1125,14 +1123,14 @@ def edit_coordinator_profile(request):
                 else:
                     x = coordinator.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "\\" + x[1]
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
                     x = coordinator.profile_pic.url.split("/account/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "\\" + x[1]
+                        file = settings.MEDIA_ROOT + "/" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = "/default.svg"
 
@@ -1140,8 +1138,14 @@ def edit_coordinator_profile(request):
             return redirect("accounts:view_coordinator_profile")
         else:
             return render(
-                request, "coordinator/update_coordinators_info.html", {"form": form, "organization": organization,}
+                request,
+                "coordinator/update_coordinators_info.html",
+                {
+                    "form": form,
+                    "organization": organization,
+                },
             )
+
 
 @login_required(login_url="accounts:loginlink")
 @user_passes_test(is_coordinator, login_url="accounts:forbidden")
@@ -1171,10 +1175,8 @@ def switchTeachersUserList(request, teacher_id):
         )
     else:
         new_teacher_id = request.POST.get("new_teacher")
-        new_teacher = TeacherInCharge.objects.filter(
-            id=new_teacher_id
-        ).first()
-        
+        new_teacher = TeacherInCharge.objects.filter(id=new_teacher_id).first()
+
         teacher_sessions = Teacher_Session.objects.filter(teacher=og_teacher)
         for teacher_session in teacher_sessions:
             session = teacher_session.session
@@ -1196,9 +1198,7 @@ def switchTeachersUserList(request, teacher_id):
             form.save()
 
         og_teacher_user.delete()
-        request.session["my_messages"] = {
-            "success": "Teacher switched successfully"
-        }
+        request.session["my_messages"] = {"success": "Teacher switched successfully"}
 
         return redirect("accounts:coordinator_dashboard")
 
@@ -1221,13 +1221,9 @@ def removeTeacher(request, teacher_id):
             student.session = None
             student.save()
         teacher_session.delete()
-        Student_Session.objects.filter(
-            session=session, teacher=teacher
-        ).delete()
+        Student_Session.objects.filter(session=session, teacher=teacher).delete()
 
     teacher_user.delete()
 
-    request.session["my_messages"] = {
-        "success": "Teacher user deleted successfully"
-    }
+    request.session["my_messages"] = {"success": "Teacher user deleted successfully"}
     return redirect("accounts:coordinator_dashboard")
