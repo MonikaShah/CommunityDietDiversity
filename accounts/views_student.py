@@ -249,6 +249,7 @@ def edit_student_profile(request):
                     student.profile_pic = "/default.svg"
 
             secondary_reg = form2.save(commit=False)
+            secondary_reg.no_of_family_members = request.POST["no_of_family_members"]
             secondary_reg.save()
             student.secondary_reg = secondary_reg
             student.save()
@@ -316,6 +317,7 @@ def secondary_registration(request):
         form = SecondaryRegForm(request.POST)
         if form.is_valid():
             secondary_reg = form.save(commit=False)
+            secondary_reg.no_of_family_members = request.POST["no_of_family_members"]
             secondary_reg.save()
             student.secondary_reg = secondary_reg
             student.save()

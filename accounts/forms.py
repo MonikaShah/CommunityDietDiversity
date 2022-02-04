@@ -126,7 +126,7 @@ class SecondaryRegForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         no_of_family_members = cleaned_data.get("no_of_family_members")
-        if no_of_family_members < 1:
+        if not no_of_family_members.isnumeric() or int(no_of_family_members) < 1:
             raise forms.ValidationError({"no_of_family_members": "Invalid Input."})
         return cleaned_data
 
