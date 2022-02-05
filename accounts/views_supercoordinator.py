@@ -183,7 +183,7 @@ def addCoordinatorForm(request, id):
             coordinator.organization = Organization.objects.filter(id=id).first()
             coordinator.first_password = password
             coordinator.password_changed = False
-            coordinator.profile_pic = "/default.svg"
+            coordinator.profile_pic = "accounts/default.svg"
             coordinator.save()
             request.session["my_messages"] = {
                 "success": "Registration Successful. Download the Login Credentials from the sidebar on the left."
@@ -373,9 +373,7 @@ def coordinators_data_download(request):
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    response[
-        "Content-Disposition"
-    ] = "attachment; filename=Coordinators Data.xlsx"
+    response["Content-Disposition"] = "attachment; filename=Coordinators Data.xlsx"
     return response
 
 
@@ -516,18 +514,18 @@ def edit_supercoordinator_profile(request):
                         },
                     )
                 else:
-                    x = supercoordinator.profile_pic.url.split("/account/media/accounts/")
+                    x = supercoordinator.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
                     supercoordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = supercoordinator.profile_pic.url.split("/account/media/accounts/")
+                    x = supercoordinator.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
-                    supercoordinator.profile_pic = "/default.svg"
+                    supercoordinator.profile_pic = "accounts/default.svg"
 
             supercoordinator.save()
             return redirect("accounts:view_supercoordinator_profile")

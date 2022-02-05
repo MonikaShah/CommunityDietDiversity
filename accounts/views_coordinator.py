@@ -152,7 +152,7 @@ def addTeacherForm(request):
             teacher.coordinator = CoordinatorInCharge.objects.filter(
                 user=request.user
             ).first()
-            teacher.profile_pic = "/default.svg"
+            teacher.profile_pic = "accounts/default.svg"
             teacher.password_changed = False
             teacher.first_password = password
             teacher.save()
@@ -1121,18 +1121,18 @@ def edit_coordinator_profile(request):
                         },
                     )
                 else:
-                    x = coordinator.profile_pic.url.split("/account/media/accounts/")
+                    x = coordinator.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
                     coordinator.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = coordinator.profile_pic.url.split("/account/media/accounts/")
+                    x = coordinator.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
-                    coordinator.profile_pic = "/default.svg"
+                    coordinator.profile_pic = "accounts/default.svg"
 
             coordinator.save()
             return redirect("accounts:view_coordinator_profile")

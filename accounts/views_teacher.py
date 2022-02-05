@@ -1391,7 +1391,7 @@ def bulkRegister(request):
             if i[-1] == "ADULT":
                 StudentsInfo.objects.create(
                     user=student_user,
-                    profile_pic="/default.svg",
+                    profile_pic="accounts/default.svg",
                     fname=encryptionHelper.encrypt(i[0]),
                     mname=encryptionHelper.encrypt(i[1]) if i[1] else None,
                     lname=encryptionHelper.encrypt(i[2]),
@@ -1413,7 +1413,7 @@ def bulkRegister(request):
                 if i[-1] in parent_created:
                     StudentsInfo.objects.create(
                         user=student_user,
-                        profile_pic="/default.svg",
+                        profile_pic="accounts/default.svg",
                         fname=encryptionHelper.encrypt(i[0]),
                         mname=encryptionHelper.encrypt(i[1]) if i[1] else None,
                         lname=encryptionHelper.encrypt(i[2]),
@@ -1454,7 +1454,7 @@ def bulkRegister(request):
                         parent_user.save()
                         parent = ParentsInfo.objects.create(
                             user=parent_user,
-                            profile_pic="/default.svg",
+                            profile_pic="accounts/default.svg",
                             fname=encryptionHelper.encrypt(this_parent_data[1]),
                             mname=encryptionHelper.encrypt(this_parent_data[2])
                             if this_parent_data[2]
@@ -1477,7 +1477,7 @@ def bulkRegister(request):
                         parent_created[i[-1]] = parent
                     StudentsInfo.objects.create(
                         user=student_user,
-                        profile_pic="/default.svg",
+                        profile_pic="accounts/default.svg",
                         fname=encryptionHelper.encrypt(i[0]),
                         mname=encryptionHelper.encrypt(i[1]) if i[1] else None,
                         lname=encryptionHelper.encrypt(i[2]),
@@ -1634,18 +1634,18 @@ def edit_teacher_profile(request):
                         },
                     )
                 else:
-                    x = teacher.profile_pic.url.split("/account/media/accounts/")
+                    x = teacher.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
                     teacher.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = teacher.profile_pic.url.split("/account/media/accounts/")
+                    x = teacher.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
-                    teacher.profile_pic = "/default.svg"
+                    teacher.profile_pic = "accounts/default.svg"
 
             teacher.save()
             return redirect("accounts:view_teacher_profile")

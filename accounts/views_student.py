@@ -235,18 +235,18 @@ def edit_student_profile(request):
                         },
                     )
                 else:
-                    x = student.profile_pic.url.split("/account/media/accounts/")
+                    x = student.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
                     student.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = student.profile_pic.url.split("/account/media/accounts/")
+                    x = student.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + "/" + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
-                    student.profile_pic = "/default.svg"
+                    student.profile_pic = "accounts/default.svg"
 
             secondary_reg = form2.save(commit=False)
             secondary_reg.no_of_family_members = request.POST["no_of_family_members"]

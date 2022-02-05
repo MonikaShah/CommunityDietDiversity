@@ -120,7 +120,7 @@ def addStudentForm(request):
             student.city = City.objects.get(
                 city__icontains=request.POST["city"].strip()
             )
-            student.profile_pic = "/default.svg"
+            student.profile_pic = "accounts/default.svg"
             student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
             student.parent = ParentsInfo.objects.filter(user=request.user).first()
             student.consent = True
@@ -264,9 +264,7 @@ def edit_parent_profile(request):
 
             if request.FILES:
                 if request.FILES["profile_pic"].size > 5 * 1024 * 1024:
-                    form.add_error(
-                        "profile_pic", "File size must be less than 5MB."
-                    )
+                    form.add_error("profile_pic", "File size must be less than 5MB.")
 
                     return render(
                         request,
@@ -276,18 +274,18 @@ def edit_parent_profile(request):
                         },
                     )
                 else:
-                    x = parent.profile_pic.url.split("/account/media/accounts/")
+                    x = parent.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
                     parent.profile_pic = request.FILES["profile_pic"]
             else:
                 if "profile_pic-clear" in request.POST.keys():
-                    x = parent.profile_pic.url.split("/account/media/accounts/")
+                    x = parent.profile_pic.url.split("/media/accounts/")
                     if x[1] != "default.svg":
-                        file = settings.MEDIA_ROOT + '/' + x[1]
+                        file = settings.MEDIA_ROOT + "/accounts/" + x[1]
                         os.remove(file)
-                    parent.profile_pic = "/default.svg"
+                    parent.profile_pic = "accounts/default.svg"
 
             parent.save()
             return redirect("accounts:view_parent_profile")

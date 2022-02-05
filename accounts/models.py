@@ -8,7 +8,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 def rename(instance, filename):
     base, ext = os.path.splitext(filename)
-    upload_to = "../accounts"
+    upload_to = "accounts"
     filename = instance.user.username + ext
     return os.path.join(upload_to, filename)
 
