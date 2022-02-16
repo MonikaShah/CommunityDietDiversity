@@ -518,7 +518,7 @@ def give_consent(request):
                 parent = ParentsInfo.objects.filter(user=request.user).first()
                 parent.consent = True
                 parent.save()
-                students = StudentsInfo.objects.filter(parent=request.user)
+                students = StudentsInfo.objects.filter(parent=parent)
                 for i in students:
                     i.consent = True
                     i.save()
