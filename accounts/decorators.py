@@ -26,7 +26,6 @@ def isActive(moduleType, userType):
                     .first()
                     .studentsinfo_set.get(pk=studentID)
                 )
-
                 if FormDetails.objects.filter(
                     form=module, open=True, teacher=student.teacher
                 ).exists():
@@ -39,14 +38,13 @@ def isActive(moduleType, userType):
     return decorator
 
 
-def isInfoActive(moduleType, userType):
+def isInfoActive(moduleType):
     def decorator(view_func):
         def wrap(request, *args, **kwargs):
             module = Form.objects.get(name=moduleType)
             if not "parent_dashboard" in request.build_absolute_uri().split("/"):
                 if request.user.groups.filter(name="Parents").exists():
                     return redirect("accounts:forbidden")
-                student = StudentsInfo.objects.get(user=request.user)
                 if InfoFormDetails.objects.filter(
                     form=module,
                     open=True,
@@ -56,13 +54,6 @@ def isInfoActive(moduleType, userType):
                     return redirect("accounts:form_closed")
 
             elif "parent_dashboard" in request.build_absolute_uri().split("/"):
-                studentID = request.META.get("HTTP_REFERER").split("/")[-2]
-                student = (
-                    ParentsInfo.objects.filter(user=request.user)
-                    .first()
-                    .studentsinfo_set.get(pk=studentID)
-                )
-
                 if InfoFormDetails.objects.filter(
                     form=module,
                     open=True,

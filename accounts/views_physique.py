@@ -8,7 +8,6 @@ from .forms import *
 from .helper_functions import *
 
 
-
 def createTempDict(postData):
     temp = {}
     for key in postData:
@@ -18,11 +17,13 @@ def createTempDict(postData):
             temp[key] = postData[key]
     del temp["csrfmiddlewaretoken"]
     return temp
-    
+
+
 def creatingOrUpdatingDraftsPhysique(temp, user, formName):
     student = StudentsInfo.objects.get(user=user)
     startdate = InfoFormDetails.objects.get(
-        form=Form.objects.get(name=formName), open=True,
+        form=Form.objects.get(name=formName),
+        open=True,
     ).start_timestamp
     if Physique.objects.filter(
         student=student, submission_timestamp__gte=startdate
@@ -66,11 +67,9 @@ def creatingOrUpdatingDraftsPhysique(temp, user, formName):
 @secondary_reg
 def physiqueDraft(request):
     if "parent_dashboard" in request.META.get("HTTP_REFERER").split("/"):
-        module = request.META.get("HTTP_REFERER").split("/")[-1]
-        id = request.META.get("HTTP_REFERER").split("/")[-2]
-        user = StudentsInfo.objects.get(pk=id).user
+        student_id = request.META.get("HTTP_REFERER").split("/")[-2]
+        user = StudentsInfo.objects.get(pk=student_id).user
     else:
-        module = request.META.get("HTTP_REFERER").split("/")[-2]
         user = request.user
     # for removing csrf field
     temp = createTempDict(request.POST)
@@ -100,7 +99,7 @@ def physiqueDraft(request):
 @consent
 @password_change_required
 @secondary_reg
-@isInfoActive("physique", "student")
+@isInfoActive("physique")
 def physique(request, user=None):
     if request.method == "GET":
         if user == None:
@@ -155,7 +154,6 @@ def physique(request, user=None):
         # valid form
         if form.is_valid():
             temp = createTempDict(request.POST)
-            student = StudentsInfo.objects.get(user=user)
             startdate = InfoFormDetails.objects.get(
                 form=Form.objects.get(name="physique"),
                 open=True,
@@ -196,7 +194,7 @@ def physique(request, user=None):
 @user_passes_test(is_parent, login_url="accounts:forbidden")
 @consent
 @password_change_required
-@isInfoActive("physique", "parent")
+@isInfoActive("physique")
 def parentPhysique(request, id):
     user = StudentsInfo.objects.get(pk=id).user
     return physique(request, user)
