@@ -74,12 +74,8 @@ def addOrganizationForm(request):
                     },
                 )
             organization = form.save(commit=False)
-            organization.state = State.objects.get(
-                state__icontains=request.POST["state"].strip()
-            )
-            organization.city = City.objects.get(
-                city__icontains=request.POST["city"].strip()
-            )
+            organization.state = State.objects.get(state=request.POST["state"])
+            organization.city = City.objects.get(city=request.POST["city"])
             organization.save()
             return redirect("accounts:supercoordinator_dashboard")
         else:

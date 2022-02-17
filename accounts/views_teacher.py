@@ -449,9 +449,7 @@ def getFormDetails(request, id, session_id, form_type):
         form = InfoFormDetails.objects.get(pk=id)
     teacher = TeacherInCharge.objects.get(user=request.user)
     session = Session.objects.filter(id=session_id).first()
-    session_students = Student_Session.objects.filter(
-        teacher=teacher, session=session
-    )
+    session_students = Student_Session.objects.filter(teacher=teacher, session=session)
     total_students = []
     for session_student in session_students:
         total_students.append(session_student.student)
@@ -464,7 +462,7 @@ def getFormDetails(request, id, session_id, form_type):
     else:
         form_open = True
         temp_list = [form.form, form.start_timestamp]
-    
+
     if form_type == 1:
         if form.pre:
             temp_list.append("Pre Test")
@@ -1400,8 +1398,8 @@ def bulkRegister(request):
                     mobile_no=encryptionHelper.encrypt(i[5]) if i[5] else None,
                     gender=encryptionHelper.encrypt(i[6]),
                     dob=encryptionHelper.encrypt(i[7]),
-                    state=State.objects.get(state__icontains=i[8].strip()),
-                    city=City.objects.get(city__icontains=i[9].strip()),
+                    state=State.objects.get(state=i[8]),
+                    city=City.objects.get(city=i[9]),
                     pincode=encryptionHelper.encrypt(i[10]),
                     unique_no=encryptionHelper.encrypt(i[11]),
                     organization=organization,
@@ -1422,8 +1420,8 @@ def bulkRegister(request):
                         mobile_no=encryptionHelper.encrypt(i[5]) if i[5] else None,
                         gender=encryptionHelper.encrypt(i[6]),
                         dob=encryptionHelper.encrypt(i[7]),
-                        state=State.objects.get(state__icontains=i[8].strip()),
-                        city=City.objects.get(city__icontains=i[9].strip()),
+                        state=State.objects.get(state=i[8]),
+                        city=City.objects.get(city=i[9]),
                         pincode=encryptionHelper.encrypt(i[10]),
                         unique_no=encryptionHelper.encrypt(i[11]),
                         organization=organization,
@@ -1486,8 +1484,8 @@ def bulkRegister(request):
                         mobile_no=encryptionHelper.encrypt(i[5]) if i[5] else None,
                         gender=encryptionHelper.encrypt(i[6]),
                         dob=encryptionHelper.encrypt(i[7]),
-                        state=State.objects.get(state__icontains=i[8].strip()),
-                        city=City.objects.get(city__icontains=i[9].strip()),
+                        state=State.objects.get(state=i[8]),
+                        city=City.objects.get(city=i[9]),
                         pincode=encryptionHelper.encrypt(i[10]),
                         unique_no=encryptionHelper.encrypt(i[11]),
                         organization=organization,

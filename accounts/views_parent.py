@@ -114,12 +114,8 @@ def addStudentForm(request):
             student.mobile_no = encryptionHelper.encrypt(request.POST["mobile_no"])
             student.gender = encryptionHelper.encrypt(request.POST["gender"])
             student.adult = encryptionHelper.encrypt(str("False"))
-            student.state = State.objects.get(
-                state__icontains=request.POST["state"].strip()
-            )
-            student.city = City.objects.get(
-                city__icontains=request.POST["city"].strip()
-            )
+            student.state = State.objects.get(state=request.POST["state"])
+            student.city = City.objects.get(city=request.POST["city"])
             student.profile_pic = "accounts/default.svg"
             student.pincode = encryptionHelper.encrypt(request.POST["pincode"])
             student.parent = ParentsInfo.objects.filter(user=request.user).first()
